@@ -54,16 +54,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: IP_WHITELIST,TRAEFIK_BASIC_AUTH,TRAEFIK_API_HOST
           script: |
-            mkdir -p infra
-            tar -xvf deploy.tar -C infra/
-            cd infra/build
+            mkdir -p reader
+            tar -xvf deploy.tar --strip-components=1 -C reader/
+            mv -r reader/build/* reader/
+            cd reader/
             set -e
             echo "Building stage"
             echo " "
             bash -c '
             set -a
             export DOCKER_USER="1000:1000"
-            source .env
             (printenv | grep -v "^_=" | sort)
             ' > .env
             docker-compose up -d --build --force-recreate --remove-orphans
