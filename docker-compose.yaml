@@ -19,8 +19,6 @@ services:
 
     nginx:
         image: nginx:1.19.3
-        ports:
-            - 80:80
         volumes:
             - ./app/nginx.conf:/etc/nginx/templates/default.conf.template
             - ./frontend/build:/usr/share/nginx/html/
@@ -32,8 +30,10 @@ services:
             - .env
         labels:
             - "traefik.enable=true"
-            - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
             - "traefik.http.routers.reader.rule=Host(`reader.dev.andyi95.com`)"
+            - "traefik.http.routers.reader.middlewares=auth"
+            - "traefik.http.middlewares.internal.ipwhitelist.sourcerange=${"
+            - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
             - "traefik.http.routers.reader.middlewares=internal"
             - "traefik.http.services.reader.loadbalancer.server.port=8080"
 
