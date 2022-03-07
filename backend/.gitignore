@@ -1,3 +1,31 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+
+@andyi95
+andyi95
+/
+reading-vue
+Private
+Code
+Issues
+Pull requests
+Actions
+Projects
+Security
+Insights
+Settings
+reading-vue/.gitignore
+@andyi95
+andyi95 Initial commit
+Latest commit 02d0ff7 5 hours ago
+ History
+ 1 contributor
+129 lines (105 sloc)  1.76 KB
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,9 +33,6 @@ __pycache__/
 
 # C extensions
 *.so
-.idea
-.vs
-.vscode
 
 # Distribution / packaging
 .Python
@@ -130,4 +155,16 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/config.cfg
+© 2022 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Loading complete
