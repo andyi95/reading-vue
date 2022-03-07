@@ -49,73 +49,8 @@ export default {
   components: {ErrorMessage, WordCounter},
   data() {
     return {
-      fetchedText: [
-    {
-        "word": "Привет,",
-        "color": "#0000ff"
-    },
-    {
-        "word": "я",
-        "color": "#BACC81"
-    },
-    {
-        "word": "дверь!",
-        "color": "#0000ff"
-    },
-    {
-        "word": "Интеграция",
-        "color": "#0000ff"
-    },
-    {
-        "word": "традиционно",
-        "color": "#478C5C"
-    },
-    {
-        "word": "специфицирует",
-        "color": "#000080"
-    },
-    {
-        "word": "социометрический",
-        "color": "#009933"
-    },
-    {
-        "word": "анализ",
-        "color": "#0000ff"
-    },
-    {
-        "word": "рыночных",
-        "color": "#009933"
-    },
-    {
-        "word": "цен.",
-        "color": "#0000ff"
-    }],
-      postBody: '',
-      countedWords: [
-    {
-        "word": "привет",
-        "count": 1
-    },
-    {
-        "word": "я",
-        "count": 2
-    },
-    {
-        "word": "дверь",
-        "count": 10
-    },
-    {
-        "word": "интеграция",
-        "count": 1
-    },
-    {
-        "word": "традиционно",
-        "count": 1
-    },
-    {
-        "word": "специфицировать",
-        "count": 1
-    }],
+      fetchedText: [],
+      countedWords: [],
       errors: []
     }
   },
@@ -131,8 +66,10 @@ export default {
     },
     updateText() {
             instance.post('parse/', {
-        text: this.postBody
-      })
+              text: {
+                text: this.postBody
+              }
+            })
       .then(response => {this.fetchedText = response.data})
       .catch(e => {
         this.errors.push(e)
