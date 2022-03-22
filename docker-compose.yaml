@@ -32,4 +32,4 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.reader.rule=Host(`reader.dev.andyi95.com`)"
             - "traefik.http.routers.reader.middlewares=auth"
-            - "traefik.http.middlewares.internal.ipwhitelist.sourcerange=${IP_WHITELIST}"
+            - "traefik.http.services.reader.loadbalancer.server.port=80"

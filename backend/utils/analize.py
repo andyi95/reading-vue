@@ -2,7 +2,7 @@ import io
 import pymorphy2 as py
 import re
 morph = py.MorphAnalyzer()
-from collections import OrderedDict
+
 
 colors = {
     'NOUN': '#0000ff',  # red
@@ -65,7 +65,7 @@ def count_words(text: str):
         if s != '':
             res += parseLine(s)
         s = buf.readline()
-    v = sorted(counter.items(), key=lambda x:x[1])
+    v = sorted(counter.items(), key=lambda x:x[1], reverse=True)
     return dict(v)
 
 

@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  nginx:
+    ports:
+      - 80:80
+
+  frontend:
+    ports:
+      - 4000:4000
+
+  backend:
+    ports:
+      - 8000:8000

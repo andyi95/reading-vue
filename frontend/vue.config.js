@@ -9,6 +9,5 @@ module.exports = {
         'localhost',
         'reader.dev.andyi95.com'
     ]
-    // public: 'https://login-dev.mindfit.keenetic.pro/'
   }
 }

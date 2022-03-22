@@ -22,10 +22,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost",
-    "http://localhost:8080",
     "http://localhost:8088",
-    "http://192.168.1.6:8088",
-    'https://reader.dev.andyi95.com/',
     'backend',
     'nginx'
 ]
