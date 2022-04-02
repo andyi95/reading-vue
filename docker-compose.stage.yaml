@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+    frontend:
+        build:
+            context: frontend
+            dockerfile: Dockerfile.stage
+        user: ${DOCKER_USER}
+        volumes:
+            - ./frontend:/app:cached
+        env_file:
+            - .env
