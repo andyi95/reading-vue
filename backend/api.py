@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi import Response
 from utils.analize import analize_text, count_words
@@ -22,7 +22,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost",
-    "http://localhost:8088",
+    'http://localhost:4000/',
     'backend',
     'nginx'
 ]

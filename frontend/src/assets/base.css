@@ -1,0 +1,18 @@
+
+.a .nav-link{
+    color: #1FAB89!important;
+    padding-left: 7px!important;
+    display: block!important;
+}
+/*.nav-link:hover, .nav-link:focus {*/
+/*  color: #62D2A2;*/
+/*}*/
+
+.nav-element:hover .nav-link:focus {
+    color: #1FAB89!important;
+    padding-left: 7px!important;
+    display: block!important;
+}
+.nav-bg-custom {
+    background-color: #222831;
+}

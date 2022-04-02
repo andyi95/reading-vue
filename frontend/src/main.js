@@ -5,13 +5,10 @@ import App from './App.vue'
 import {createApp} from "vue";
 import router from './router'
 
-import { errorInterceptor, initFacebookSdk } from "./helpers";
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-errorInterceptor();
+import './assets/base.css'
 
-initFacebookSdk().then(startApp);
-
-function startApp() {
-    createApp(App).use(router).mount('#app');
-}
+const app = createApp(App);
+app.config.compilerOptions.whitespace = 'preserve';
+app.use(router).mount('#app');

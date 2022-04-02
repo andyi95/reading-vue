@@ -29,7 +29,7 @@ def analize_text(text: str, colorset: dict=None):
             stripped = re.sub(r'[^\w\s]', '', word).lower()
             parsed = morph.parse(stripped)[0]
             color = colors.get(parsed.tag.POS, '')
-            word = {'word': word, 'color': color}
+            word = {'word': word, 'color': color, 'tag': parsed.tag.POS}
             new_line.append(word)
         return new_line
 
