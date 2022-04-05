@@ -12,6 +12,8 @@ RUN npm run build
 
 FROM nginx as production-stage
 
+USER node
+
 RUN mkdir /app
 
 COPY --from=build-stage /app/dist /app

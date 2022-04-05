@@ -14,7 +14,7 @@ const routes = [
   {path: '/instagram', name: 'IGAccount', component: IGAccount},
   {path: '/text', name: 'Parser', component: TextParser},
   {path: '/helloworld', name: 'HelloWorld', component: HelloWorld},
-  // {path: '/:catchAll(.*)', redirect: '/'},
+  {path: '/:catchAll(.*)', redirect: '/text'},
   {
     path: '/about',
     name: 'About',
@@ -26,6 +26,7 @@ const routes = [
 ]
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
+  linkActiveClass: 'active',
   routes
 });
 export default router

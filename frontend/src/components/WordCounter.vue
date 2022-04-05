@@ -11,8 +11,10 @@
 export default {
   name: "WordCounter",
   props: {
-    word: String,
-    count: Number
+    word: {
+      word: String,
+      count: Number
+    }
   },
 }
 </script>

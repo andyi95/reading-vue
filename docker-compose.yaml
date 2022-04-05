@@ -22,7 +22,7 @@ services:
         volumes:
             - ./app/nginx.conf:/etc/nginx/templates/default.conf.template
             - ./frontend/build:/usr/share/nginx/html/
-        restart: always
+        restart: unless-stopped
         depends_on:
             - backend
             - frontend
