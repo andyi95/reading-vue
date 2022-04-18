@@ -61,10 +61,14 @@ jobs:
             cd reader/
             echo "Building stage"
             echo " "
+            env -i \
+            CI_ENVIRONMENT_DOMAIN=$CI_ENVIRONMENT_DOMAIN \
+            CI_PROJECT_NAME=$CI_PROJECT_NAME \
+            CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH \
             bash -c '
             set -a;
+            source .env.dist;
             export DOCKER_USER="1000:1000"
-            source .env.dist
             (printenv | grep -v "^_=" | sort)
             ' > .env
             docker-compose build frontend
