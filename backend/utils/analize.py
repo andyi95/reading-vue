@@ -1,8 +1,10 @@
 import io
-import pymorphy2 as py
 import re
-morph = py.MorphAnalyzer()
 
+import pymorphy2 as py
+
+morph = py.MorphAnalyzer()
+from nltk import pos_tag
 
 colors = {
     'NOUN': '#0000ff',  # blue
@@ -25,12 +27,19 @@ def analize_text(text: str, colorset: dict=None):
         new_line = []
         for word in words:
             stripped = re.sub(r'[^\w\s]', '', word).lower()
-            parsed = morph.parse(stripped)[0]
-            color = colors.get(parsed.tag.POS, '')
-            word = {
-                'word': word, 'color': color,
-                'tag': parsed.tag.POS, 'id': i
-            }
+            word = {'word': word, 'id': i}
+            if re.search(r'[а-яА-Я]', stripped):
+                parsed = morph.parse(stripped)[0]
+                word.update({
+                    'color': colors.get(parsed.tag.POS, ''),
+                    'tag': parsed.tag.POS
+                })
+            else:
+                parsed = pos_tag([stripped], tagset='universal')
+                word.update({
+                    'color': colors.get(parsed[0][1]),
+                    'tag': parsed[0][1]
+                })
             new_line.append(word)
             i += 1
         return new_line, i
@@ -55,10 +64,6 @@ def count_words(text: str):
             stripped = re.sub(r'[^\w\s]', '', word)
             parsed = morph.parse(stripped)[0]
             counter[parsed.normal_form] = counter.get(parsed.normal_form, 0) + 1
-            color = colors.get(parsed.tag.POS)
-            # if color:
-            #     word = f'<span style="color: {color}">{word}</span>'
-            # new_line += word + ' '
         return new_line
     buf = io.StringIO(text)
     s = buf.readline()

@@ -1,12 +1,19 @@
 FROM python:3.9
 
+ENV PYTHONUNBUFFERED=1 \
+    POETRY_HOME="/opt/poetry"
+
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
 WORKDIR /code
 
-COPY requirements.txt /code/requirements.txt
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+COPY poetry.lock pyproject.toml ./
 
-COPY . /code
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction
 
-#CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN python -m nltk.downloader universal_tagset  omw-1.4 stopwords wordnet averaged_perceptron_tagger
+
 CMD ["python", "api.py"]
