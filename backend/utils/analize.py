@@ -2,13 +2,12 @@ import io
 import re
 
 import pymorphy2 as py
-
-morph = py.MorphAnalyzer()
-from nltk.corpus import stopwords
 from nltk import pos_tag
+from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
-stemmer = PorterStemmer()
 
+stemmer = PorterStemmer()
+morph = py.MorphAnalyzer()
 
 colors = {
     'NOUN': '#0000ff',  # blue
@@ -33,13 +32,14 @@ colors.update({
     'ADJS': colors['ADJF'], 'ADJ': colors['ADJF']
 })
 
-def analize_text(text: str, colorset: dict=None):
-    def parseLine(s, i):
-        words = s.split()
+
+def analize_text(text: str) -> list:
+    def parse_line(line: str, counter: int):
+        words = line.split()
         new_line = []
         for word in words:
             stripped = re.sub(r'[^\w\s]', '', word).lower()
-            word = {'word': word, 'id': i}
+            word = {'word': word, 'id': counter}
             if re.search(r'[а-яА-Я]', stripped):
                 parsed = morph.parse(stripped)[0]
                 word.update({
@@ -53,8 +53,8 @@ def analize_text(text: str, colorset: dict=None):
                     'tag': parsed[0][1]
                 })
             new_line.append(word)
-            i += 1
-        return new_line, i
+            counter += 1
+        return new_line, counter
     buf = io.StringIO(text)
     s = buf.readline()
     res = []
@@ -62,15 +62,17 @@ def analize_text(text: str, colorset: dict=None):
     while s:
         s = s.strip()
         if s != '':
-            t, i = parseLine(s, i)
+            t, i = parse_line(s, i)
             res.extend(t)
         s = buf.readline()
     return res
 
-def count_words(text: str):
+
+def count_words(text: str) -> dict:
     counter = {}
-    def parseLine(s):
-        words = s.split()
+
+    def parse_line(line):
+        words = line.split()
         new_line = ''
         for word in words:
             stripped = re.sub(r'[^\w\s]', '', word)
@@ -87,7 +89,7 @@ def count_words(text: str):
     while s:
         s = s.strip()
         if s != '':
-            res += parseLine(s)
+            res += parse_line(s)
         s = buf.readline()
-    v = sorted(counter.items(), key=lambda x:x[1], reverse=True)
+    v = sorted(counter.items(), key=lambda x: x[1], reverse=True)
     return dict(v)

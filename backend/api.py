@@ -1,10 +1,12 @@
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-from utils.analize import analize_text, count_words
-from pydantic import BaseModel
-import uvicorn
-from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+
+from utils.analize import analize_text, count_words
 
 
 class Counted(BaseModel):
@@ -34,6 +36,7 @@ app.add_middleware(
 )
 analized = str
 
+
 @api.post('/parse/')
 async def create_text(text: TextModel, colors: Optional[dict] = None):
     analized = analize_text(text.text, colors)
@@ -47,6 +50,7 @@ async def count_text(text: TextModel):
     for item, value in counted.items():
         res.append({'word': item, 'count': value})
     return JSONResponse(res)
+
 
 @api.get('/parse')
 async def get_text():
