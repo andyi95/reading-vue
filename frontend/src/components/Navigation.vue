@@ -44,7 +44,7 @@ export default {
   display: block!important;
 }
 .brand-logo {
-  color: #56CFE1;
+  color: #1266f1;
 }
 
 .nav-item{

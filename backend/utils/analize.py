@@ -4,22 +4,34 @@ import re
 import pymorphy2 as py
 
 morph = py.MorphAnalyzer()
+from nltk.corpus import stopwords
 from nltk import pos_tag
+from nltk.stem.porter import PorterStemmer
+stemmer = PorterStemmer()
+
 
 colors = {
     'NOUN': '#0000ff',  # blue
     'VERB': '#009933',  # green
     'INFN': '#009933',
-    # 'PRTF': '#ff9900', # orange
-    # 'PRTS': '#cc6600',
-    # 'GRND': '#751aff',
-    # 'NUMR': '#013a20',
-    # 'ADVB': '#478C5C',
-    # 'NPRO': '#BACC81',
-    # 'PRED': '#cc33ff',
-    # 'PREP': '#ECF87F',
-    # 'CONJ': '#999966',
+    'PRTF': '#ff9900', # orange
+    'PRTS': '#cc6600',
+    'GRND': '#751aff',
+    'NUMR': '#013a20',
+    'ADVB': '#478C5C',
+    'NPRO': '#BACC81',
+    'PRED': '#cc33ff',
+    'PREP': '#ECF87F',
+    'CONJ': '#999966',
+    'ADJF': '#f4a261',
 }
+
+colors['PRON'] = colors['NPRO']
+colors.update({
+    'PRON': colors['NPRO'], 'PROPN': colors['NPRO'],
+    'ADV': colors['ADVB'], 'NUM': colors['NUMR'],
+    'ADJS': colors['ADJF'], 'ADJ': colors['ADJF']
+})
 
 def analize_text(text: str, colorset: dict=None):
     def parseLine(s, i):
@@ -35,7 +47,7 @@ def analize_text(text: str, colorset: dict=None):
                     'tag': parsed.tag.POS
                 })
             else:
-                parsed = pos_tag([stripped], tagset='universal')
+                parsed = pos_tag([stripped.lower()], tagset='universal')
                 word.update({
                     'color': colors.get(parsed[0][1]),
                     'tag': parsed[0][1]
@@ -62,8 +74,12 @@ def count_words(text: str):
         new_line = ''
         for word in words:
             stripped = re.sub(r'[^\w\s]', '', word)
-            parsed = morph.parse(stripped)[0]
-            counter[parsed.normal_form] = counter.get(parsed.normal_form, 0) + 1
+            if re.search(r'[а-яА-Я]', stripped) and stripped.lower() not in stopwords.words('russian'):
+                parsed = morph.parse(stripped.lower())[0]
+                counter[parsed.normal_form] = counter.get(parsed.normal_form, 0) + 1
+            elif stripped.lower() not in stopwords.words('english'):
+                normal_form = stemmer.stem(stripped.lower())
+                counter[normal_form] = counter.get(normal_form, 0) + 1
         return new_line
     buf = io.StringIO(text)
     s = buf.readline()
