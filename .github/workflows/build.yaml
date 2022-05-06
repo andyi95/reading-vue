@@ -1,4 +1,4 @@
-name: Custom infrastructure workflow
+name: deploy
 
 on: [push]
 
