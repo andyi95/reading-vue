@@ -33,7 +33,7 @@ colors.update({
 })
 
 
-def analize_text(text: str) -> list:
+def analize_text(text: str, colorset: dict = None) -> list:
     def parse_line(line: str, counter: int):
         words = line.split()
         new_line = []
