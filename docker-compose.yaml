@@ -1,34 +1,45 @@
 version: '3.4'
 
 services:
-    frontend:
-        build: frontend
-        user: ${DOCKER_USER}
-        volumes:
-            - ./frontend:/app:cached
-        env_file:
-            - .env
+  frontend:
+    build: frontend
+    user: ${DOCKER_USER}
+    volumes:
+      - ./frontend:/app:cached
+    env_file:
+      - .env
 
-    backend:
-        build: backend
-        volumes:
-            - ./backend:/app:cached
-        working_dir: /app
-        env_file:
-            - .env
+  backend:
+    build: backend
+    volumes:
+      - ./backend:/app:cached
+    working_dir: /app
+    env_file:
+      - .env
 
-    nginx:
-        image: nginx:1.19.3
-        volumes:
-            - ./app/nginx.conf:/etc/nginx/templates/default.conf.template
-            - ./frontend/build:/usr/share/nginx/html/
-        restart: unless-stopped
-        depends_on:
-            - backend
-            - frontend
-        env_file:
-            - .env
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.reader.rule=Host(`reader.dev.andyi95.com`)"
-            - "traefik.http.services.reader.loadbalancer.server.port=80"
+  nginx:
+    image: nginx:1.19.3
+    volumes:
+      - ./app/nginx.conf:/etc/nginx/templates/default.conf.template
+      - ./frontend/build:/usr/share/nginx/html/
+    depends_on:
+      - backend
+      - frontend
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.reader.rule=Host(`reader.dev.andyi95.com`)"
+      - "traefik.http.services.reader.loadbalancer.server.port=80"
+
+  db:
+      image: postgres:14
+      volumes:
+          -   db-data:/var/lib/postgresql/data
+      env_file:
+        - .env
+
+volumes:
+    db-data:
+
+

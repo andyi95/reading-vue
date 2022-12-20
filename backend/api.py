@@ -1,11 +1,12 @@
-from typing import Optional
+from typing import Optional, List
 
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-
+from models import Users, User_Pydantic
+from config import init_fastapi_db
 from utils.analize import analize_text, count_words
 
 
@@ -36,6 +37,10 @@ app.add_middleware(
 )
 analized = str
 
+@api.get('/users', response_model=List[User_Pydantic])
+async def get_users():
+    return await User_Pydantic.from_queryset(Users.all())
+
 
 @api.post('/parse/')
 async def create_text(text: TextModel, colors: Optional[dict] = None):
@@ -56,7 +61,8 @@ async def count_text(text: TextModel):
 async def get_text():
     return analized
 
-app.mount('/api', api)
 
 if __name__ == "__main__":
+    init_fastapi_db(app)
+    app.mount('/api', api)
     uvicorn.run(app, host="0.0.0.0", port=8000)
