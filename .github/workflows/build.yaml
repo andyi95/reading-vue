@@ -1,6 +1,9 @@
 name: deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 env:
   DEPLOY_PATH: reader/
@@ -71,6 +74,7 @@ jobs:
             export DOCKER_USER="1000:1000"
             (printenv | grep -v "^_=" | sort)
             ' > .env
+            echo "${{ secrets.ENV_FILE }}" >> .env
             docker-compose build frontend
             docker-compose run --rm -T frontend bash -c "npm install --no-save && npm run build"
             docker-compose up -d --build --force-recreate --remove-orphans
