@@ -48,11 +48,10 @@ jobs:
           TRAEFIK_BASIC_AUTH: ${{ secrets.TRAEFIK_BASIC_AUTH }}
           TRAEFIK_API_HOST: ${{ secrets.TRAEFIK_API_HOST }}
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.DEV_HOST }}
           username: ${{ secrets.USER }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
-          envs: IP_WHITELIST,TRAEFIK_BASIC_AUTH,TRAEFIK_API_HOST
           script: |
             mkdir -p reader
             tar -xvf deploy.tar --strip-components=1 -C reader/
