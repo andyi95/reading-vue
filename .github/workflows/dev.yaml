@@ -1,0 +1,86 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - dev
+
+env:
+  DEPLOY_PATH: reader/
+
+jobs:
+  deploy:
+    name: Deploy images on the destination server
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Copy env vars
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_DEBUG: true
+          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          envkey_COMPOSE_FILE: 'docker-compose.yaml'
+          envkey_COMPOSE_PROJECT_NAME: 'reader'
+          file_name: .env.dist
+          fail_on_empty: false
+
+      - name: Copy files to server
+        run: |
+          mkdir ../build
+          cp -TR . ../build
+          tar -cvf deploy.tar ../build/
+
+      - name: Deploy to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "deploy.tar"
+          target: "./"
+
+      - name: executing remote ssh commands to deploy
+        uses: appleboy/ssh-action@master
+        env:
+          IP_WHITELIST: ${{ secrets.IP_WHITELIST }}
+          TRAEFIK_BASIC_AUTH: ${{ secrets.TRAEFIK_BASIC_AUTH }}
+          TRAEFIK_API_HOST: ${{ secrets.TRAEFIK_API_HOST }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          envs: IP_WHITELIST,TRAEFIK_BASIC_AUTH,TRAEFIK_API_HOST
+          script: |
+            mkdir -p reader
+            tar -xvf deploy.tar --strip-components=1 -C reader/
+            mv -r reader/build/* reader/
+            cd reader/
+            echo "Building stage"
+            echo " "
+            env -i \
+            CI_ENVIRONMENT_DOMAIN=$CI_ENVIRONMENT_DOMAIN \
+            CI_PROJECT_NAME=$CI_PROJECT_NAME \
+            CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH \
+            bash -c '
+            set -a;
+            source .env.dist;
+            export DOCKER_USER="1000:1000"
+            (printenv | grep -v "^_=" | sort)
+            ' > .env
+            echo "${{ secrets.ENV_FILE }}" >> .env
+            docker-compose build frontend
+            docker-compose run --rm -T frontend bash -c "npm install --no-save && npm run build"
+            docker-compose up -d --build --force-recreate --remove-orphans
+
+      - name: send telegram message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            Report on the last run of ${{ github.workflow }}.
+            ${{ github.job }} in workflow ${{ github.action }} from repo ${{ github.repository }} has finished with status ${{ job.status }}.

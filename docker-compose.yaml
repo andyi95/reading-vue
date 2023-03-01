@@ -28,7 +28,3 @@ services:
             - frontend
         env_file:
             - .env
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.reader.rule=Host(`reader.dev.andyi95.com`)"
-            - "traefik.http.services.reader.loadbalancer.server.port=80"

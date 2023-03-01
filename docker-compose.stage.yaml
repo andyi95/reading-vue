@@ -4,9 +4,17 @@ services:
     frontend:
         build:
             context: frontend
-            dockerfile: Dockerfile.stage
+            dockerfile: Dockerfile
         user: ${DOCKER_USER}
         volumes:
             - ./frontend:/app:cached
         env_file:
             - .env
+
+    nginx:
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.reader.rule=Host(`reader.stage.andyi95.com`)"
+            - "traefik.http.services.reader.loadbalancer.server.port=80"
+            - "traefik.http.middlewares.reader.headers.customrequestheaders.X-Forwarded-Proto=https,wss"
+
