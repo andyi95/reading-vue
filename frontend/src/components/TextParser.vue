@@ -1,24 +1,38 @@
 <template>
-  <div class="container mt-3">
-    <div class="form-group">
-      <div class="row mb-2">
-      <label for="inputtextp0" class="align-right">Исходный текст для форматирования</label>
-      <textarea class="form-control" placeholder="Начните вводить текст..." rows="6" id="inputtextp0" v-model="postBody"
-                @input=updateText()></textarea></div>
-      <!-- @change="postPost()-->
-      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <button class="btn btn-primary" @click="updateText()">
-            Раскрасить текст!
-          </button>
-        <button class="btn btn-primary" @click="countWords()">Подсчёт количества слов</button>
-        </div>
-        <div class="d-grid gap-2 d-md-flex">
-          <input class="form-check-input" type="checkbox" value="" id="onlyNouns" v-model="onlyNouns" @change="filterText()">
-          <label class="form-check-label" for="onlyNouns">Показать только существительные</label>
-          <input class="form-check-input" type="checkbox" value="" id="onlyVerbs" v-model="onlyVerbs" @change="filterText()">
-          <label class="form-check-label" for="onlyVerbs">Показать только глаголы</label>
-        </div>
-      </div>
+
+<!--  <n-grid :x-gap="12" :y-gap="8" :rows="1">-->
+<!--    <n-grid-item>-->
+
+
+    <n-form size="medium" >
+      <n-form-item label-align="center">
+      <BaseInput label="Исходный текст" placeholder="Начните вводить текст"
+                 v-model:post-body="postBody" @input-updated="textUpdated($event)">
+
+      </BaseInput>
+      </n-form-item>
+      <n-space justify="space-between" size="medium">
+          <BaseButton label="Раскрасить текст!" @button-clicked="updateText()"/>
+
+
+        <BaseButton label="Подсчёт количества слов" @button-clicked="countWords()"/>
+
+
+      </n-space>
+      <n-space vertical>
+        <BaseCheckbox label="Показать только существительные" v-model="onlyNouns" @nSwitched="filterText()"/>
+        <BaseCheckbox label="Показать только глаголы" v-model="onlyVerbs" @n-switched="filterText()"/>
+        <BaseCheckbox label="Оттенки серого" v-model="grayScale" @n-switched="grayUpdated"></BaseCheckbox>
+      </n-space>
+    </n-form>
+
+
+<div v-if="grayScale && fetchedText && fetchedText.length">
+  <n-card title="Текст для чтения">
+    <span v-for="item in grayedText" :class="item.gray" :key="item.id">{{item.word + ' '}}</span>
+  </n-card>
+
+</div>
     <div class="row mb-2 mt-4" v-if="fetchedText && fetchedText.length">
       <p class="text-justify"><span v-for="item in fetchedText" :key="item.id" :style="{color: item.color}">{{item.word + ' ' }}</span></p>
     </div>
@@ -31,35 +45,44 @@
           </li>
         </ol>
       </div>
-      <div class="accordion accordion-flush container-sm" id="errorsAccordion" v-if="errors && errors.length">
-        <ErrorMessage v-for="error of errors" v-bind:key="error" :error="error"/>
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
 import {api} from "@/helpers";
 import debounce from "debounce";
 import WordCounter from "@/components/WordCounter";
-import ErrorMessage from "@/components/ErrorMessage";
-
+import BaseInput from "@/components/BaseInput";
+import BaseCheckbox from "@/components/BaseCheckbox";
+import BaseButton from "@/components/BaseButton";
+import { useMessage, NSpace, NForm, NFormItem } from "naive-ui";
 
 export default {
+  setup(){
+    const message = useMessage();
+    return {
+      warning(text){
+        message.warning(text)
+      }
+    }
+  },
   name: "Form",
-  components: {ErrorMessage, WordCounter},
+  components: {BaseButton, BaseCheckbox, WordCounter, BaseInput, NSpace, NForm, NFormItem},
   data() {
     return {
       fetchedText: [],
       countedWords: [],
       errors: [],
       onlyVerbs: false,
-      onlyNouns: false
+      onlyNouns: false,
+      grayScale: true,
+      postBody: String,
+      grayedText: []
     }
   },
   methods: {
     updateText() {
-      api.post('parse/', {
+      api.post('parse/?gray=' + this.grayScale, {
         text: {
           text: this.postBody
         }
@@ -71,8 +94,29 @@ export default {
             }
           })
           .catch(e => {
-            this.errors.push(e)
+            this.warning("Что-то пошло не так")
           })
+      if(this.grayScale === true){
+        this.grayUpdated(true)
+      }
+    },
+    textUpdated(value){
+      this.postBody = value;
+      this.updateText();
+    },
+    grayUpdated(value){
+      if (this.postBody.length > 0 && this.fetchedText.length === 0){
+        this.updateText()
+      }
+      this.grayScale = value;
+      let new_elem = [];
+      this.TAGS = ['VERB', 'NOUN', 'INF', 'ADJ'];
+      if(value === true){
+        this.gr_results = this.fetchedText.reduce(
+            (firstData,item)=>{firstData.push({...item,gray: this.TAGS.includes(item.tag) ? 'not-gray': 'grayed'})
+          return firstData},[])
+        this.grayedText = this.gr_results;
+      }
     },
     countWords() {
       api.post('count/', {text: this.postBody})
@@ -80,7 +124,7 @@ export default {
             this.countedWords = response.data
           })
           .catch(e => {
-            this.errors.push(e)
+            this.warning("Что-то пошло не так")
           })
     },
     filterText() {
@@ -103,6 +147,8 @@ export default {
       this.fetchedText = union(nouns, verbs)
     }
   },
+
+
   created() {
     this.updateText = debounce(this.updateText, 300)
   },
@@ -113,4 +159,10 @@ export default {
 p {
   text-align: left;
 }
+
+.grayed {
+  color: #E0E0E0;
+}
+
+
 </style>

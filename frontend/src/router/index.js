@@ -1,19 +1,18 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import TextParser from "@/components/TextParser";
-import Login from "@/components/LoginButton";
-import IGAccount from "@/components/IGAccount";
 import HelloWorld from "@/components/HelloWorld";
 // eslint-disable-next-line no-unused-vars
 import Home from "@/views/Home";
 import Text from "@/views/Text";
+import Spreeder from "@/views/Spreeder";
 
 
 const routes = [
   {path: '/', name: 'TextParser', component: Text},
-  {path: '/login', name: 'Login', component: Login},
-  {path: '/instagram', name: 'IGAccount', component: IGAccount},
+  // {path: '/login', name: 'Login', component: Login},
   {path: '/text', name: 'Parser', component: TextParser},
   {path: '/helloworld', name: 'HelloWorld', component: HelloWorld},
+  {path: '/spreeder', name: 'Spreeder', component: Spreeder},
   {path: '/:catchAll(.*)', redirect: '/text'},
   {
     path: '/about',

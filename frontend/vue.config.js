@@ -8,13 +8,16 @@ module.exports = {
                 return options;
             });
     },
-  devServer: {
-    host: 'localhost',
-    port: 4000,
-    allowedHosts: [
-        'frontend',
-        'localhost',
-        'reader.dev.andyi95.com'
-    ]
-  }
+    devServer: {
+        host: 'localhost',
+        port: 4000,
+        allowedHosts: [
+            'frontend',
+            'localhost',
+            'reader.dev.andyi95.com'
+        ],
+        client: {
+            webSocketURL: 'auto://0.0.0.0:0/ws'
+        }
+    }
 }

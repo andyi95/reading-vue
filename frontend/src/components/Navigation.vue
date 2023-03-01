@@ -1,63 +1,65 @@
 <template>
-  <div id="app">
 
-    <nav class="navbar navbar-nav navbar-expand-lg navbar-dark nav-bg-custom">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a href="https://github.com/andyi95" class="brand-logo" target="_blank">Тестовое тесто</a></div>
-        <ul class="navbar-nav">
-          <li class="nav-item" v-for="link in navlinks" :key="link.name">
-            <router-link class="nav-link" :to="{path:link.name}">{{ link.title }}</router-link>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    <router-view/>
-  </div>
+<n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" />
+<n-button @click="changeTheme">Сменить тему</n-button>
+        <router-view/>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      navlinks: [
+import {defineComponent, h, ref} from "vue";
+import {RouterLink } from 'vue-router';
+import {NMenu, NButton} from 'naive-ui';
+import {useStore} from "vuex";
+
+const navLinks = [
+    {
+  label: () =>
+      h(
+          RouterLink,
+          {
+            to: {
+              name: 'TextParser'
+            }
+          },
+          {default: () => 'Цветной текст'}
+      ),
+  key: 'text'
+},
+  {
+    label: () =>
+    h(
+        RouterLink,
         {
-          name: 'text',
-          title: 'Текстовые инструменты'
-        },
-        {
-          name: 'about', title: 'Что-то будет'
-        },
-        {
-          name: 'about',
-          title: 'О сайте'
-        }
-    ]
-    }
+          to: {
+            name: 'Spreeder'
+          },
+        },{ default: () => 'Спридер'}
+    ),
+    key: 'spreeder'
+  },
+  {
+    label: 'Что-то будет',
+    key: 'hello'
+  },
+  {
+    label: 'О сайте',
+    key: 'about'
   }
-}
+]
+
+export default defineComponent({
+  setup() {
+    return {
+      activeKey: ref(null),
+      navLinks,
+    };
+  },
+  methods: {
+    changeTheme(){
+      this.$store.commit('switchTheme')
+    }
+  },
+  components: {NMenu, NButton}
+});
 </script>
-<style scoped>
-.nav-link a{
-  color: #1FAB89!important;
-  padding-left: 7px!important;
-  display: block!important;
-}
-.brand-logo {
-  color: #1266f1;
-}
 
-.nav-item{
-    color: #6098a1!important;
-    padding-left: 7px!important;
-    display: block;
-}
-.nav-item:hover {
-  background-color: #393E46;
-}
-
-.nav-bg-custom {
-    background-color: #222831;
-}
-
-</style>
