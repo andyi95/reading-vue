@@ -4,7 +4,7 @@ services:
     frontend:
         build:
             context: frontend
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile.stage
         user: ${DOCKER_USER}
         volumes:
             - ./frontend:/app:cached

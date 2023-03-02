@@ -1,4 +1,6 @@
-FROM node:lts-alpine as build-stage
+FROM node:17-alpine as build-stage
+
+RUN mkdir -p /app
 
 WORKDIR /app
 
@@ -12,11 +14,15 @@ RUN npm run build
 
 FROM nginx as production-stage
 
-
-RUN mkdir /app
+RUN rm /usr/share/nginx/html/*
 
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
-#CMD ["nginx", "-g", "daemon off;"]
+RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx && \
+    chmod -R 770 /var/cache/nginx /var/run /var/log/nginx
+
+EXPOSE 4000
+
+CMD ["nginx", "-g", "daemon off;"]
