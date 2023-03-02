@@ -1,22 +1,24 @@
-FROM node:lts-alpine as build-stage
+FROM node:17-alpine as build-stage
 
-WORKDIR /app
+RUN mkdir -p /opt/app
+WORKDIR /opt/app
 
-COPY package*.json ./
+ENV PATH /opt/app/node_modules/.bin:$PATH
+
+COPY package*.json /opt/app/
 
 RUN npm install
 
-COPY . .
+COPY . /opt/app
 
 RUN npm run build
 
-FROM nginx as production-stage
+FROM nginx
 
+COPY --from=build-stage /opt/app/dist /usr/share/nginx/html
 
-RUN mkdir /app
+RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx && \
+    chmod -R 770 /var/cache/nginx /var/run /var/log/nginx
 
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-COPY nginx.conf /etc/nginx/nginx.conf
-
-#CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
