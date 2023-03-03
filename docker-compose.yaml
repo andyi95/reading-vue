@@ -3,7 +3,6 @@ version: '3.4'
 services:
     frontend:
         build: frontend
-        user: ${DOCKER_USER}
         volumes:
             - ./frontend:/app:cached
         env_file:
@@ -21,7 +20,6 @@ services:
         image: nginx:1.19.3
         volumes:
             - ./app/nginx.conf:/etc/nginx/templates/default.conf.template
-            - ./frontend/build:/usr/share/nginx/html/
         restart: unless-stopped
         depends_on:
             - backend

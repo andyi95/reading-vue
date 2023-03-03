@@ -12,17 +12,10 @@ COPY . .
 
 RUN npm run build
 
-FROM nginx as production-stage
-
-RUN rm /usr/share/nginx/html/*
+FROM nginx:1.17-alpine
 
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/nginx.conf
-
-RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx && \
-    chmod -R 770 /var/cache/nginx /var/run /var/log/nginx
-
-EXPOSE 4000
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
 CMD ["nginx", "-g", "daemon off;"]

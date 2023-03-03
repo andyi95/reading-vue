@@ -52,6 +52,7 @@ jobs:
           username: ${{ secrets.USER }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
+          command_timeout: 300m
           script: |
             mkdir -p reader
             tar -xvf deploy.tar --strip-components=1 -C reader/
