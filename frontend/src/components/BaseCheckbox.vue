@@ -1,6 +1,8 @@
 <template>
-<n-switch :id="id" @update:value="$emit('nSwitched', $event)"></n-switch>
+  <div>
+<n-switch :id="id" @update:value="$emit('n-switched', $event)"></n-switch>
   <label class="form-check-label" :for="id">{{ label }}</label>
+  </div>
 </template>
 
 <script>
@@ -10,15 +12,14 @@ export default {
   name: "BaseCheckbox",
   emits: ['n-switched'],
   props:{
-    label: ''
+    label: '',
   },
   components: {
     NSwitch
   },
   data(){
     return{
-      id: null,
-      is_switched: Boolean
+      id: null
     }
   },
   mounted() {

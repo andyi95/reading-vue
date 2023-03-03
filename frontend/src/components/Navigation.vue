@@ -2,7 +2,7 @@
 
 <n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" />
 <n-button @click="changeTheme">Сменить тему</n-button>
-        <router-view/>
+
 </template>
 
 <script>

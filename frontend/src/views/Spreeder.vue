@@ -1,26 +1,19 @@
 <template>
-
-  <n-form size="medium" align="center" style="padding: 14px;">
-    <n-space vertical size="medium">
-      <n-form-item>
+  <n-space vertical size="medium" justify="space-between">
+  <n-form size="medium">
+      <n-form-item label-align="center">
       <BaseInput label="Текст для чтения" placeholder="Вставьте или введите текст для упражнения"
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
       </n-form-item>
 
-      <!--    <n-card size="medium">-->
 
-      <!--    </n-card >-->
-
-
-    </n-space>
-  </n-form>
-  <n-space vertical size="medium" style="padding-top: 14px; padding-left: 16px; max-width: 20%">
     <n-input-number v-model:value="wordsPerMinute" @update:value="changeSpeed" :validator="speedValidator" placeholder="слов в минуту"/>
     <BaseButton :label="slider.buttonLabel" @buttonClicked="startShow()"/>
-    <n-progress type="line" :percentage="slider.progress" indicator-placement="inside" processing/>
-  </n-space>
 
-<n-space size="medium">
+  </n-form>
+
+    <n-progress type="line" :percentage="slider.progress" indicator-placement="inside" processing style="max-width: 80%"/>
+
     <swiper :space-between="30"
             :loop="false"
             :autoplay="{
@@ -29,7 +22,11 @@
     }"
             :effect="'fade'"
         :modules="modules" @progress="progressUpdate" @swiper="getSwiperRef">
-      <swiper-slide v-for="word in splittedText">{{ word }}</swiper-slide>
+      <swiper-slide v-for="word in splittedText">
+        <n-card size="large" content-style="font-size: 1.5em;">
+        {{ word }}
+        </n-card>
+      </swiper-slide>
     </swiper>
 
   </n-space>
@@ -39,7 +36,7 @@
 <script>
 import BaseInput from "@/components/BaseInput";
 import BaseButton from "@/components/BaseButton";
-import {NInputGroup, NSpace, NCard, NInputNumber, NProgress, NForm} from "naive-ui";
+import {NInputGroup, NSpace, NCard, NInputNumber, NProgress, NForm, NGrid, NGridItem} from "naive-ui";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -49,10 +46,11 @@ import 'swiper/css/effect-fade';
 import {Autoplay, Pagination, Navigation, EffectFade, EffectCards} from "swiper";
 import {Swiper, SwiperSlide, useSwiper} from "swiper/vue";
 import {ref, computed} from "vue";
+import {mapState} from "vuex";
 
 export default {
   name: "Spreeder",
-  components: {BaseButton, BaseInput, NInputGroup, NSpace, NCard, Swiper, SwiperSlide, NInputNumber, NProgress},
+  components: {BaseButton, BaseInput, NInputGroup, NSpace, NCard, Swiper, SwiperSlide, NInputNumber, NProgress, NGrid, NGridItem, NForm},
 
   methods: {
     splitText() {
@@ -89,7 +87,6 @@ export default {
   },
   data() {
     return {
-      sourceText: '',
       splittedText: [],
       slider: {
         isShow: false,
@@ -102,6 +99,7 @@ export default {
       speed: computed(() => {
         return 60 * 1000 / this.wordsPerMinute
       }),
+      sourceText: ''
 
     }
   },
@@ -125,11 +123,11 @@ export default {
 .swiper {
   width: 100%;
   height: 100%;
+  padding-top: 1.5em;
 }
 
 .swiper-slide {
   text-align: center;
-  font-size: 18px;
   background: #fff;
 
   /* Center slide text vertically */
@@ -137,7 +135,9 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
+.n-card .n-card-bordered{
+  font-size: 1.5em;
+}
 
 .swiper-slide img {
   display: block;

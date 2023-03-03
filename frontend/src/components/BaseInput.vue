@@ -2,7 +2,7 @@
 
       <label for="inputtextp0" class="align-right">{{ label }}</label>
       <n-input type="textarea" :placeholder="placeholder" rows="6" id="inputtextp0"
-                @input="$emit('input-updated', $event)"/>
+                @input="$emit('input-updated', $event)" v-model="sourceText"/>
 </template>
 
 
@@ -18,8 +18,10 @@ export default {
   props: {
     label: '',
     placeholder: '',
-    postBody: String
-  }
+    postBody: String,
+    sourceText: ''
+  },
+
 }
 
 </script>

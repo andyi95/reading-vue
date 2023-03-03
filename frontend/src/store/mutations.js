@@ -12,8 +12,11 @@ export const mutations = {
             state.theme = null
         }
     },
-    setText(state, text){
-        state.content = text
+    UPDATE_TEXT(state, text){
+        state.sourceText = text
+    },
+    UPDATE_DATA(state, data){
+        state.fetchedData = data
     }
 }
 

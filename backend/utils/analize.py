@@ -5,35 +5,39 @@ import pymorphy2 as py
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
+from collections import Counter
 
 stemmer = PorterStemmer()
 morph = py.MorphAnalyzer()
 
 colors = {
     'NOUN': '#0000ff',  # blue
+    'NPRO': '#4B4BF9',
+
+    'ADJF': '#f4a261',
+    'ADJS': '#f4a261',
+
     'VERB': '#009933',  # green
     'INFN': '#009933',
-    'PRTF': '#ff9900', # orange
-    'PRTS': '#cc6600',
-    'GRND': '#751aff',
-    'NUMR': '#013a20',
-    'ADVB': '#478C5C',
-    'NPRO': '#BACC81',
-    'PRED': '#cc33ff',
-    'PREP': '#ECF87F',
-    'CONJ': '#999966',
-    'ADJF': '#f4a261',
+
+    'PRTF': '#00F752', # orange
+    'PRTS': '#00F752',
+    'GRND': '#00C441',  # деепричастие
+#     'NUMR': '#013a20',
+    'ADVB': '#A7B312',
+    'PRED': '#4D4DFF',
+#     'PREP': '#ECF87F',
+#     'CONJ': '#999966',
 }
 
 colors['PRON'] = colors['NPRO']
 colors.update({
     'PRON': colors['NPRO'], 'PROPN': colors['NPRO'],
-    'ADV': colors['ADVB'], 'NUM': colors['NUMR'],
-    'ADJS': colors['ADJF'], 'ADJ': colors['ADJF']
+    'ADV': colors['ADVB'],
 })
 
 
-def analize_text(text: str, colorset: dict = None) -> list:
+def analize_text(text: str, colorset: dict = None, gray: bool = False) -> list:
     def parse_line(line: str, counter: int):
         words = line.split()
         new_line = []
@@ -69,7 +73,7 @@ def analize_text(text: str, colorset: dict = None) -> list:
 
 
 def count_words(text: str) -> dict:
-    counter = {}
+    result = []
 
     def parse_line(line):
         words = line.split()
@@ -78,10 +82,10 @@ def count_words(text: str) -> dict:
             stripped = re.sub(r'[^\w\s]', '', word)
             if re.search(r'[а-яА-Я]', stripped) and stripped.lower() not in stopwords.words('russian'):
                 parsed = morph.parse(stripped.lower())[0]
-                counter[parsed.normal_form] = counter.get(parsed.normal_form, 0) + 1
+                result.append(parsed.normal_form)
             elif stripped.lower() not in stopwords.words('english'):
                 normal_form = stemmer.stem(stripped.lower())
-                counter[normal_form] = counter.get(normal_form, 0) + 1
+                result.append(normal_form)
         return new_line
     buf = io.StringIO(text)
     s = buf.readline()
@@ -91,5 +95,5 @@ def count_words(text: str) -> dict:
         if s != '':
             res += parse_line(s)
         s = buf.readline()
-    v = sorted(counter.items(), key=lambda x: x[1], reverse=True)
-    return dict(v)
+    v = Counter(result)
+    return dict(v.most_common())
