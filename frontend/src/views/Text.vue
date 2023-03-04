@@ -15,35 +15,29 @@
 
 
     </n-space>
-    <n-space vertical>
-      <BaseCheckbox label="Показать только существительные" v-model:value="onlyNouns" @nSwitched="radioUpdated('nouns', $event)"/>
-      <BaseCheckbox label="Показать только глаголы" v-model:value="onlyVerbs" @n-switched="radioUpdated('verbs', $event)"/>
-      <BaseCheckbox label="Оттенки серого" v-model:gray-scale="grayScale" @n-switched="grayUpdated($event)"></BaseCheckbox>
+    <n-space vertical justify="space-between" class="py-2">
+      <BaseCheckbox label="Показать только существительные" v-model:value="options.onlyNouns" @nSwitched="radioUpdated('nouns', $event)"/>
+      <BaseCheckbox label="Показать только глаголы" v-model:value="options.onlyVerbs" @n-switched="radioUpdated('verbs', $event)"/>
+      <BaseCheckbox label="Оттенки серого" v-model:gray-scale="options.grayScale" @n-switched="grayUpdated($event)"></BaseCheckbox>
     </n-space>
   </n-form>
 
-
-  <div v-if="grayedText.length && grayScale" class="row mb-2 mt-4">
-    <n-card title="Текст для чтения">
+    <n-card title="Текст для чтения" v-if="grayedText.length && options.grayScale" class="row mb-2 mt-4">
       <span v-for="item in grayedText" :class="item.gray" :key="item.id">{{item.word + ' '}}</span>
     </n-card>
-  </div>
 
-  <div class="row mb-2 mt-4" v-if="fetchedText && fetchedText.length && !grayScale">
-    <n-card title="Текст для чтения">
+    <n-card title="Текст для чтения" class="row mb-2 mt-4" v-if="fetchedText && fetchedText.length && ! options.grayScale">
     <span v-for="item in fetchedText" :key="item.id" :style="{color: item.color}">{{item.word + ' ' }}</span>
     </n-card>
-  </div>
-  <div class="card-body p-2">
-    <div class="list-group" v-if="countedWords && countedWords.length">
-      <ol class="list-group list-group-numbered">
-        <li class="list-group-item d-flex justify-content-between align-items-start" v-for="word in countedWords"
-            :key="word.count">
-          <WordCounter :word="word"/>
-        </li>
-      </ol>
-    </div>
-  </div>
+
+<div  v-if="countedWords.length" style="padding-top: 2em">
+  <n-list hoverable style="padding: 0.8em">
+    <n-list-item v-for="word in countedWords">
+      <n-card><span>{{word.word}}</span>
+        <n-tag type="success" style="position: absolute; right: 10px;">{{word.count}}</n-tag>
+      </n-card>
+    </n-list-item>
+  </n-list></div>
 </template>
 
 <script>
@@ -53,9 +47,8 @@ import WordCounter from "@/components/WordCounter";
 import BaseInput from "@/components/BaseInput";
 import BaseCheckbox from "@/components/BaseCheckbox";
 import BaseButton from "@/components/BaseButton";
-import { useMessage, NSpace, NForm, NFormItem } from "naive-ui";
-import {mapState} from "vuex";
-import {ref} from "vue";
+import { useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag} from "naive-ui";
+import {parsedText, countedText} from "@/store/mock";
 
 export default {
   setup(){
@@ -67,76 +60,95 @@ export default {
     }
   },
   name: "Text",
-  components: {BaseButton, BaseCheckbox, WordCounter, BaseInput, NSpace, NForm, NFormItem},
+  components: {BaseButton, BaseCheckbox, WordCounter, BaseInput, NSpace, NForm, NFormItem, NListItem, NList, NTag},
   data() {
     return {
       fetchedText: [],
       cachedText: [],
       countedWords: [],
       errors: [],
-      onlyVerbs: false,
-      onlyNouns: false,
+      options: {
+        onlyVerbs: false,
+        onlyNouns: false,
+        grayScale: false,
+      },
       grayedText: [],
-      grayScale: false,
-      sourceText: this.$store.state.sourceText
+      sourceText: ''
     }
   },
   methods: {
     updateText() {
-      api.post('parse/', {
-        text: {
-          text: this.sourceText
-        }
-      })
-          .then(response => {
-            this.fetchedText = response.data;
-            if (this.onlyVerbs === true || this.onlyVerbs === true) {
-              this.filterText();
-            }
-          })
-          .catch(e => {
-            this.warning("Что-то пошло не так")
-          })
-      if(this.grayScale === true){
+      if(process.env.NODE_ENV === 'development') {
+        this.fetchedText = parsedText.data
+      }
+      else {
+        api.post('parse/', {
+          text: {
+            text: this.sourceText
+          }
+        })
+            .then(response => {
+              this.fetchedText = response.data;
+              if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
+                this.filterText();
+              }
+            })
+            .catch(e => {
+              this.warning("Что-то пошло не так")
+            })
+      }
+      if(this.options.grayScale === true){
         this.grayUpdated(true)
       }
     },
     textUpdated(value){
       this.sourceText = value;
-      this.$store.dispatch('updateText', this.sourceText)
       this.updateText();
     },
     radioUpdated(type, value){
       if (type === 'verbs'){
-        this.onlyVerbs = value
+        this.options.onlyVerbs = value
         this.filterText()
       }
       if (type === 'nouns'){
-        this.onlyNouns = value
+        this.options.onlyNouns = value
         this.filterText()
       }
       if (type === 'gray'){
-        this.grayScale = value
+        this.options.grayScale = value
         if (value){
           this.grayUpdated(value)
         }
       }
     },
     grayUpdated(value){
-      // if (this.sourceText.length > 0 && this.fetchedText.length === 0){
-      //   this.updateText()
-      // }
-      this.grayScale = value;
-      let new_elem = [];
-      this.TAGS = ['VERB', 'NOUN', 'INF', 'ADJ'];
+      this.options.grayScale = value;
+      let gr_results = []
+      const TAGS = ['VERB', 'NOUN', 'INF', 'ADJ'];
+      var grayText = function (tag){
+        if(TAGS.includes(tag)){
+          return 'not-gray'
+        }
+        if (this.$store.state.theme === 'darkTheme') {
+          return 'grayed-dark'
+        }
+
+        return 'grayed'
+      }.bind(this)
       if(value === true){
-        this.gr_results = this.fetchedText.reduce(
-            (firstData,item)=>{firstData.push({...item,gray: this.TAGS.includes(item.tag) ? 'not-gray': 'grayed'})
+        gr_results = this.fetchedText.reduce(
+            (firstData,item)=>{firstData.push({
+              ...item,gray: grayText(item.tag)
+            })
               return firstData},[])
-        this.grayedText = this.gr_results;
+        this.grayedText = gr_results;
       }
     },
     countWords() {
+      if (process.env.NODE_ENV === 'development'){
+
+        return;
+      }
       api.post('count/', {text: this.sourceText})
           .then(response => {
             this.countedWords = response.data
@@ -146,22 +158,22 @@ export default {
           })
     },
     filterText() {
-      if (this.onlyNouns || this.onlyVerbs){
+      if (this.options.onlyNouns || this.options.onlyVerbs){
         this.cachedText = this.fetchedText
       }
-      if (!this.onlyVerbs && !this.onlyNouns) {
+      if (!this.options.onlyVerbs && !this.options.onlyNouns) {
         this.fetchedText = this.cachedText
         return;
       }
       let nouns = [];
       let verbs = [];
       let union = require('arr-union');
-      if (this.onlyNouns === true) {
+      if (this.options.onlyNouns === true) {
         nouns = this.fetchedText.filter(function (items) {
           return items.tag === 'NOUN'
         });
       }
-      if (this.onlyVerbs === true) {
+      if (this.options.onlyVerbs === true) {
         verbs = this.fetchedText.filter(function (item) {
           return item.tag === 'VERB' || item.tag === 'INFN'
         });
@@ -173,6 +185,12 @@ export default {
 
   created() {
     this.updateText = debounce(this.updateText, 300)
+    if(process.env.NODE_ENV !== 'development') {
+      return;
+    }
+    this.countedWords = countedText.data
+    this.fetchedText = parsedText.data
+    this.sourceText = parsedText.sourceText
   },
 }
 </script>
@@ -181,9 +199,15 @@ export default {
 p {
   text-align: left;
 }
-
+.n-card.n-card--bordered .n-card__content span{
+  font-size: 1.2em;
+}
+/*.n-card > .n-card__content, .n-card > .n-card__footer*/
 .grayed {
   color: #E0E0E0;
+}
+.grayed-dark{
+  color: #767676
 }
 
 

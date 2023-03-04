@@ -1,8 +1,9 @@
 <template>
 
-      <label for="inputtextp0" class="align-right">{{ label }}</label>
+<!--      <label for="inputtextp0" class="align-right">{{ label }}</label>-->
+  <n-form-item :label="label">
       <n-input type="textarea" :placeholder="placeholder" rows="6" id="inputtextp0"
-                @input="$emit('input-updated', $event)" v-model="sourceText"/>
+                @input="$emit('input-updated', $event)" v-model="sourceText"/></n-form-item>
 </template>
 
 

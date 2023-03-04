@@ -2,17 +2,11 @@
   <div id="app">
 <n-config-provider :theme="theme">
   <n-message-provider>
-    <n-layout wh-full>
-      <article flex-1 flex-col overflow-hidden>
-        <header
-            class="bg-white px-15 border-b bc-eee flex items-center"
-            style="height: 60px">
+    <n-layout>
           <Navigation/>
-        </header>
-        <n-layout-content class="flex-1 overflow-hidden px-3">
+        <n-layout-content class="px-3" position="static">
     <router-view/>
         </n-layout-content>
-      </article>
     </n-layout>
   </n-message-provider>
   </n-config-provider>
@@ -45,7 +39,14 @@ export default defineComponent({
 <style lang="scss">
 @import '~@/assets/scss/index.free.scss';
 
+.bg, .n-config-provider, body, html {
+  height: 100%;
+}
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;
+  height: 100%;
+}
+.n-layout-scroll-container {
+  height: 100%;
 }
 </style>

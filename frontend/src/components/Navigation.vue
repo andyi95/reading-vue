@@ -1,8 +1,8 @@
 <template>
-
-<n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" />
+<div>
+<n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" style="height: 60px"/>
 <n-button @click="changeTheme">Сменить тему</n-button>
-
+</div>
 </template>
 
 <script>
@@ -36,10 +36,6 @@ const navLinks = [
         },{ default: () => 'Спридер'}
     ),
     key: 'spreeder'
-  },
-  {
-    label: 'Что-то будет',
-    key: 'hello'
   },
   {
     label: 'О сайте',
