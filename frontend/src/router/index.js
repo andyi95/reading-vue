@@ -8,11 +8,11 @@ import Spreeder from "@/views/Spreeder";
 
 
 const routes = [
-  {path: '/', name: 'TextParser', component: Text},
+  {path: '/', name: 'TextParser', component: Text, meta: {title: "Морфемы"}},
   // {path: '/login', name: 'Login', component: Login},
-  {path: '/text', name: 'Parser', component: Text},
+  {path: '/text', name: 'Parser', component: Text, meta: {title: "Морфемы"}},
   {path: '/helloworld', name: 'HelloWorld', component: HelloWorld},
-  {path: '/spreeder', name: 'Spreeder', component: Spreeder},
+  {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {title: "Чтение на скорость"}},
   {path: '/:catchAll(.*)', redirect: '/text'},
   {
     path: '/about',
@@ -28,5 +28,10 @@ const router = createRouter({
   linkActiveClass: 'active',
   routes
 });
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title ? to.meta.title : "Текстовые инструменты"
+  next()
+})
+
 export default router
 

@@ -36,21 +36,27 @@ export default defineComponent({
   })
 </script>
 
-<style lang="scss">
-@import '~@/assets/scss/index.free.scss';
+<style lang="css">
+@import "~@/assets/css/bootstrap.min.css";
 
-.bg, .n-config-provider, html, body, .n-layout.n-layout--static-positioned {
-  height: 100%;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
+/** {*/
+/*  padding: 0;*/
+/*  margin: 0;*/
+/*}*/
+
+body, #app, .n-layout-scroll-container, .n-config-provider, .n-layout--static--positioned{
+  min-height: 100vh;
 }
 
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;
-  height: 100%;
+  /*height: 100%;*/
+
 }
-//.n-layout--static-positioned {
-//  height: 100%;
-//}
+.n-layout-scroll-container{
+  padding-left: .75rem;
+  padding-right: .75rem;
+  padding-top: .50rem;
+  padding-bottom: .25rem;
+}
 </style>

@@ -22,8 +22,6 @@ jobs:
         with:
           envkey_DEBUG: true
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          envkey_COMPOSE_FILE: 'docker-compose.yaml'
-          envkey_COMPOSE_PROJECT_NAME: 'reader'
           file_name: .env.dist
           fail_on_empty: false
 
@@ -49,6 +47,8 @@ jobs:
           IP_WHITELIST: ${{ secrets.IP_WHITELIST }}
           TRAEFIK_BASIC_AUTH: ${{ secrets.TRAEFIK_BASIC_AUTH }}
           TRAEFIK_API_HOST: ${{ secrets.TRAEFIK_API_HOST }}
+          COMPOSE_FILE: 'docker-compose.yaml:docker-compose.stage.yaml'
+          COMPOSE_PROJECT_NAME: 'reader'
         with:
           host: ${{ secrets.DEV_HOST }}
           username: ${{ secrets.USER }}
@@ -61,11 +61,7 @@ jobs:
             mv -r reader/build/* reader/
             cd reader/
             echo "Building stage"
-            echo " "
-            env -i \
-            CI_ENVIRONMENT_DOMAIN=$CI_ENVIRONMENT_DOMAIN \
-            CI_PROJECT_NAME=$CI_PROJECT_NAME \
-            CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH \
+            echo " "=
             bash -c '
             set -a;
             source .env.dist;

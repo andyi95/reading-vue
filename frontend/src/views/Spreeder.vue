@@ -4,19 +4,17 @@
       <BaseInput label="Текст для чтения" placeholder="Вставьте или введите текст для упражнения"
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
 
-    <n-form-item label="слов в минуту" style="padding-right: 30em">
+    <n-form-item label="слов в минуту">
       <n-slider v-model:value="wordsPerMinute" :step="1" :min="100" :max="900" style="padding-right: 4em"/>
-    <n-input-number style="width: 6em" v-model:value="wordsPerMinute" @update:value="changeSpeed" :validator="speedValidator" placeholder="слов в минуту"/>
+    <n-input-number v-model:value="wordsPerMinute" @update:value="changeSpeed" :validator="speedValidator" placeholder="слов в минуту"/>
     </n-form-item>
 
     <BaseButton :label="slider.buttonLabel" @buttonClicked="startShow()"/>
 
   </n-form>
 
-    <n-card style="text-align: center"><span>{{slider.currentWord}}</span></n-card>
-
-
-    <n-progress type="line" :percentage="slider.progress" indicator-placement="inside" processing style="max-width: 80%"/>
+    <n-card style="text-align: center" v-show="slider.currentWord"><span>{{slider.currentWord}}</span></n-card>
+    <n-progress type="line" :percentage="slider.progress" indicator-placement="inside" style="max-width: 80%" v-show="slider.progress > 0"/>
 
   </n-space>
 
@@ -105,7 +103,10 @@ export default {
 </script>
 
 <style scoped>
-
+.n-input-number {
+  width: 8em;
+  display: flex;
+}
 .n-card.n-card--bordered .n-card__content{
   text-align: center;
   display: flex;
@@ -119,7 +120,7 @@ export default {
   /*display: flex;*/
   justify-content: center;
   align-items: center;
-  /*padding-top: 1.5em;*/
+
 }
 
 
