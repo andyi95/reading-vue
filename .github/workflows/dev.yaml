@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - dev
+    paths-ignore:
+      - 'README.md'
 
 env:
   DEPLOY_PATH: reader/
@@ -67,13 +69,11 @@ jobs:
             bash -c '
             set -a;
             source .env.dist;
-            export DOCKER_USER="1000:1000"
             (printenv | grep -v "^_=" | sort)
             ' > .env
             echo "${{ secrets.ENV_FILE }}" >> .env
             docker-compose build frontend
-            docker-compose run --rm -T frontend sh -c "npm install --no-save && npm run build"
-            docker-compose up -d --build --force-recreate --remove-orphans
+            docker-compose up -d --force-recreate --remove-orphans
 
       - name: send telegram message
         uses: appleboy/telegram-action@master

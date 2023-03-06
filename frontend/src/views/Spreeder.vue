@@ -63,7 +63,7 @@ export default {
       this.wordsPerMinute = value;
     },
     startShow() {
-      this.slider.buttonLabel = this.slider.isShow === true ? "Стоп" : "Старт"
+      this.slider.buttonLabel = this.slider.isShow === true ? "Старт" : "Стоп"
       if (this.slider.isShow === true){
         this.slider.isShow = false;
       }

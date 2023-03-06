@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-    baseURL: "http://localhost:8000/api/",
-    // baseURL: "https://reader.dev.andyi95.com/api/",
+    baseURL: process.env.VUE_APP_API_URL,
     timeout: 1000,
     withCredentials: true
 });
