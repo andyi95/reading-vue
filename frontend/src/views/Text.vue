@@ -1,12 +1,10 @@
 <template>
 
   <n-form size="medium" >
-    <n-form-item label-align="center">
       <BaseInput label="Исходный текст" placeholder="Начните вводить текст"
                  v-model:post-body="postBody" @input-updated="textUpdated($event)">
 
       </BaseInput>
-    </n-form-item>
     <n-space justify="space-between" size="medium">
       <BaseButton label="Раскрасить текст!" @button-clicked="updateText()"/>
 

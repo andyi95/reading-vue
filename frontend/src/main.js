@@ -1,5 +1,5 @@
 
-import DefaultLayout from './layouts/default';
+import DefaultLayout from './layout/index.vue';
 import App from './App.vue'
 import {createApp, inject} from "vue";
 import store from './store';

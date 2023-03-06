@@ -4,7 +4,7 @@
   <n-message-provider>
     <n-layout>
           <Navigation/>
-        <n-layout-content class="px-3" position="static">
+        <n-layout-content >
     <router-view/>
         </n-layout-content>
     </n-layout>
@@ -39,14 +39,18 @@ export default defineComponent({
 <style lang="scss">
 @import '~@/assets/scss/index.free.scss';
 
-.bg, .n-config-provider, body, html {
+.bg, .n-config-provider, html, body, .n-layout.n-layout--static-positioned {
   height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
 }
+
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   height: 100%;
 }
-.n-layout-scroll-container {
-  height: 100%;
-}
+//.n-layout--static-positioned {
+//  height: 100%;
+//}
 </style>

@@ -13,24 +13,10 @@
 
   </n-form>
 
-    <n-card>{{slider.currentWord}}</n-card>
+    <n-card style="text-align: center"><span>{{slider.currentWord}}</span></n-card>
 
-<!--    <swiper :space-between="30"-->
-<!--            :loop="false"-->
-<!--            :autoplay="{-->
-<!--      delay: speed,-->
-<!--      disableOnInteraction: false,-->
-<!--    }"-->
-<!--            :effect="'fade'"-->
-<!--        :modules="modules" @progress="progressUpdate" @swiper="getSwiperRef">-->
-<!--      <swiper-slide v-for="word in splittedText">-->
-<!--        <n-card size="large" content-style="font-size: 6em;">-->
-<!--        {{ word }}-->
-<!--        </n-card>-->
-<!--      </swiper-slide>-->
-<!--    </swiper>-->
 
-    <n-progress v-if="slider.progress > 0" type="line" :percentage="slider.progress" indicator-placement="inside" processing style="max-width: 80%"/>
+    <n-progress type="line" :percentage="slider.progress" indicator-placement="inside" processing style="max-width: 80%"/>
 
   </n-space>
 
@@ -40,12 +26,6 @@
 import BaseInput from "@/components/BaseInput";
 import BaseButton from "@/components/BaseButton";
 import {NInputGroup, NSpace, NCard, NInputNumber, NProgress, NForm, NGrid, NGridItem, NSlider} from "naive-ui";
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import 'swiper/css/autoplay';
-import 'swiper/css/effect-cards';
-import 'swiper/css/effect-fade';
 import {ref, computed} from "vue";
 import {mapState} from "vuex";
 
@@ -60,10 +40,14 @@ export default {
     async displayShow(){
       for(let i = this.slider.currentIndex; i < this.splittedText.length; i++){
         await this.sleep(this.speed);
-        this.slider.currentWord = this.splittedText[i]
+        this.slider.currentWord = this.splittedText[i];
+        let progress = i === 0 ? 0 : Math.trunc(i / this.splittedText.length * 100)
+        this.progressUpdate(progress);
+        // this.slider.progress = Math.trunc(i / this.splittedText.length)
         if (i === this.splittedText.length - 1) i = 0;  // loop show
-        if(!this.slider.isShow){
+        if(!this.slider.isShow && i > 1){
           this.slider.currentIndex = i;
+          console.log(this.slider)
           break;
         }
       }
@@ -73,19 +57,23 @@ export default {
     },
     textUpdated(value) {
       this.sourceText = value;
-
+      this.splitText();
     },
     changeSpeed(value){
       this.wordsPerMinute = value;
     },
     startShow() {
-      this.splitText();
-      this.slider.isShow = this.slider.isShow === false;
       this.slider.buttonLabel = this.slider.isShow === true ? "Стоп" : "Старт"
-      this.displayShow();
+      if (this.slider.isShow === true){
+        this.slider.isShow = false;
+      }
+      else {
+        this.slider.isShow = true;
+        this.displayShow();
+      }
     },
     progressUpdate(value){
-      this.slider.progress = value.progress.toFixed(0) * 100;
+      this.slider.progress = value.toFixed(0);
     }
   },
   data() {
@@ -117,29 +105,23 @@ export default {
 </script>
 
 <style scoped>
-.swiper {
-  width: 100%;
-  height: 100%;
-  padding-top: 1.5em;
-}
 
-.swiper-slide {
+.n-card.n-card--bordered .n-card__content{
   text-align: center;
-  background: #fff;
-
-  /* Center slide text vertically */
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-top: 1.5em;
 }
-.n-card .n-card-bordered{
+.n-card.n-card--bordered .n-card__content span{
   font-size: 1.5em;
+  text-align: center;
+  /*display: flex;*/
+  justify-content: center;
+  align-items: center;
+  /*padding-top: 1.5em;*/
 }
 
-.swiper-slide img {
-  display: block;
-  width: 100%;
-}
 
 
 </style>
