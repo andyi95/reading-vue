@@ -5,6 +5,11 @@
                  v-model:post-body="postBody" @input-updated="textUpdated($event)">
 
       </BaseInput>
+    <n-space size="medium" class="pb-3">
+      <n-card>Всего символов <n-tag :bordered="false">{{charsTotal}}</n-tag></n-card>
+      <n-card>Без пробелов <n-tag :bordered="false">{{charsClean}}</n-tag></n-card>
+      <n-card>Количество слов<n-tag :bordered="false">{{fetchedText.length}}</n-tag></n-card>
+    </n-space>
     <n-space justify="space-between" size="medium">
       <BaseButton label="Раскрасить текст!" @button-clicked="updateText()"/>
 
@@ -48,6 +53,7 @@ import BaseButton from "@/components/BaseButton";
 import { useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag} from "naive-ui";
 import {parsedText, countedText} from "@/store/mock";
 
+
 export default {
   setup(){
     const message = useMessage();
@@ -71,10 +77,32 @@ export default {
         grayScale: false,
       },
       grayedText: [],
-      sourceText: ''
+      sourceText: '',
+      reText: /[A-Za-zА-Яа-я\s]/g
     }
   },
+  computed:{
+    charsTotal(){
+      let match = this.sourceText.match(this.reText);
+      if (match){
+        return match.length
+      }
+      return 0
+    },
+    charsClean(){
+      let match = this.sourceText.replace(/ /g,'').match(this.reText);
+      if (match){
+        return match.length
+      }
+      return 0
+    }
+
+  },
   methods: {
+    track(){
+      this.$gtag.pageview({page_path: '/'})
+      this.$gtag.pageview({page_path: '/text'})
+    },
     updateText() {
       if(process.env.NODE_ENV === 'development') {
         this.fetchedText = parsedText.data

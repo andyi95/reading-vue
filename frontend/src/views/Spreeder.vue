@@ -72,7 +72,10 @@ export default {
     },
     progressUpdate(value){
       this.slider.progress = value.toFixed(0);
-    }
+    },
+    track(){
+      this.$gtag.pageview({page_path: '/spreeder'})
+    },
   },
   data() {
     return {

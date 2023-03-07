@@ -1,5 +1,5 @@
 
-import DefaultLayout from './layout/index.vue';
+import VueGtagPlugin from "vue-gtag";
 import App from './App.vue'
 import {createApp, inject} from "vue";
 import store from './store';
@@ -14,5 +14,9 @@ app.config.compilerOptions.whitespace = 'preserve';
 app.use(naive);
 app.use(router);
 app.use(store);
-// app.component('default-layout', DefaultLayout)
+app.use(VueGtagPlugin, {
+    config: {
+        id: process.env.G_ANALYTICS_TID
+    }
+}, router)
 app.mount('#app');
