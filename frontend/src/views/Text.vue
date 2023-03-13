@@ -99,10 +99,6 @@ export default {
 
   },
   methods: {
-    track(){
-      this.$gtag.pageview({page_path: '/'})
-      this.$gtag.pageview({page_path: '/text'})
-    },
     updateText() {
       if(process.env.NODE_ENV === 'development') {
         this.fetchedText = parsedText.data
