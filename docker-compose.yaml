@@ -2,14 +2,14 @@ version: '3.4'
 
 services:
     frontend:
-        build: frontend
+        image: andyi95/reading-frontend
         volumes:
             - ./frontend:/app:cached
         env_file:
             - .env
 
     backend:
-        build: backend
+        image: andyi95/reading-backend
         volumes:
             - ./backend:/app:cached
         working_dir: /app

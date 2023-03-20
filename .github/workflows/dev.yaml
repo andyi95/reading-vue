@@ -11,25 +11,46 @@ env:
   DEPLOY_PATH: reader/
 
 jobs:
+  build_and_push_to_docker_hub:
+    name: Build and push image to Docker Hub
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Login to Docker
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+
+      - name: Set up Docker BuildX
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v2
+#
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tags: andyi95/reading-frontend:latest
+          context: frontend
+          file: Dockerfile.stage
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tags: andyi95/reading-backend:latest
+          context: backend
+
   deploy:
     name: Deploy images on the destination server
     runs-on: ubuntu-latest
+    on: workflow_dispatch
     steps:
       - uses: actions/checkout@v2
-
-      - name: Copy env vars
-        uses: SpicyPizza/create-envfile@v1.3
-        with:
-          envkey_DEBUG: true
-          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          file_name: .env.dist
-          fail_on_empty: false
-
-      - name: Copy files to server
-        run: |
-          mkdir ../build
-          cp -TR . ../build
-          tar -cvf deploy.tar ../build/
 
       - name: Deploy to server
         uses: appleboy/scp-action@master
@@ -57,18 +78,19 @@ jobs:
           command_timeout: 300m
           script: |
             mkdir -p reader
-            tar -xvf deploy.tar --strip-components=1 -C reader/
-            mv -r reader/build/* reader/
-            cd reader/
-            echo "Building stage"
-            echo " "=
-            bash -c '
-            set -a;
-            source .env.dist;
-            (printenv | grep -v "^_=" | sort)
-            ' > .env
-            echo "${{ secrets.ENV_FILE }}" >> .env
-            docker-compose build frontend
+
+            cd reader
+#            tar -xvf deploy.tar --strip-components=1 -C reader/
+#            mv -r reader/build/* reader/
+#            cd reader/
+#            echo "Building stage"
+#            echo " "=
+#            bash -c '
+#            set -a;
+#            source .env.dist;
+#            (printenv | grep -v "^_=" | sort)
+#            ' > .env
+#            echo "${{ secrets.ENV_FILE }}" >> .env
             docker-compose up -d --force-recreate --remove-orphans
 
       - name: send telegram message

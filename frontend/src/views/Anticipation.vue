@@ -64,7 +64,6 @@ export default {
 }
 .n-card > .n-card__content, .n-card{
   word-spacing: 1.3em;
-  color: rgba(31, 34, 37, 0.89);
   font-size: 14pt;
   /*font-weight: 200;*/
 }
