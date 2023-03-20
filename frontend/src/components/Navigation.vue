@@ -38,7 +38,24 @@ const navLinks = [
     key: 'spreeder'
   },
   {
-    label: 'О сайте',
+    label: () =>
+        h(
+            RouterLink,
+            {
+              to: {
+                name: 'Anticipation'
+              },
+            },{ default: () => 'Антиципация'}
+        ),
+    key: 'anticipation'
+  },
+  {
+    label: () =>
+        h(
+            RouterLink, {
+              to: {name: 'About'}
+  }, {default: () => 'О сайте'}
+        ),
     key: 'about'
   }
 ]

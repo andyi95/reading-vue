@@ -1,5 +1,18 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+<n-card title="О сайте" size="large">
+  Сайт в активной разработке
+</n-card>
 </template>
+
+<script>
+import {NSpace, NCard, NTag} from "naive-ui";
+export default {
+  name: 'About',
+  components: {NSpace, NCard, NTag},
+  methods:{
+    track(){
+      this.$gtag.pageview({page_path: '/about'})
+    },
+  }
+}
+</script>

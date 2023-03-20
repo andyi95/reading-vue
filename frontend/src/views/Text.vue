@@ -12,8 +12,7 @@
     </n-space>
     <n-space justify="space-between" size="medium">
       <BaseButton label="Раскрасить текст!" @button-clicked="updateText()"/>
-
-
+      <BaseButton label="Скопировать текст" @button-clicked="copyText()"/>
       <BaseButton label="Подсчёт количества слов" @button-clicked="countWords()"/>
 
 
@@ -25,11 +24,11 @@
     </n-space>
   </n-form>
 
-    <n-card title="Текст для чтения" v-if="grayedText.length && options.grayScale" class="row mb-2 mt-4">
+    <n-card title="Текст для чтения" v-if="grayedText.length && options.grayScale" class="row mb-2 mt-4 parsed-text" ref="grayedTextContent">
       <span v-for="item in grayedText" :class="item.gray" :key="item.id">{{item.word + ' '}}</span>
     </n-card>
 
-    <n-card title="Текст для чтения" class="row mb-2 mt-4" v-if="fetchedText && fetchedText.length && ! options.grayScale">
+    <n-card title="Текст для чтения" class="row mb-2 mt-4 parsed-text" v-if="fetchedText && fetchedText.length && ! options.grayScale" ref="coloredTextContent">
     <span v-for="item in fetchedText" :key="item.id" :style="{color: item.color}">{{item.word + ' ' }}</span>
     </n-card>
 
@@ -99,6 +98,10 @@ export default {
 
   },
   methods: {
+    track(){
+      this.$gtag.pageview({page_path: '/'})
+      this.$gtag.pageview({page_path: '/text'})
+    },
     updateText() {
       if(process.env.NODE_ENV === 'development') {
         this.fetchedText = parsedText.data
@@ -201,6 +204,23 @@ export default {
         });
       }
       this.fetchedText = union(nouns, verbs)
+    },
+    removeVowels(){
+
+    },
+    copyText(){
+      if (this.options.grayScale){
+        let textToCopy = this.$refs.grayedTextContent
+        textToCopy.$el.classList.value = textToCopy.$el.classList.value + ''
+      }
+      if (this.fetchedText){
+        let textToCopy = this.$refs.coloredTextContent
+      }
+      else{
+        let textToCopy = this.sourceText
+      }
+
+
     }
   },
 
@@ -229,6 +249,12 @@ p {
   color: #E0E0E0;
 }
 .grayed-dark{
+  color: #767676
+}
+.grayed-copy {
+  color: #E0E0E0;
+}
+.grayed-dark-copy {
   color: #767676
 }
 

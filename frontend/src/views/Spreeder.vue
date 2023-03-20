@@ -25,7 +25,7 @@ import BaseInput from "@/components/BaseInput";
 import BaseButton from "@/components/BaseButton";
 import {NInputGroup, NSpace, NCard, NInputNumber, NProgress, NForm, NGrid, NGridItem, NSlider} from "naive-ui";
 import {ref, computed} from "vue";
-import {mapState} from "vuex";
+
 
 export default {
   name: "Spreeder",
@@ -72,6 +72,9 @@ export default {
     },
     progressUpdate(value){
       this.slider.progress = value.toFixed(0);
+    },
+    track(){
+      this.$gtag.pageview({page_path: '/spreeder'})
     },
   },
   data() {
