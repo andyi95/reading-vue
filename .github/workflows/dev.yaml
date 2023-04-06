@@ -29,7 +29,7 @@ jobs:
 
       - name: Build and push frontend
         uses: docker/build-push-action@v2
-#
+
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -80,17 +80,17 @@ jobs:
             mkdir -p reader
 
             cd reader
-#            tar -xvf deploy.tar --strip-components=1 -C reader/
-#            mv -r reader/build/* reader/
-#            cd reader/
-#            echo "Building stage"
-#            echo " "=
-#            bash -c '
-#            set -a;
-#            source .env.dist;
-#            (printenv | grep -v "^_=" | sort)
-#            ' > .env
-#            echo "${{ secrets.ENV_FILE }}" >> .env
+            tar -xvf deploy.tar --strip-components=1 -C reader/
+            mv -r reader/build/* reader/
+            cd reader/
+            echo "Building stage"
+            echo " "=
+            bash -c '
+            set -a;
+            source .env.dist;
+            (printenv | grep -v "^_=" | sort)
+            ' > .env
+            echo "${{ secrets.ENV_FILE }}" >> .env
             docker-compose up -d --force-recreate --remove-orphans
 
       - name: send telegram message
