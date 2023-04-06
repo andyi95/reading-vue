@@ -3,6 +3,9 @@ version: '3.4'
 services:
     frontend:
         image: andyi95/reading-frontend
+        build:
+            context: frontend
+            dockerfile: Dockerfile.stage
         volumes:
             - ./frontend:/app:cached
         env_file:
@@ -10,6 +13,7 @@ services:
 
     backend:
         image: andyi95/reading-backend
+        build: backend
         volumes:
             - ./backend:/app:cached
         working_dir: /app
