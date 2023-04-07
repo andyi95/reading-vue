@@ -78,21 +78,22 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           command_timeout: 300m
           script: |
-            mkdir -p reader
-
-            cd reader
-            tar -xvf deploy.tar --strip-components=1 -C reader/
-            mv -r reader/build/* reader/
-            cd reader/
-            echo "Building stage"
-            echo " "=
-            bash -c '
-            set -a;
-            source .env.dist;
-            (printenv | grep -v "^_=" | sort)
-            ' > .env
-            echo "${{ secrets.ENV_FILE }}" >> .env
-            docker-compose up -d --force-recreate --remove-orphans
+            echo "Done"
+#            mkdir -p reader
+#
+#            cd reader
+#            tar -xvf deploy.tar --strip-components=1 -C reader/
+#            mv -r reader/build/* reader/
+#            cd reader/
+#            echo "Building stage"
+#            echo " "=
+#            bash -c '
+#            set -a;
+#            source .env.dist;
+#            (printenv | grep -v "^_=" | sort)
+#            ' > .env
+#            echo "${{ secrets.ENV_FILE }}" >> .env
+#            docker-compose up -d --force-recreate --remove-orphans
 
       - name: send telegram message
         uses: appleboy/telegram-action@master
