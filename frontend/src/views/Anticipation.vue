@@ -3,14 +3,17 @@
     <n-form size="medium">
       <BaseInput label="Текст для чтения" placeholder="Вставьте или введите текст для упражнения"
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
-<BaseButton label="Убрать гласные" @buttonClicked="removeVowels()"/>
+        <n-space justify="space-between" size="small">
+            <BaseButton label="Убрать гласные" @buttonClicked="removeVowels()"/>
+            <BaseButton label="Скопировать текст" @button-clicked="copyText()"/>
+        </n-space>
     </n-form>
 <!--    <BaseTextBox title="Текст для чтения"-->
 
-    <n-card title="Текст для чтения" v-if="parsedText && parsedText.length">
+      <BaseTextBox title="Текст для чтения" ref="textContent">
 <!--      <BaseButton label="скопировать" @buttonClicked="copyText()"/>-->
       <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
-    </n-card>
+      </BaseTextBox>
   </n-space>
 </template>
 
@@ -30,8 +33,17 @@ export default {
     }
   },
   methods: {
-    copyText(){
-    },
+      copyText() {
+          let textToCopy = this.$refs.textContent;
+          let blob = textToCopy.$el;
+          const range = document.createRange();
+          range.selectNode(blob);
+          window.getSelection().removeAllRanges()
+          const selection = window.getSelection();
+          selection.addRange(range);
+          document.execCommand("copy");
+          window.getSelection().removeAllRanges()
+      },
     textUpdated(value){
       this.sourceText = value
     },
@@ -59,10 +71,7 @@ export default {
 </script>
 
 <style scoped>
-.n-card .n-card__content span{
-  font-size: 1.2em;
-}
-.n-card > .n-card__content, .n-card{
+.n-card > .n-card__content span{
   word-spacing: 1.3em;
   font-size: 14pt;
   /*font-weight: 200;*/

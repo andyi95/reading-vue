@@ -49,15 +49,15 @@ const navLinks = [
         ),
     key: 'anticipation'
   },
-  {
-    label: () =>
-        h(
-            RouterLink, {
-              to: {name: 'About'}
-  }, {default: () => 'О сайте'}
-        ),
-    key: 'about'
-  }
+  // {
+  //   label: () =>
+  //       h(
+  //           RouterLink, {
+  //             to: {name: 'About'}
+  // }, {default: () => 'О сайте'}
+  //       ),
+  //   key: 'about'
+  // }
 ]
 
 export default defineComponent({

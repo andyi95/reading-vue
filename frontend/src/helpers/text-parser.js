@@ -14,3 +14,15 @@ export default class TextParser {
         return result
     }
 }
+
+export function copyText() {
+    let textToCopy = this.$refs.textContent;
+    let blob = textToCopy.$el;
+    const range = document.createRange();
+    range.selectNode(blob);
+    window.getSelection().removeAllRanges()
+    const selection = window.getSelection();
+    selection.addRange(range);
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges()
+}

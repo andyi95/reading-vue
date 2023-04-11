@@ -14,7 +14,8 @@ export default createStore({
     state: {
         theme: null,
         sourceText: '',
-        fetchedData: []
+        fetchedData: [],
+        locale: 'ru'
     },
     mutations,
     strict: debug,

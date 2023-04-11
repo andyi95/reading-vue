@@ -1,6 +1,5 @@
 <template>
-  <n-card title="Текст для чтения">
-
+  <n-card :title="title" class="row mb-2 mt-4 parsed-text">
     <slot/>
   </n-card>
 </template>

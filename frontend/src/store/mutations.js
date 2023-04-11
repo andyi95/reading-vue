@@ -17,6 +17,14 @@ export const mutations = {
     },
     UPDATE_DATA(state, data){
         state.fetchedData = data
+    },
+    switchLocale(state){
+        if(state.locale === 'ru'){
+            state.locale = 'en'
+        }
+        else{
+            state.locale = 'ru'
+        }
     }
 }
 

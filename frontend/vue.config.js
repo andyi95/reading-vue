@@ -16,7 +16,8 @@ module.exports = {
         allowedHosts: [
             'frontend',
             'localhost',
-            'reader.dev.andyi95.com'
+            'reader.dev.andyi95.com',
+            'reader.stage.andyi95.com'
         ],
         client: {
             webSocketURL: 'auto://0.0.0.0:0/ws'

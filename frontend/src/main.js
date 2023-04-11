@@ -12,10 +12,13 @@ document.title = 'Текстовые инструменты'
 
 const app = createApp(App);
 app.config.compilerOptions.whitespace = 'preserve';
-app.use(naive).use(router).use(store).use(VueClipboard);
+app.use(naive).use(router).use(store).use(VueClipboard, {
+    autoSetContainer: true,
+    appendToBody: true,
+});
 app.use(VueGtagPlugin, {
     config: {
-        id: process.env.G_ANALYTICS_TID
+        id: 'G-181EZLB3NP'
     }
 }, router)
 app.mount('#app');
