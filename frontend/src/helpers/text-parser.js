@@ -2,7 +2,7 @@
 export default class TextParser {
     constructor(text) {
         this.text = text;
-        this.vowels_reg = /[aeiouаяуюоеёэиы]/gi
+        this.vowels_reg = /^[aeiouаяуюоеёэиы]$/i
     }
     replaceVowels() {
         let text = this.text.split('')
