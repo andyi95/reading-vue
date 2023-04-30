@@ -1,11 +1,8 @@
 name: Development version deploy
 
 on:
-  push:
-    branches:
-      - dev
-    paths-ignore:
-      - 'README.md'
+  workflow_dipatch:
+
 
 env:
   DEPLOY_PATH: reader/
@@ -35,6 +32,8 @@ jobs:
         uses: docker/build-push-action@v2
 
         with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
           tags: andyi95/reading-frontend:latest
           context: frontend
           file: frontend/Dockerfile.stage
