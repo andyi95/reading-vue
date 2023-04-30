@@ -34,7 +34,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           tags: registry.launch.andyi95.com/text-tools/reading-frontend
           context: frontend
-          file: stage.Dockerfile
+          file: frontend/stage.Dockerfile
 
       - name: Build and push backend
         uses: docker/build-push-action@v2
