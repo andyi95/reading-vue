@@ -1,12 +1,11 @@
 FROM node:17-alpine as build-stage
 
-RUN mkdir -p /app
-
 WORKDIR /app
+
 
 COPY package*.json ./
 
-RUN npm install
+RUN apk update && apk add -u openssl apk-tools zlib busybox && npm install
 
 COPY . .
 

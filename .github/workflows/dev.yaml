@@ -1,7 +1,11 @@
 name: Development version deploy
 
 on:
-  workflow_dipatch:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - 'README.md'
 
 
 env:
@@ -22,35 +26,40 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Build and push frontend
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
 
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tags: andyi95/reading-frontend:latest
+          tags: registry.launch.andyi95.com/text-tools/reading-frontend
           context: frontend
-          file: frontend/Dockerfile.stage
+          file: stage.Dockerfile
 
       - name: Build and push backend
         uses: docker/build-push-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tags: andyi95/reading-backend:latest
+          tags: registry.launch.andyi95.com/text-tools/reading-backend
           context: backend
 
   deploy:
+
     name: Deploy images on the destination server
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
     steps:
+      - name: Deploy to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "deploy.tar"
+          target: "./"
+
       - uses: actions/checkout@v2
 
       - name: executing remote ssh commands to deploy
@@ -68,11 +77,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           command_timeout: 300m
           script: |
+            mkdir -p reader
+            cd reader
+            tar -xvf deploy.tar --strip-components=1 -C reader/
+            cd reader/
+            docker-compose pull frontend backend
+            docker-compose up -d --force-recreate --remove-orphans
             echo "Done"
-#            mkdir -p reader
-#
-#            cd reader
-#            tar -xvf deploy.tar --strip-components=1 -C reader/
 #            mv -r reader/build/* reader/
 #            cd reader/
 #            echo "Building stage"

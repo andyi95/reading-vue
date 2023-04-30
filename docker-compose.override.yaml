@@ -6,9 +6,13 @@ services:
       - 80:80
 
   frontend:
+    volumes:
+      - ./frontend:/app:cached
     ports:
       - 4000:4000
 
   backend:
+    volumes:
+      - ./backend:/app:cached
     ports:
       - 8000:8000

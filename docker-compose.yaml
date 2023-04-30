@@ -2,20 +2,16 @@ version: '3.4'
 
 services:
     frontend:
-        image: andyi95/reading-frontend
+        image: registry.launch.andyi95.com/text-tools/reading-frontend
         build:
             context: frontend
-            dockerfile: Dockerfile.stage
-        volumes:
-            - ./frontend:/app:cached
+            dockerfile: stage.Dockerfile
         env_file:
             - .env
 
     backend:
-        image: andyi95/reading-backend
+        image: registry.launch.andyi95.com/text-tools/reading-backend
         build: backend
-        volumes:
-            - ./backend:/app:cached
         working_dir: /app
         env_file:
             - .env
