@@ -1,15 +1,15 @@
 <template>
   <n-space vertical size="medium" justify="space-between">
   <n-form size="medium">
-      <BaseInput label="Текст для чтения" placeholder="Вставьте или введите текст для упражнения"
+      <BaseInput :label="$t('spreeder.sourceText')" :placeholder="$t('spreeder.textPlaceHolder')"
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
 
-    <n-form-item label="слов в минуту">
+    <n-form-item :label="$t('spreeder.wordsPerMinute')">
       <n-slider v-model:value="wordsPerMinute" :step="1" :min="100" :max="900" style="padding-right: 4em"/>
-    <n-input-number v-model:value="wordsPerMinute" @update:value="changeSpeed" :validator="speedValidator" placeholder="слов в минуту"/>
+    <n-input-number v-model:value="wordsPerMinute" @update:value="changeSpeed" :validator="speedValidator" :placeholder="$t('spreeder.wordsPerMinute')"/>
     </n-form-item>
 
-    <BaseButton :label="slider.buttonLabel" @buttonClicked="startShow()"/>
+    <BaseButton :label="$t('spreeder.startLabel')" @buttonClicked="startShow()"/>
 
   </n-form>
 
@@ -25,7 +25,7 @@ import BaseInput from "@/components/BaseInput";
 import BaseButton from "@/components/BaseButton";
 import {NInputGroup, NSpace, NCard, NInputNumber, NProgress, NForm, NGrid, NGridItem, NSlider} from "naive-ui";
 import {ref, computed} from "vue";
-
+import {useI18n} from "vue-i18n";
 
 export default {
   name: "Spreeder",
@@ -97,7 +97,9 @@ export default {
     }
   },
   setup() {
+      const { t } = useI18n();
     return {
+        t,
       wordsPerMinute: ref(120),
       speedValidator: (x) => x > 0
     };

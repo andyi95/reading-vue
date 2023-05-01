@@ -9,10 +9,5 @@ import {NSpace, NCard, NTag} from "naive-ui";
 export default {
   name: 'About',
   components: {NSpace, NCard, NTag},
-  methods:{
-    track(){
-      this.$gtag.pageview({page_path: '/about'})
-    },
-  }
 }
 </script>

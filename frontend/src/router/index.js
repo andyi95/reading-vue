@@ -1,15 +1,16 @@
 import {createRouter, createWebHistory} from 'vue-router'
-
-import Anticipation from "@/views/Anticipation.vue";
-import Text from "@/views/Text";
-import Spreeder from "@/views/Spreeder";
-
+const Anticipation = () => import('@/views/Anticipation.vue')
+const Text = () => import('@/views/Text.vue')
+const Spreeder = () => import('@/views/Spreeder.vue')
+const ChaosChars = () => import('@/views/Mixer.vue')
+import i18n from "@/i18n";
 
 const routes = [
   {path: '/', name: 'TextParser', component: Text, meta: {title: "Морфемы"}},
   {path: '/anticipation', name: 'Anticipation', component: Anticipation, meta: {title: "Антиципация"}},
   {path: '/text', name: 'Parser', component: Text, meta: {title: "Морфемы"}},
   {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {title: "Чтение на скорость"}},
+  {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {title: "Дешифровщик"}},
   {
     path: '/about',
     name: 'About',

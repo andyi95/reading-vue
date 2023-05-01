@@ -1,39 +1,39 @@
 <template>
 
     <n-form size="medium">
-        <BaseInput label="Исходный текст" placeholder="Начните вводить текст"
+        <BaseInput :label="$t('textparser.sourceText')" :placeholder='$t("textparser.textPlaceHolder")'
                    v-model:post-body="postBody" @input-updated="textUpdated($event)">
 
         </BaseInput>
         <n-space size="medium" class="pb-3">
-            <n-card>Всего символов
+            <n-card>{{ $t('textparser.totalSymbols')}}
                 <n-tag :bordered="false">{{ charsTotal }}</n-tag>
             </n-card>
-            <n-card>Без пробелов
+            <n-card>{{ $t('textparser.withoutSpaces') }}
                 <n-tag :bordered="false">{{ charsClean }}</n-tag>
             </n-card>
-            <n-card>Количество слов
+            <n-card> {{ $t('textparser.cntWords')}}
                 <n-tag :bordered="false">{{ fetchedText.length }}</n-tag>
             </n-card>
         </n-space>
         <n-space justify="space-between" size="medium">
-            <BaseButton label="Раскрасить текст!" @button-clicked="updateText()"/>
-            <BaseButton label="Скопировать текст" @button-clicked="copyText()"/>
-            <BaseButton label="Подсчёт количества слов" @button-clicked="countWords()"/>
+            <BaseButton :label="$t('textparser.paintText')" @button-clicked="updateText()"/>
+            <BaseButton :label="$t('common.copyText')" @button-clicked="copyText()"/>
+            <BaseButton :label="$t('textparser.cntWords')" @button-clicked="countWords()"/>
 
 
         </n-space>
         <n-space vertical justify="space-between" class="py-2">
-            <BaseCheckbox label="Показать только существительные" v-model:value="options.onlyNouns"
+            <BaseCheckbox :label="$t('textparser.onlyNouns')" v-model:value="options.onlyNouns"
                           @nSwitched="radioUpdated('nouns', $event)"/>
-            <BaseCheckbox label="Показать только глаголы" v-model:value="options.onlyVerbs"
+            <BaseCheckbox :label="$t('textparser.onlyVerbs')" v-model:value="options.onlyVerbs"
                           @n-switched="radioUpdated('verbs', $event)"/>
-            <BaseCheckbox label="Оттенки серого" v-model:gray-scale="options.grayScale"
+            <BaseCheckbox :label="$t('textparser.grayScale')" v-model:gray-scale="options.grayScale"
                           @n-switched="grayUpdated($event)"></BaseCheckbox>
         </n-space>
     </n-form>
 
-        <BaseTextBox title="Текст для чтения" ref="textContent">
+        <BaseTextBox :label="$t('common.textContent')" ref="textContent">
             <div v-if="grayedText.length && options.grayScale">
                 <span v-for="item in grayedText" :class="item.gray" :key="item.id">{{ item.word + ' ' }}</span>
             </div>
@@ -65,17 +65,21 @@ import {useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag} from "naiv
 import {parsedText, countedText} from "@/store/mock";
 import {ref} from "vue";
 import BaseTextBox from "@/components/BaseTextBox.vue";
+import {useI18n} from "vue-i18n";
 
 const textContent = ref(null);
 
 export default {
     setup() {
         const message = useMessage();
+        const { t } = useI18n();
         return {
+            t: ref(t),
             warning(text) {
                 message.warning(text)
             },
-            textContent
+            textContent,
+
         }
     },
     name: "Text",
@@ -116,10 +120,6 @@ export default {
 
     },
     methods: {
-        track() {
-            this.$gtag.pageview({page_path: '/'})
-            this.$gtag.pageview({page_path: '/text'})
-        },
         updateText() {
             if (process.env.NODE_ENV === 'development') {
                 this.fetchedText = parsedText.data

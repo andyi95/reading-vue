@@ -10,7 +10,7 @@ services:
         restart: unless-stopped
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.reader.rule=Host(`reader.stage.andyi95.com`)"
+            - "traefik.http.routers.reader.rule=Host(`reader.stage.andyi95.com`, `text-tools.ru`)"
             - "traefik.http.services.reader.loadbalancer.server.port=80"
             - "traefik.http.middlewares.reader.headers.customrequestheaders.X-Forwarded-Proto=https,wss"
 

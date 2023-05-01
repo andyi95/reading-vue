@@ -1,76 +1,100 @@
 <template>
 <div>
 <n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" style="height: 60px"/>
-<n-button @click="changeTheme">Сменить тему</n-button>
+    <n-space size="large">
+<n-button @click="changeTheme">{{ $t('nav.theme') }}</n-button>
+    <n-button @click="changeLocale" style="margin-left: 5px;">{{locale}}</n-button></n-space>
 </div>
 </template>
 
 <script>
-import {defineComponent, h, ref} from "vue";
+import {computed, defineComponent, h, ref} from "vue";
 import {RouterLink } from 'vue-router';
 import {NMenu, NButton} from 'naive-ui';
 import {useStore} from "vuex";
+import {useI18n} from "vue-i18n";
 
-const navLinks = [
-    {
-  label: () =>
-      h(
-          RouterLink,
-          {
-            to: {
-              name: 'TextParser'
-            }
-          },
-          {default: () => 'Цветной текст'}
-      ),
-  key: 'text'
-},
-  {
-    label: () =>
-    h(
-        RouterLink,
-        {
-          to: {
-            name: 'Spreeder'
-          },
-        },{ default: () => 'Спридер'}
-    ),
-    key: 'spreeder'
-  },
-  {
-    label: () =>
-        h(
-            RouterLink,
-            {
-              to: {
-                name: 'Anticipation'
-              },
-            },{ default: () => 'Антиципация'}
-        ),
-    key: 'anticipation'
-  },
-  // {
-  //   label: () =>
-  //       h(
-  //           RouterLink, {
-  //             to: {name: 'About'}
-  // }, {default: () => 'О сайте'}
-  //       ),
-  //   key: 'about'
-  // }
-]
+
 
 export default defineComponent({
   setup() {
+      const { t } = useI18n();
+      const store = useStore();
+      let locale = computed(function (){
+          return store.state.locale
+      })
+
+
     return {
+          t,
       activeKey: ref(null),
-      navLinks,
+        locale
     };
   },
+    data(){
+      return {
+          navLinks: [
+              {
+                  label: () =>
+                      h(
+                          RouterLink,
+                          {
+                              to: {
+                                  name: 'TextParser'
+                              }
+                          },
+                          {default: () => this.$t('nav.textparser')}
+                      ),
+                  key: 'text'
+              },
+              {
+                  label: () =>
+                      h(
+                          RouterLink,
+                          {
+                              to: {
+                                  name: 'Spreeder'
+                              },
+                          },{ default: () => this.$t('nav.spreeder')}
+                      ),
+                  key: 'spreeder'
+              },
+              {
+                  label: () =>
+                      h(
+                          RouterLink,
+                          {
+                              to: {
+                                  name: 'Anticipation'
+                              },
+                          },{ default: () => this.$t('nav.anticipation')}
+                      ),
+                  key: 'anticipation'
+              },
+              {
+                  label: () =>
+                      h(
+                          RouterLink,
+                          {
+                              to: {
+                                  name: 'Mixer'
+                              },
+                          },{ default: () => this.$t('nav.mixer')}
+                      ),
+                  key: 'mixer'
+              },
+          ]
+      }
+    },
   methods: {
     changeTheme(){
       this.$store.commit('switchTheme')
-    }
+        this.$i18n.locale = this.locale
+    },
+      changeLocale(){
+        this.$store.commit('switchLocale')
+          this.$i18n.locale = this.locale
+      }
   },
   components: {NMenu, NButton}
 });

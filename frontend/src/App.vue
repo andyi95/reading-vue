@@ -1,7 +1,6 @@
 <template>
   <div id="app">
 
-    <noscript><div><img src="https://mc.yandex.ru/watch/92721463" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <n-config-provider :theme="theme">
   <n-message-provider>
     <n-layout>
@@ -23,12 +22,14 @@ import Navigation from "@/components/Navigation";
 import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
 import {defineComponent, computed} from "vue";
 import {useStore} from "vuex";
+import {useI18n} from "vue-i18n";
 
 
 export default defineComponent({
   components: {Navigation, NConfigProvider, NMessageProvider, darkTheme},
   setup() {
     const store = useStore();
+    const locale = useI18n();
 
       return {
         darkTheme,
@@ -37,7 +38,8 @@ export default defineComponent({
           return store.state.theme === 'darkTheme' ? darkTheme : null
         })
       }
-    }
+    },
+
   })
 </script>
 
