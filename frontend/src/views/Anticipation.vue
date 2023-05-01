@@ -1,16 +1,16 @@
 <template>
   <n-space vertical size="medium" justify="space-between">
     <n-form size="medium">
-      <BaseInput label="Текст для чтения" placeholder="Вставьте или введите текст для упражнения"
+      <BaseInput :label="$t('common.sourceText')" :placeholder="$t('common.textPlaceHolder')"
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
         <n-space justify="space-between" size="small">
-            <BaseButton label="Убрать гласные" @buttonClicked="removeVowels()"/>
-            <BaseButton label="Скопировать текст" @button-clicked="copyText()"/>
+            <BaseButton :label="$t('common.removeVowels')" @buttonClicked="removeVowels()"/>
+            <BaseButton :label="$t('common.copyText')"  @button-clicked="copyText()"/>
         </n-space>
     </n-form>
 <!--    <BaseTextBox title="Текст для чтения"-->
 
-      <BaseTextBox title="Текст для чтения" ref="textContent">
+      <BaseTextBox :title="$t('common.textContent')" ref="textContent">
 <!--      <BaseButton label="скопировать" @buttonClicked="copyText()"/>-->
       <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
       </BaseTextBox>
@@ -23,9 +23,16 @@ import BaseButton from "@/components/BaseButton.vue";
 import {NForm, NSpace} from "naive-ui";
 import TextParser from "@/helpers/text-parser";
 import BaseTextBox from "@/components/BaseTextBox.vue";
+import {useI18n} from "vue-i18n";
 export default {
   name: "Anticipation",
   components: {BaseTextBox, BaseButton, BaseInput, NSpace, NForm},
+    setup(){
+      const { t } = useI18n();
+      return{
+          t
+      }
+    },
   data(){
     return {
       sourceText: '',

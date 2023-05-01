@@ -1,9 +1,8 @@
 <template>
 <div>
 <n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" style="height: 60px"/>
-    <n-space size="large">
 <n-button @click="changeTheme">{{ $t('nav.theme') }}</n-button>
-    <n-button @click="changeLocale" style="margin-left: 5px;">{{locale}}</n-button></n-space>
+    <n-button @click="changeLocale" style="float: right; margin-right: 1.2em">{{locale === 'en' ? 'ru': 'en'}}</n-button>
 </div>
 </template>
 

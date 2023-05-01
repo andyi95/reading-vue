@@ -1,9 +1,9 @@
 <template>
     <n-space vertical size="medium" justify="space-between">
         <n-form size="medium">
-            <BaseInput :label="$t('chaos.sourceText')" :placeholder="$t('chaos.textPlaceHolder')" v-model:post-body="postBody" @input-updated="textUpdated($event)"/>
+            <BaseInput :label="$t('common.sourceText')" :placeholder="$t('common.textPlaceHolder')" v-model:post-body="postBody" @input-updated="textUpdated($event)"/>
 
-                <BaseButton :label="$t('chaos.convertText')" @button-clicked="chaosChars()"/>
+                <BaseButton :label="$t('common.convert')" @button-clicked="chaosChars()"/>
         </n-form>
         <n-card  v-if="convertedText && convertedText.length > 1">
             <span>{{ convertedText }}</span></n-card>

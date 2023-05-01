@@ -14,7 +14,11 @@ const messages = {
         },
         common:{
             textContent: 'Text for reading',
-            copyText: 'Copy to clipboard'
+            copyText: 'Copy to clipboard',
+            convert: 'Convert',
+            sourceText: 'Source text',
+            textPlaceHolder: 'Start text input...',
+            removeVowels: 'Remove vowels'
         },
         textparser: {
             sourceText: 'Source text',
@@ -40,7 +44,7 @@ const messages = {
     ru: {
         nav: {
             textparser: 'Цветной текст',
-            spreader: 'Спридер',
+            spreeder: 'Спридер',
             anticipation: 'Антиципация',
             mixer: 'Дешифровщик',
             parser: 'Цветной текст',
@@ -48,7 +52,11 @@ const messages = {
         },
         common:{
             textContent: 'Текст для чтения',
-            copyText: 'Скопировать текст'
+            copyText: 'Скопировать текст',
+            convert: 'Конвертировать',
+            sourceText: 'Исходный текст',
+            textPlaceHolder: 'Введите текст...',
+            removeVowels: 'Убрать гласные'
         },
         textparser: {
             sourceText: 'Исходный текст',

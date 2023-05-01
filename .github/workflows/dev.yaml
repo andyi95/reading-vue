@@ -1,9 +1,8 @@
 name: Development version deploy
 
 on:
-  push:
-    branches:
-      - dev
+  release:
+    types: [created]
     paths-ignore:
       - 'README.md'
 
