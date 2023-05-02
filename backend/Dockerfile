@@ -5,10 +5,9 @@ ENV PYTHONUNBUFFERED=1 \
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-WORKDIR /code
+WORKDIR /app
 
 RUN curl -sSL https://install.python-poetry.org | python3 -
-
 
 COPY poetry.lock pyproject.toml ./
 
@@ -16,5 +15,7 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction
 
 RUN python -m nltk.downloader universal_tagset  omw-1.4 stopwords wordnet averaged_perceptron_tagger
+
+COPY . .
 
 CMD ["python", "api.py"]

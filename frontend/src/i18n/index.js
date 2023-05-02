@@ -1,6 +1,6 @@
 import {createI18n, VueI18n} from "vue-i18n";
 
-import {useStore} from "vuex";
+import store from "@/store";
 
 const messages = {
     en: {
@@ -87,7 +87,8 @@ const messages = {
     }
 }
 const storage = JSON.parse(localStorage.getItem('store'))
-const storedLocale = storage.locale || "ru"
+
+const storedLocale = store.state.locale || "ru"
 export default createI18n({
     locale: storedLocale,
     fallbackLocale: 'ru',
