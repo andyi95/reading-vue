@@ -121,16 +121,19 @@ export default {
     },
     methods: {
         updateText() {
-            if (process.env.NODE_ENV === 'development') {
-                this.fetchedText = parsedText.data
-            } else {
-                api.post('parse/', {
+          const chunkSize = 5000;
+          this.fetchedText = [];
+          for (let i = 0; i < this.sourceText.length; i += chunkSize) {
+            const chunk = this.sourceText.slice(i, i + chunkSize)
+                            api.post('parse/', {
                     text: {
-                        text: this.sourceText
+                        text: chunk
                     }
                 })
                     .then(response => {
-                        this.fetchedText = response.data;
+                        let new_data = []
+                        new_data.push(...this.fetchedText, ...response.data,)
+                        this.fetchedText = new_data
                         if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
                             this.filterText();
                         }
