@@ -5,8 +5,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-
+from aioredis import from_url, Redis
 from utils.analize import analize_text, count_words
+from asyncio import sleep
+REDIS_URL = 'redis:6379/0'
 
 
 class Counted(BaseModel):
@@ -39,7 +41,7 @@ analized = str
 
 @api.post('/parse/')
 async def create_text(text: TextModel, colors: Optional[dict] = None):
-    analized = analize_text(text.text, colors)
+    analized = await analize_text(text.text, colors)
     return analized
 
 
@@ -57,6 +59,10 @@ async def get_text():
     return analized
 
 app.mount('/api', api)
+
+@app.on_event('startup')
+async def init_cache():
+    redis = from_url(f'redis://{REDIS_URL}', encoding="utf8", decode_responses=True)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

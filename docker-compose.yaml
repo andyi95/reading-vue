@@ -15,6 +15,8 @@ services:
         working_dir: /app
         env_file:
             - .env
+        depends_on:
+            -  redis
 
     nginx:
         image: nginx:1.19.3
@@ -26,3 +28,14 @@ services:
             - frontend
         env_file:
             - .env
+
+    redis:
+        image: redis:6.2-alpine
+        volumes:
+            -   redis-data:/data
+        restart: unless-stopped
+        command: redis-server --maxmemory 134217728 --maxmemory-policy allkeys-lru
+
+volumes:
+    redis-data:
+

@@ -6,9 +6,14 @@ from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from collections import Counter
+from aioredis import from_url
+import json
+
+REDIS_URL = 'redis:6379/0'
 
 stemmer = PorterStemmer()
 morph = py.MorphAnalyzer()
+redis = from_url(f"redis://{REDIS_URL}", encoding="utf-8", decode_responses=True)
 
 colors = {
     'NOUN': '#0000ff',  # blue
@@ -37,12 +42,22 @@ colors.update({
 })
 
 
-def analize_text(text: str, colorset: dict = None, gray: bool = False) -> list:
-    def parse_line(line: str, counter: int):
+
+async def analize_text(text: str, colorset: dict = None, gray: bool = False) -> list:
+    async def parse_line(line: str, counter: int):
         words = line.split()
         new_line = []
         for word in words:
             stripped = re.sub(r'[^\w\s]', '', word).lower()
+            cached = await redis.get(stripped)
+            if cached:
+                proccessed = json.loads(cached)
+                proccessed.update(
+                    {'id': counter, 'word': word}
+                )
+                new_line.append(proccessed)
+                counter += 1
+                continue
             word = {'word': word, 'id': counter}
             if re.search(r'[а-яА-Я]', stripped):
                 parsed = morph.parse(stripped)[0]
@@ -56,6 +71,7 @@ def analize_text(text: str, colorset: dict = None, gray: bool = False) -> list:
                     'color': colors.get(parsed[0][1]),
                     'tag': parsed[0][1]
                 })
+            await redis.set(stripped, json.dumps(word))
             new_line.append(word)
             counter += 1
         return new_line, counter
@@ -66,7 +82,7 @@ def analize_text(text: str, colorset: dict = None, gray: bool = False) -> list:
     while s:
         s = s.strip()
         if s != '':
-            t, i = parse_line(s, i)
+            t, i = await parse_line(s, i)
             res.extend(t)
         s = buf.readline()
     return res
@@ -97,3 +113,4 @@ def count_words(text: str) -> dict:
         s = buf.readline()
     v = Counter(result)
     return dict(v.most_common())
+
