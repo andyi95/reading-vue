@@ -51,7 +51,7 @@ export default {
       }
     },
     splitText() {
-      this.splittedText = this.sourceText.split(' ');
+      this.splittedText = this.sourceText.replace(/\r\n|\r|\n/, ' ').replace(/[\W_]+/g, ' ').split(' ');
     },
     textUpdated(value) {
       this.sourceText = value;
@@ -120,7 +120,7 @@ export default {
   padding-top: 1.5em;
 }
 .n-card.n-card--bordered .n-card__content span{
-  font-size: 1.5em;
+  font-size: 3em;
   text-align: center;
   /*display: flex;*/
   justify-content: center;

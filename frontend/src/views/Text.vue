@@ -177,7 +177,7 @@ export default {
 
                 return 'grayed'
             }.bind(this)
-            if (value === true) {
+            if (value === true && this.fetchedText.length > 0) {
                 gr_results = this.fetchedText.reduce(
                     (firstData, item) => {
                         firstData.push({
