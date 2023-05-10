@@ -120,31 +120,40 @@ export default {
 
     },
     methods: {
-        updateText() {
+        async updateText() {
           const chunkSize = 5000;
           this.fetchedText = [];
+          let responses = []
           for (let i = 0; i < this.sourceText.length; i += chunkSize) {
             const chunk = this.sourceText.slice(i, i + chunkSize)
-                            api.post('parse/', {
-                    text: {
-                        text: chunk
-                    }
-                })
-                    .then(response => {
-                        let new_data = []
-                        new_data.push(...this.fetchedText, ...response.data,)
-                        this.fetchedText = new_data
-                        if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
-                            this.filterText();
-                        }
-                    })
-                    .catch(e => {
-                        this.warning("Что-то пошло не так")
-                    })
+            let response = null
+            try {
+              response = await api.post('parse/', {
+                text: {
+                  text: chunk
+                }
+              })
+            } catch (error) {
+              this.warning('Что-то прошло не так')
+              console.log(error)
+              continue
             }
-            if (this.options.grayScale === true) {
-                this.grayUpdated(true)
+
+            let j = this.fetchedText.length
+            response.data.forEach(function (part, idx, arr) {
+              arr[idx]['id'] = j
+              j += 1
+            })
+            let new_data = [...this.fetchedText, ...response.data,]
+            console.log('newData', new_data)
+            this.fetchedText = new_data
+            if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
+              this.filterText();
             }
+          }
+          if (this.options.grayScale === true) {
+            this.grayUpdated(true)
+          }
         },
         textUpdated(value) {
             this.sourceText = value;
