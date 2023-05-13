@@ -38,7 +38,9 @@ const messages = {
             sourceText: 'Source text',
             textPlaceHolder: 'Enter your text...',
             wordsPerMinute: 'words per minute',
-            startLabel: 'Start'
+            startLabel: 'Start',
+            stopLabel: 'Stop',
+            resetLabel: 'Reset'
         }
     },
     ru: {
@@ -76,7 +78,9 @@ const messages = {
             sourceText: 'Исходный текст',
             textPlaceHolder: 'Вставьте или введите текст для упражнения',
             wordsPerMinute: 'слов в минуту',
-            startLabel: 'Начать'
+            startLabel: 'Начать',
+            stopLabel: 'Стоп',
+            resetLabel: 'Сброс'
         },
         chaos: {
             sourceText: 'Исходный текст',

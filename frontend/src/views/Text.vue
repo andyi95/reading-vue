@@ -121,16 +121,17 @@ export default {
     },
     methods: {
         async updateText() {
-          const chunkSize = 5000;
+          const chunkSize = 100;
           this.fetchedText = [];
           let responses = []
-          for (let i = 0; i < this.sourceText.length; i += chunkSize) {
-            const chunk = this.sourceText.slice(i, i + chunkSize)
+          let splittedText = this.sourceText.split(' ')
+          for (let i = 0; i < splittedText.length; i += chunkSize) {
+            const chunk = splittedText.slice(i, i + chunkSize)
             let response = null
             try {
               response = await api.post('parse/', {
                 text: {
-                  text: chunk
+                  text: chunk.join(' ')
                 }
               })
             } catch (error) {
@@ -138,15 +139,12 @@ export default {
               console.log(error)
               continue
             }
-
             let j = this.fetchedText.length
             response.data.forEach(function (part, idx, arr) {
               arr[idx]['id'] = j
               j += 1
             })
-            let new_data = [...this.fetchedText, ...response.data,]
-            console.log('newData', new_data)
-            this.fetchedText = new_data
+            this.fetchedText = [...this.fetchedText, ...response.data,]
             if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
               this.filterText();
             }

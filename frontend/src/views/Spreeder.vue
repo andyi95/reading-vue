@@ -9,7 +9,7 @@
     <n-input-number v-model:value="wordsPerMinute" @update:value="changeSpeed" :validator="speedValidator" :placeholder="$t('spreeder.wordsPerMinute')"/>
     </n-form-item>
 
-    <BaseButton :label="$t('spreeder.startLabel')" @buttonClicked="startShow()"/>
+    <BaseButton :label="slider.buttonLabel" @buttonClicked="startShow()"/> <BaseButton :label="$t('spreeder.resetLabel')" @buttonClicked="resetShow()"/>
 
   </n-form>
 
@@ -39,7 +39,7 @@ export default {
       for(let i = this.slider.currentIndex; i < this.splittedText.length; i++){
         await this.sleep(this.speed);
         this.slider.currentWord = this.splittedText[i];
-        let progress = i === 0 ? 0 : Math.trunc(i / this.splittedText.length * 100)
+        let progress = i === 0 ? 0 : Math.max(Math.round(i / this.splittedText.length * 100) / 100, 1)
         this.progressUpdate(progress);
         // this.slider.progress = Math.trunc(i / this.splittedText.length)
         if (i === this.splittedText.length - 1) i = 0;  // loop show
@@ -60,8 +60,14 @@ export default {
     changeSpeed(value){
       this.wordsPerMinute = value;
     },
+    resetShow(){
+      this.slider.buttonLabel = this.$t('spreeder.startLabel')
+      this.slider.isShow = false;
+      this.slider.currentIndex = 0;
+      this.slider.progress = 0;
+    },
     startShow() {
-      this.slider.buttonLabel = this.slider.isShow === true ? "Старт" : "Стоп"
+      this.slider.buttonLabel = this.slider.isShow === true ? this.$t('spreeder.startLabel') : this.$t('spreeder.stopLabel')
       if (this.slider.isShow === true){
         this.slider.isShow = false;
       }
@@ -88,6 +94,7 @@ export default {
         currentIndex: 0
       },
       autoplay: {delay: 250, disableOnInteraction: false,},
+
 
       speed: computed(() => {
         return 60000 / this.wordsPerMinute
