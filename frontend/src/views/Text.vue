@@ -1,8 +1,8 @@
 <template>
-
+<div>
     <n-form size="medium">
         <BaseInput :label="$t('textparser.sourceText')" :placeholder='$t("textparser.textPlaceHolder")'
-                   v-model:post-body="postBody" @input-updated="textUpdated($event)">
+                   v-model:post-body="sourceText" @input-updated="textUpdated($event)">
 
         </BaseInput>
         <n-space size="medium" class="pb-3">
@@ -52,15 +52,16 @@
             </n-list-item>
         </n-list>
     </div>
+</div>
 </template>
 
 <script>
 import {api, copyText} from "@/helpers";
 import debounce from "debounce";
-import WordCounter from "@/components/WordCounter";
-import BaseInput from "@/components/BaseInput";
-import BaseCheckbox from "@/components/BaseCheckbox";
-import BaseButton from "@/components/BaseButton";
+import WordCounter from "@/components/WordCounter.vue";
+import BaseInput from "@/components/BaseInput.vue";
+import BaseCheckbox from "@/components/BaseCheckbox.vue";
+import BaseButton from "@/components/BaseButton.vue";
 import {useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag} from "naive-ui";
 import {parsedText, countedText} from "@/store/mock";
 import {ref} from "vue";
@@ -120,28 +121,38 @@ export default {
 
     },
     methods: {
-        updateText() {
-            if (process.env.NODE_ENV === 'development') {
-                this.fetchedText = parsedText.data
-            } else {
-                api.post('parse/', {
-                    text: {
-                        text: this.sourceText
-                    }
-                })
-                    .then(response => {
-                        this.fetchedText = response.data;
-                        if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
-                            this.filterText();
-                        }
-                    })
-                    .catch(e => {
-                        this.warning("Что-то пошло не так")
-                    })
+        async updateText() {
+          const chunkSize = 100;
+          this.fetchedText = [];
+          let responses = []
+          let splittedText = this.sourceText.split(' ')
+          for (let i = 0; i < splittedText.length; i += chunkSize) {
+            const chunk = splittedText.slice(i, i + chunkSize)
+            let response = null
+            try {
+              response = await api.post('parse/', {
+                text: {
+                  text: chunk.join(' ')
+                }
+              })
+            } catch (error) {
+              this.warning('Что-то прошло не так')
+              console.log(error)
+              continue
             }
-            if (this.options.grayScale === true) {
-                this.grayUpdated(true)
+            let j = this.fetchedText.length
+            response.data.forEach(function (part, idx, arr) {
+              arr[idx]['id'] = j
+              j += 1
+            })
+            this.fetchedText = [...this.fetchedText, ...response.data,]
+            if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
+              this.filterText();
             }
+          }
+          if (this.options.grayScale === true) {
+            this.grayUpdated(true)
+          }
         },
         textUpdated(value) {
             this.sourceText = value;
@@ -177,7 +188,7 @@ export default {
 
                 return 'grayed'
             }.bind(this)
-            if (value === true && this.fetchedText.length > 0) {
+            if (value === true) {
                 gr_results = this.fetchedText.reduce(
                     (firstData, item) => {
                         firstData.push({

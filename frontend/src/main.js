@@ -4,7 +4,8 @@ import App from './App.vue'
 import {createApp, inject} from "vue";
 import store from './store';
 import VueClipboard from "vue3-clipboard";
-import i18n from "@/i18n";
+import i18n from "./i18n";
+
 import router from './router';
 import naive from 'naive-ui';
 
@@ -15,5 +16,16 @@ app.use(naive).use(i18n).use(router).use(store).use(VueClipboard, {
     autoSetContainer: true,
     appendToBody: true,
 });
+if (process.env.NODE_ENV !== 'development'){
+    app.use(VueGtagPlugin, {
+        config: {
+            id: 'G-181EZLB3NP'
+        }
+    }, router)
+}
+// else {
+//     console.log('Development')
+// }
 
+app.use(i18n)
 app.mount('#app');

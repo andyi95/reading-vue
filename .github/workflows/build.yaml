@@ -44,6 +44,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: "deploy.tar"
           target: "./"
+  create-envfile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create env fie
+        uses: SpicyPizza/create-envfile@1.3
+        with:
+          envkey_
 
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master

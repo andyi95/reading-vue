@@ -3,7 +3,6 @@ const Anticipation = () => import('@/views/Anticipation.vue')
 const Text = () => import('@/views/Text.vue')
 const Spreeder = () => import('@/views/Spreeder.vue')
 const ChaosChars = () => import('@/views/Mixer.vue')
-import i18n from "@/i18n";
 
 const routes = [
   {path: '/', name: 'TextParser', component: Text, meta: {title: "Морфемы"}},

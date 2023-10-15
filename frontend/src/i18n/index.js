@@ -1,11 +1,11 @@
-import {createI18n, VueI18n} from "vue-i18n";
+import {createI18n} from "vue-i18n";
 
 import store from "@/store";
 
 const messages = {
     en: {
         nav: {
-            textparser: 'Colored text',
+            textparser: 'Word count',
             spreeder: 'Spreader',
             anticipation: 'Anticipation',
             mixer: 'Text mixer',
@@ -38,12 +38,14 @@ const messages = {
             sourceText: 'Source text',
             textPlaceHolder: 'Enter your text...',
             wordsPerMinute: 'words per minute',
-            startLabel: 'Start'
+            startLabel: 'Start',
+            stopLabel: 'Stop',
+            resetLabel: 'Reset'
         }
     },
     ru: {
         nav: {
-            textparser: 'Цветной текст',
+            textparser: 'Подсчёт слов',
             spreeder: 'Спридер',
             anticipation: 'Антиципация',
             mixer: 'Дешифровщик',
@@ -66,7 +68,7 @@ const messages = {
             cntWords: 'Количество слов',
             paintText: 'Раскрасить текст',
             copyText: 'Скопировать текст',
-            countWords: 'Подсчёт количества слов',
+            countWords: 'Подсчёт слов',
             onlyNouns: 'Показать только существительные',
             onlyVerbs: 'Показать только глаголы',
             grayScale: 'Оттенки серого',
@@ -76,7 +78,9 @@ const messages = {
             sourceText: 'Исходный текст',
             textPlaceHolder: 'Вставьте или введите текст для упражнения',
             wordsPerMinute: 'слов в минуту',
-            startLabel: 'Начать'
+            startLabel: 'Начать',
+            stopLabel: 'Стоп',
+            resetLabel: 'Сброс'
         },
         chaos: {
             sourceText: 'Исходный текст',

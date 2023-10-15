@@ -1,3 +1,4 @@
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     chainWebpack: config => {
@@ -34,5 +35,8 @@ module.exports = {
                 'https://text-tools.ru/text'
             ]
         }
-    }
+    },
+    // configureWebpack: {
+    //     plugins: [new BundleAnalyzerPlugin()]
+    // }
 }

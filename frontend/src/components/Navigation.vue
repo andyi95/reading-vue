@@ -13,9 +13,8 @@ import {NMenu, NButton} from 'naive-ui';
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 
-
-
 export default defineComponent({
+  name: 'Navigation',
   setup() {
       const { t } = useI18n();
       const store = useStore();

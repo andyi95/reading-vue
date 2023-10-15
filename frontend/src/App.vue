@@ -18,7 +18,7 @@
 <script>
 
 
-import Navigation from "@/components/Navigation";
+import Navigation from "@/components/Navigation.vue";
 import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
 import {defineComponent, computed} from "vue";
 import {useStore} from "vuex";
@@ -44,7 +44,7 @@ export default defineComponent({
 </script>
 
 <style lang="css">
-@import "~@/assets/css/bootstrap.min.css";
+@import "@/assets/css/bootstrap.min.css";
 
 /** {*/
 /*  padding: 0;*/
