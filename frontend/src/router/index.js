@@ -3,6 +3,7 @@ const Anticipation = () => import('@/views/Anticipation.vue')
 const Text = () => import('@/views/Text.vue')
 const Spreeder = () => import('@/views/Spreeder.vue')
 const ChaosChars = () => import('@/views/Mixer.vue')
+const Schulte = () => import('@/views/Schulte.vue')
 
 const routes = [
   {path: '/', name: 'TextParser', component: Text, meta: {title: "Морфемы"}},
@@ -10,6 +11,7 @@ const routes = [
   {path: '/text', name: 'Parser', component: Text, meta: {title: "Морфемы"}},
   {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {title: "Чтение на скорость"}},
   {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {title: "Дешифровщик"}},
+  {path: '/schulte', name: 'Schulte', component: Schulte, meta: {title: "Тренажер «Шульте» "}},
   {
     path: '/about',
     name: 'About',

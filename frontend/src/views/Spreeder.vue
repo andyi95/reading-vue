@@ -75,19 +75,28 @@ export default {
       let chunkSize = Number(this.chunkSize)
       for(let i = this.slider.currentIndex; true; i += chunkSize){
         await this.sleep(this.speed);
-        this.slider.currentWord = this.splittedText.slice(i, i + chunkSize).join(' ');
+        if(!this.slider.isShow && i > 1){
+          break
+        }
+        let currentChunk = this.splittedText.slice(i, i + chunkSize);
+        this.slider.currentWord = currentChunk.join(' ');
+
+        if(!this.slider.currentWord.trim().length) {
+          this.slider.currentIndex = 0;
+          i = -chunkSize;
+          continue;
+        }
         let progress = i === 0 ? 0 : Math.max(Math.round(i / this.splittedText.length * 100), 1)
         this.progressUpdate(progress);
-        // this.slider.progress = Math.trunc(i / this.splittedText.length)
-        if (i === this.splittedText.length - 1) i = 0;  // loop show
-        if(!this.slider.isShow && i > 1){
-          i = 0
-          this.slider.currentIndex = i;
-          break;
+
+        if(i >= this.splittedText.length - chunkSize) {
+          this.slider.currentIndex = 0;
+          i = -chunkSize;
         }
-        if(i < this.splittedText.length){
-          i = 0
+        else {
+          this.slider.currentIndex += chunkSize;
         }
+
       }
     },
     splitText() {

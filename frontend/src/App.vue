@@ -20,7 +20,7 @@
 
 import Navigation from "@/components/Navigation.vue";
 import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
-import {defineComponent, computed} from "vue";
+import {defineComponent, computed, ref} from "vue";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 
@@ -29,10 +29,11 @@ export default defineComponent({
   components: {Navigation, NConfigProvider, NMessageProvider, darkTheme},
   setup() {
     const store = useStore();
-    const locale = useI18n();
+    const {t} = useI18n();
 
       return {
         darkTheme,
+        t,
         // theme: store.state.theme
         theme: computed(function (){
           return store.state.theme === 'darkTheme' ? darkTheme : null

@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
     frontend:
-        image: registry.lit1.andyi95.com/text-tools/reading-frontend
+        image: registry.se.andyi95.com/text-tools/reading-frontend
         build:
             context: frontend
             dockerfile: stage.Dockerfile
@@ -10,7 +10,7 @@ services:
             - .env
 
     backend:
-        image: registry.lit1.andyi95.com/text-tools/reading-backend
+        image: registry.se.andyi95.com/text-tools/reading-backend
         build: backend
         working_dir: /app
         env_file:

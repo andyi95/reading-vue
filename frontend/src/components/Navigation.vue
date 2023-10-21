@@ -81,6 +81,11 @@ export default defineComponent({
                       ),
                   key: 'mixer'
               },
+            {
+              label: () =>
+                  h(RouterLink, {to: {name: 'Schulte'}}, {default: () => this.$t('nav.schulte')}),
+              key: 'schulte'
+            }
           ]
       }
     },

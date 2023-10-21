@@ -11,6 +11,7 @@ const messages = {
             mixer: 'Text mixer',
             parser: 'Color text',
             theme: 'Change theme',
+            schulte: 'Schulte table'
         },
         common:{
             textContent: 'Text for reading',
@@ -41,16 +42,51 @@ const messages = {
             startLabel: 'Start',
             stopLabel: 'Stop',
             resetLabel: 'Reset'
+        },
+        schulte: {
+            title: 'Schulte table',
+            settings: 'Settings',
+            start: 'Start',
+            stop: 'Stop',
+            reset: 'Reset',
+            wrong: 'Wrong',
+            easyGame: 'Easy game',
+            digitsOption: 'Digits',
+            ruLetterOptions: 'Russian letters',
+            enLetterOptions: 'English letters',
+            zhLetterOption: 'Chinese hyeroglyphs',
+            gorbovOption: 'Gorbov table',
+            selectOption: 'Game mode',
+            timeLabel: 'Time',
+            size: 'Size',
         }
     },
     ru: {
+        schulte: {
+            title: 'Таблица Шульте',
+            settings: 'Настройки',
+            start: 'Старт',
+            stop: 'Стоп',
+            reset:'Сброс',
+            wrong: 'Неправильно',
+            easyGame: 'Лёгкая игра',
+            selectOption: 'Режим игры',
+            digitsOption: 'Цифры',
+            ruLetterOptions: 'Русские буквы',
+            enLetterOptions: 'Английские буквы',
+            zhLetterOption: 'Китайские иероглифы',
+            gorbovOption: 'Таблица Горбова',
+            timeLabel: 'Время',
+            size: 'Размер',
+        },
         nav: {
             textparser: 'Подсчёт слов',
             spreeder: 'Спридер',
             anticipation: 'Антиципация',
             mixer: 'Дешифровщик',
             parser: 'Цветной текст',
-            theme: 'Сменить тему'
+            theme: 'Сменить тему',
+            schulte: 'Таблица Шульте'
         },
         common:{
             textContent: 'Текст для чтения',
