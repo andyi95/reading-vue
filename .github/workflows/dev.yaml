@@ -1,12 +1,10 @@
 name: Development version deploy
 
 on:
-  release:
-    types: [created]
-    paths-ignore:
-      - 'README.md'
   push:
     tags: [v*]
+    paths-ignore:
+      - 'README.md'
 
 env:
   DEPLOY_PATH: reader/
