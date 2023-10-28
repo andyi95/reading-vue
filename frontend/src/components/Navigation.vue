@@ -91,11 +91,11 @@ export default defineComponent({
     },
   methods: {
     changeTheme(){
-      this.$store.commit('switchTheme')
+      this.$store.commit('SWITCH_THEME')
         this.$i18n.locale = this.locale
     },
       changeLocale(){
-        this.$store.commit('switchLocale')
+        this.$store.commit('SWITCH_LOCALE')
           this.$i18n.locale = this.locale
       }
   },

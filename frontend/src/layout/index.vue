@@ -17,12 +17,17 @@
 </template>
 
 <script>
-import ButtonLink from "@/components/ButtonLink";
 import {NLayoutContent, NLayout, NLayoutHeader} from "naive-ui";
 import Navigation from "@/App.vue";
 
 export default {
   name: "DefaultLayout",
-  components: {Navigation, ButtonLink, NLayoutContent, NLayout, NLayoutHeader }
+  components: {Navigation, NLayoutContent, NLayout, NLayoutHeader }
 }
 </script>
+
+<style>
+body, #app {
+  overflow: auto;
+}
+</style>

@@ -10,12 +10,25 @@ var plugins = [vuexLocal.plugin]
 if (debug){
     plugins.push(createLogger())
 }
+
+/**
+ * @typedef {object} schulteResultsItem
+ * @property {number} currentRate
+ * @property {number} size
+ * @property {Date} startTime
+ * @property {Date} endTime
+ * @property {number} time
+ * @property {number} errors
+ */
 export default createStore({
     state: {
         theme: null,
         sourceText: '',
         fetchedData: [],
-        locale: 'ru'
+        locale: 'ru',
+        /** @type {schulteResultsItem[]} */
+        schulteResults: [],
+        schulteSettings: { size: 5}
     },
     mutations,
     strict: debug,
@@ -24,5 +37,11 @@ export default createStore({
         updateText(context, payload){
             context.commit('UPDATE_TEXT', payload)
         },
+        updateSchulteSettings(context, payload){
+            context.commit('UPDATE_SCHULTE_SETTINGS', payload)
+        },
+        updateSchulteResults(context, payload){
+            context.commit('UPDATE_SCHULTE_RESULTS', payload)
+        }
     }
 })

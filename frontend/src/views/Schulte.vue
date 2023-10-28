@@ -1,16 +1,18 @@
 <script>
-import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars } from 'naive-ui';
+import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, ResponsiveDescription } from 'naive-ui';
 import {ref} from "vue";
 import Timer from "@/components/Timer.vue";
 import {useI18n} from "vue-i18n";
+import {mapActions}  from "vuex";
 
 export default {
   name: 'Schulte',
   components: {Timer, NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent},
+
   data() {
     return {
       isPlaying: false,
-      size: 5,
+      size: this.$store.state.schulteSettings.size,
       gridData: [],
       shuffledGrid: [],
       startTime: null,
@@ -21,6 +23,7 @@ export default {
       tableType: 'gorbov',
       buttonLabel: null,
       easyMode: false,
+      errors: 0,
       trainingData: 'digits'
     }
   },
@@ -29,29 +32,6 @@ export default {
     const timerCount = ref(0);
     const timer = ref(null);
     const themeVars = useThemeVars();
-    const { t } = useI18n();
-    const trainingDataOptions = [
-          {
-            label: t('schulte.digitsOption'),
-            value: 'digits'
-          },
-          {
-            label: t('schulte.enLetterOptions'),
-            value: 'letters-en'
-          },
-      {
-        label: t('schulte.ruLetterOptions'),
-        value: 'letters-ru'},
-      {
-        label: t('schulte.zhLetterOption'),
-        value: 'letters-zh'
-      },
-      {
-        label: t('schulte.gorbovOption'),
-        value: 'gorbov'
-      }
-    ]
-
     return {
       timerCount, timer,
       warning(text) {
@@ -61,17 +41,41 @@ export default {
         message.success(
             text, {closable: true, duration: 0})
       },
-      trainingDataOptions, themeVars
+      themeVars
     }
   },
   computed: {
   timerCountFormatted(){
        return new Date(this.timerCount * 1000)
+    },
+    trainingDataOptions(){
+      return [
+        {
+          label: this.$t('schulte.digitsOption'),
+          value: 'digits'
+        },
+        {
+          label: this.$t('schulte.enLetterOptions'),
+          value: 'letters-en'
+        },
+        {
+          label: this.$t('schulte.ruLetterOptions'),
+          value: 'letters-ru'},
+        {
+          label: this.$t('schulte.zhLetterOption'),
+          value: 'letters-zh'
+        },
+        {
+          label: this.$t('schulte.gorbovOption'),
+          value: 'gorbov'
+        }
+      ]
     }
   },
   watch: {
     isPlaying(value){
       if (value){
+
         this.buttonLabel = this.$t('schulte.stop')
       }
       else {
@@ -81,10 +85,22 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+        'updateSchulteResults',
+        'updateSchulteSettings'
+    ]),
     start(){
       if (!this.isPlaying){
         this.isPlaying = true
         this.startTime = new Date()
+        this.updateSchulteResults({
+          startTime: this.startTime,
+          endTime: null,
+          currentRate: 0, errors: 0,
+          size: this.size,
+          tableType: this.tableType,
+          easyMode: this.easyMode
+        })
         this.timer = setInterval(() => {
           this.timerCount++;
         }, 1000);
@@ -94,9 +110,17 @@ export default {
         clearInterval(this.timer);
       }
     },
-    reset(){
+    reset(value){
+      console.log(value)
+      this.updateSchulteSettings({
+        size: this.size,
+        tableType: this.tableType,
+        easyMode: this.easyMode
+      })
       this.shuffle();
       this.currentIndex = 0;
+      this.startTime = new Date();
+      this.errors = 0;
       this.currentItem = this.gridData[this.currentIndex];
       this.timerCount = 0;
     },
@@ -174,6 +198,15 @@ export default {
         }
       }
     },
+    saveResults(){
+      this.endTime = new Date()
+      this.updateSchulteResults({
+        startTime: this.startTime,
+        endTime: this.endTime,
+        currentRate: this.currentRate,
+        errors: this.errors
+      })
+    },
     clickTile(value){
       if (!this.isPlaying){
         return 0
@@ -186,13 +219,16 @@ export default {
         this.currentItem.hidden = true
       }
       if (this.currentIndex === this.gridData.length - 1){
-        this.success(this.$t('schulte.finished'))
+        let time = (this.endTime - this.startTime) / 1000
+
+        this.success(this.$t('schulte.finished', {time: time, errors: this.errors, rate: this.currentRate}))
         this.isPlaying = false
         clearInterval(this.timer);
         return 0
       }
       this.currentIndex ++ ;
       this.currentRate ++;
+      this.saveResults()
       this.currentItem = this.gridData[this.currentIndex]
     }
   },
@@ -204,8 +240,13 @@ export default {
 </script>
 
 <template>
-<n-layout has-sider>
-<n-layout-sider content-style="padding: 5px;">
+
+<n-grid cols="1 414:6" :x-gap="10">
+<n-grid-item
+    content-style="padding: 5px;"
+    span="1"
+    style="max-width: 300px"
+>
   <n-space vertical>
     <n-form-item :label="$t('schulte.size')">
   <n-input-number v-model:value="size" :min="3" :max="20" :step="1" :default-value="5" @update:value="reset"/>
@@ -226,11 +267,11 @@ export default {
     <span size="small">{{ this.$t('schulte.timeLabel')}}: <n-time :time="timerCountFormatted" format="mm:ss"></n-time></span>
 
   </n-space>
-</n-layout-sider>
-  <n-layout-content>
+</n-grid-item>
+  <n-grid-item style="max-width: 768px;" span="5">
     <n-card v-if="currentItem" class="current-item">
       <span
-          :class="{red: currentItem.isRed}">{{ currentItem.value }}</span>
+          :class="{red: currentItem.isRed}" class="current-item">{{ currentItem.value }}</span>
     </n-card>
   <n-grid :cols="this.size" :x-gap="5" :y-gap="5" class="square-container">
     <n-grid-item v-for="(item, index) in this.shuffledGrid"
@@ -241,8 +282,9 @@ export default {
     </n-grid-item>
   </n-grid>
 
-  </n-layout-content>
-</n-layout>
+  </n-grid-item>
+</n-grid>
+
 </template>
 
 <style scoped>
@@ -250,14 +292,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   max-width: 768px;
-}
-.light-green {
-  height: 108px;
-  background-color: rgba(0, 128, 0, 0.12);
-}
-.green {
-  height: 108px;
-  background-color: rgba(0, 128, 0, 0.24);
 }
 
 .square {
@@ -268,32 +302,53 @@ export default {
   display: flex;
   align-content: center;
   align-items: center;
-  background-color: v-bind('themeVars.buttonColor2');
+  background-color: #313131;
+}
+.square:hover {
+  background-color: #5F5C5C;
 }
 .current-item {
   align-items: center;
   max-width: 768px;
-  margin-bottom: 3px;
-}
-.square .content {
-  position: absolute;
   top: 0;
   bottom: 0;
+  //margin-bottom: 3px;
+  font-size: 2em;
+}
+.square .content {
   justify-content: center;
   display: flex;
   align-content: center;
   align-items: center;
+  font-size: 3.5em;
+  color: #ffffff
 }
 .hidden {
   visibility: hidden;
 }
 .red {
-  color: v-bind('themeVars.errorColor');
+  background-color: #ff6a6a;
+}
+.red:hover {
+  background-color: #fe8a8a;
+}
+@media screen and (max-width: 414px){
+  .square-container, .current-item {
+    max-width: 480px;
+  }
+  .square .content{
+    font-size: 2.5em;
+  }
+  .current-item {
+    font-size: 1.5em;
+  }
+  aside {
+    float: left;
+    width: 30%;
+  }
 }
 
 </style>
 <style>
-body, #app {
-  overflow: hidden;
-}
+
 </style>

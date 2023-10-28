@@ -19,13 +19,10 @@ app.use(naive).use(i18n).use(router).use(store).use(VueClipboard, {
 if (process.env.NODE_ENV !== 'development'){
     app.use(VueGtagPlugin, {
         config: {
-            id: 'G-181EZLB3NP'
+            id: process.env.VUE_APP_GTAG
         }
     }, router)
 }
-// else {
-//     console.log('Development')
-// }
 
 app.use(i18n)
 app.mount('#app');

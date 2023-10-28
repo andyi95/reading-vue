@@ -78,6 +78,7 @@ const messages = {
             gorbovOption: 'Таблица Горбова',
             timeLabel: 'Время',
             size: 'Размер',
+            finished: 'Отличная работа! Вы закончили игру за {time} секунд, совершив {errors} ошибок. Угадано {rate}.'
         },
         nav: {
             textparser: 'Подсчёт слов',

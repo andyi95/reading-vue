@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import {loadLayoutMiddleware} from "@/router/middleware";
 const Anticipation = () => import('@/views/Anticipation.vue')
 const Text = () => import('@/views/Text.vue')
 const Spreeder = () => import('@/views/Spreeder.vue')
@@ -11,7 +12,10 @@ const routes = [
   {path: '/text', name: 'Parser', component: Text, meta: {title: "Морфемы"}},
   {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {title: "Чтение на скорость"}},
   {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {title: "Дешифровщик"}},
-  {path: '/schulte', name: 'Schulte', component: Schulte, meta: {title: "Тренажер «Шульте» "}},
+  {path: '/schulte', name: 'Schulte', component: Schulte, meta: {
+    title: "Тренажер «Шульте» ",
+      layout: 'no-scroll'
+  }},
   {
     path: '/about',
     name: 'About',
@@ -25,8 +29,9 @@ const router = createRouter({
   linkActiveClass: 'active',
   routes
 });
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   document.title = to.meta.title ? to.meta.title : "Текстовые инструменты"
+    await loadLayoutMiddleware(to)
   next()
 })
 

@@ -47,11 +47,6 @@ export default defineComponent({
 <style lang="css">
 @import "@/assets/css/bootstrap.min.css";
 
-/** {*/
-/*  padding: 0;*/
-/*  margin: 0;*/
-/*}*/
-
 body, #app, .n-layout-scroll-container, .n-config-provider, .n-layout--static--positioned{
   min-height: 100vh;
 }
