@@ -30,11 +30,12 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const {t} = useI18n();
+    const windowWidth = ref(window.innerWidth);
 
       return {
         darkTheme,
         t,
-        // theme: store.state.theme
+        windowWidth,
         theme: computed(function (){
           return store.state.theme === 'darkTheme' ? darkTheme : null
         })
@@ -46,6 +47,10 @@ export default defineComponent({
 
 <style lang="css">
 @import "@/assets/css/bootstrap.min.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body, #app, .n-layout-scroll-container, .n-config-provider, .n-layout--static--positioned{
   min-height: 100vh;

@@ -10,7 +10,6 @@
       <n-layout-content content-style="flex-1 overflow-hidden px-3">
         <slot/>
       </n-layout-content>
-
     </article>
   </n-layout>
 </div>

@@ -10,6 +10,7 @@ module.exports = {
                 return options;
             });
     },
+
     devServer: {
         host: 'localhost',
         port: 4000,

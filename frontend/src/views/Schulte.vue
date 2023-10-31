@@ -1,8 +1,7 @@
 <script>
-import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, ResponsiveDescription } from 'naive-ui';
+import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars } from 'naive-ui';
 import {ref} from "vue";
 import Timer from "@/components/Timer.vue";
-import {useI18n} from "vue-i18n";
 import {mapActions}  from "vuex";
 
 export default {
@@ -70,7 +69,20 @@ export default {
           value: 'gorbov'
         }
       ]
+    },
+    tileFontSize(){
+    if(this.size < 8){
+      return '60px';
     }
+    if(this.size > 11){
+      return '20px';
+    }
+    return '40px';
+    },
+    getSchulteResults(){
+      return this.$store.getters.sortedSchulteResults
+    }
+
   },
   watch: {
     isPlaying(value){
@@ -93,6 +105,11 @@ export default {
       if (!this.isPlaying){
         this.isPlaying = true
         this.startTime = new Date()
+        this.currentIndex = 0;
+        this.startTime = new Date();
+        this.errors = 0;
+        this.currentItem = this.gridData[this.currentIndex];
+        this.timerCount = 0;
         this.updateSchulteResults({
           startTime: this.startTime,
           endTime: null,
@@ -106,12 +123,13 @@ export default {
         }, 1000);
       }
       else {
-        this.isPlaying = false
-        clearInterval(this.timer);
+        this.stop();
       }
     },
     reset(value){
-      console.log(value)
+      if (value && typeof value === 'number'){
+        this.size = value
+      }
       this.updateSchulteSettings({
         size: this.size,
         tableType: this.tableType,
@@ -125,6 +143,7 @@ export default {
       this.timerCount = 0;
     },
     shuffle() {
+      this.gridData = [];
       this.generateData()
       this.shuffledGrid = [...this.gridData].sort(() => Math.random() - 0.5)
     },
@@ -204,7 +223,8 @@ export default {
         startTime: this.startTime,
         endTime: this.endTime,
         currentRate: this.currentRate,
-        errors: this.errors
+        errors: this.errors,
+        size: this.size
       })
     },
     clickTile(value){
@@ -213,23 +233,28 @@ export default {
       }
       if(this.currentItem !== value){
         this.warning(this.$t('schulte.wrong'))
+        this.errors ++;
         return 0
       }
       if (this.easyMode) {
         this.currentItem.hidden = true
       }
       if (this.currentIndex === this.gridData.length - 1){
-        let time = (this.endTime - this.startTime) / 1000
-
-        this.success(this.$t('schulte.finished', {time: time, errors: this.errors, rate: this.currentRate}))
-        this.isPlaying = false
-        clearInterval(this.timer);
+        this.stop();
         return 0
       }
       this.currentIndex ++ ;
       this.currentRate ++;
       this.saveResults()
       this.currentItem = this.gridData[this.currentIndex]
+    },
+    stop(){
+      let time = (this.endTime - this.startTime) / 1000
+
+      this.success(this.$t('schulte.finished', {time: time, errors: this.errors, rate: this.currentRate}))
+      this.saveResults();
+      this.isPlaying = false
+      clearInterval(this.timer);
     }
   },
   mounted() {
@@ -268,7 +293,7 @@ export default {
 
   </n-space>
 </n-grid-item>
-  <n-grid-item style="max-width: 768px;" span="5">
+  <n-grid-item class="responsive-grid" span="5">
     <n-card v-if="currentItem" class="current-item">
       <span
           :class="{red: currentItem.isRed}" class="current-item">{{ currentItem.value }}</span>
@@ -283,17 +308,67 @@ export default {
   </n-grid>
 
   </n-grid-item>
+<div v-if="false">
+  <n-grid-item v-if="getSchulteResults" :span="2">
+
+        <n-card v-for="result in getSchulteResults" :title="$d(result.startTime, 'short')">
+          <p>{{ $t('schulte.size') }}: {{ result.size? result.size : '0' }} </p>
+        <p>{{ $t('schulte.timeLabel')}}: {{ $d(result.endTime - result.startTime, 'diff') }} </p>
+        <p>{{ $t('schulte.errorsLabel')}}: {{ result.errors }} </p>
+        <p>{{ $t('schulte.rateLabel')}}: {{ result.currentRate }} </p>
+        </n-card>
+
+  </n-grid-item></div>
 </n-grid>
 
 </template>
 
 <style scoped>
+:root {
+  --grid-max-width: 768px;
+}
+.responsive-grid {
+  max-width: 768px;
+}
+@media screen and (max-width: 414px){
+  :root {
+    --grid-max-width: 480px;
+  }
+  .square-container, .current-item {
+    max-width: 480px;
+  }
+  .responsive-grid {
+    max-width: 480px;
+  }
+
+  aside {
+    float: left;
+    width: 30%;
+  }
+}
+
+
+@media screen and (min-height: 1090px){
+  :root {
+    --grid-max-width: 1090px;
+  }
+  .square-container, .current-item {
+    max-width: 1090px;
+  }
+  .responsive-grid {
+    max-width: 1090px;
+  }
+  aside {
+    float: left;
+    width: 30%;
+  }
+
+}
 .square-container {
   display: flex;
   flex-wrap: wrap;
-  max-width: 768px;
+  max-width: var(--grid-max-width);
 }
-
 .square {
   aspect-ratio: 1/1;
   margin: 1px;
@@ -309,7 +384,7 @@ export default {
 }
 .current-item {
   align-items: center;
-  max-width: 768px;
+  max-width: var(--grid-max-width);
   top: 0;
   bottom: 0;
   //margin-bottom: 3px;
@@ -320,7 +395,7 @@ export default {
   display: flex;
   align-content: center;
   align-items: center;
-  font-size: 3.5em;
+  font-size: v-bind('tileFontSize');
   color: #ffffff
 }
 .hidden {
@@ -332,21 +407,7 @@ export default {
 .red:hover {
   background-color: #fe8a8a;
 }
-@media screen and (max-width: 414px){
-  .square-container, .current-item {
-    max-width: 480px;
-  }
-  .square .content{
-    font-size: 2.5em;
-  }
-  .current-item {
-    font-size: 1.5em;
-  }
-  aside {
-    float: left;
-    width: 30%;
-  }
-}
+
 
 </style>
 <style>

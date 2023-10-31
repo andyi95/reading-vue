@@ -1,5 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import {loadLayoutMiddleware} from "@/router/middleware";
+import i18n from "@/i18n";
+
+const {t, locale} = i18n.global
 const Anticipation = () => import('@/views/Anticipation.vue')
 const Text = () => import('@/views/Text.vue')
 const Spreeder = () => import('@/views/Spreeder.vue')
@@ -7,14 +9,13 @@ const ChaosChars = () => import('@/views/Mixer.vue')
 const Schulte = () => import('@/views/Schulte.vue')
 
 const routes = [
-  {path: '/', name: 'TextParser', component: Text, meta: {title: "Морфемы"}},
-  {path: '/anticipation', name: 'Anticipation', component: Anticipation, meta: {title: "Антиципация"}},
-  {path: '/text', name: 'Parser', component: Text, meta: {title: "Морфемы"}},
-  {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {title: "Чтение на скорость"}},
-  {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {title: "Дешифровщик"}},
+  {path: '/', name: 'TextParser', component: Text, meta: {title: t('nav.textparser')}},
+  {path: '/anticipation', name: 'Anticipation', component: Anticipation, meta: {title: t('nav.anticipation')}},
+  {path: '/text', name: 'Parser', component: Text, meta: {title: t('nav.textparser')}},
+  {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {title: t('nav.spreeder')}},
+  {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {title: t('nav.mixer')}},
   {path: '/schulte', name: 'Schulte', component: Schulte, meta: {
-    title: "Тренажер «Шульте» ",
-      layout: 'no-scroll'
+    title: t('nav.schulte')
   }},
   {
     path: '/about',
@@ -30,8 +31,7 @@ const router = createRouter({
   routes
 });
 router.beforeEach(async (to, from, next) => {
-  document.title = to.meta.title ? to.meta.title : "Текстовые инструменты"
-    await loadLayoutMiddleware(to)
+  document.title = to.meta.title ? to.meta.title : t('nav.title')
   next()
 })
 

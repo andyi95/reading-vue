@@ -43,5 +43,10 @@ export default createStore({
         updateSchulteResults(context, payload){
             context.commit('UPDATE_SCHULTE_RESULTS', payload)
         }
+    },
+    getters: {
+        sortedSchulteResults(state){
+            return state.schulteResults.sort((a, b) => a.time - b.time)
+        }
     }
 })

@@ -11,7 +11,8 @@ const messages = {
             mixer: 'Text mixer',
             parser: 'Color text',
             theme: 'Change theme',
-            schulte: 'Schulte table'
+            schulte: 'Schulte table',
+            title: 'Text tools'
         },
         common:{
             textContent: 'Text for reading',
@@ -59,6 +60,9 @@ const messages = {
             selectOption: 'Game mode',
             timeLabel: 'Time',
             size: 'Size',
+            errorsLabel: 'errors',
+            rateLabel: 'rate',
+            resultsLabel: 'Results',
         }
     },
     ru: {
@@ -78,7 +82,10 @@ const messages = {
             gorbovOption: 'Таблица Горбова',
             timeLabel: 'Время',
             size: 'Размер',
-            finished: 'Отличная работа! Вы закончили игру за {time} секунд, совершив {errors} ошибок. Угадано {rate}.'
+            finished: 'Отличная работа! Вы закончили игру за {time} секунд, совершив {errors} ошибок. Угадано {rate}.',
+            errorsLabel: 'ошибок',
+            rateLabel: 'угадано',
+            resultsLabel:'Результаты',
         },
         nav: {
             textparser: 'Подсчёт слов',
@@ -87,7 +94,8 @@ const messages = {
             mixer: 'Дешифровщик',
             parser: 'Цветной текст',
             theme: 'Сменить тему',
-            schulte: 'Таблица Шульте'
+            schulte: 'Таблица Шульте',
+            title: 'Текстовые инструменты'
         },
         common:{
             textContent: 'Текст для чтения',
@@ -134,5 +142,21 @@ export default createI18n({
     locale: storedLocale,
     fallbackLocale: 'ru',
     legacy: false,
-    messages
+    messages,
+    datetimeFormats: {
+        en: {
+            short: {
+                year: 'numeric', month: 'short', day: 'numeric'
+            }
+        },
+        ru: {
+            short: {
+                year: 'numeric', month: 'short', day: 'numeric'
+            },
+            diff: {
+                minute: 'numeric', second: 'numeric'
+            }
+        },
+
+    }
 })
