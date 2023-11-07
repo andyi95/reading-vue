@@ -57,12 +57,15 @@ const messages = {
             enLetterOptions: 'English letters',
             zhLetterOption: 'Chinese hyeroglyphs',
             gorbovOption: 'Gorbov table',
+            classicTable: 'Classic table',
+            tableFillment: 'Character set',
             selectOption: 'Game mode',
             timeLabel: 'Time',
             size: 'Size',
             errorsLabel: 'errors',
             rateLabel: 'rate',
             resultsLabel: 'Results',
+            easyGameTooltip: 'The guessed tiles will disappear',
         }
     },
     ru: {
@@ -82,10 +85,13 @@ const messages = {
             gorbovOption: 'Таблица Горбова',
             timeLabel: 'Время',
             size: 'Размер',
-            finished: 'Отличная работа! Вы закончили игру за {time} секунд, совершив {errors} ошибок. Угадано {rate}.',
+            classicTable: 'Обычная таблица',
+            tableFillment: 'Набор символов',
+            finished: 'Отличная работа! Вы закончили игру за {minutes} минут {seconds} секунд, совершив {errors} ошибок. Ваша скорость {rate} символов в минуту.',
             errorsLabel: 'ошибок',
             rateLabel: 'угадано',
             resultsLabel:'Результаты',
+            easyGameTooltip: 'Угаданные плитки будут исчезать',
         },
         nav: {
             textparser: 'Подсчёт слов',
@@ -142,6 +148,7 @@ export default createI18n({
     locale: storedLocale,
     fallbackLocale: 'ru',
     legacy: false,
+    runtimeOnly: false,
     messages,
     datetimeFormats: {
         en: {

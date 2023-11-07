@@ -1,16 +1,24 @@
 <template>
-  <div class="md:hidden max-w-screen-xl flex flex-wrap mx-auto p-4">
-    <n-button @click="show = true">
-      <span class="sr-only">Open main menu</span>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="lu oc se"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
+  <div class="flex relative md:hidden max-w-screen-xl">
+      <n-button
+          @click="show = true" class="content-end justify-end fixed z-10 end-5"
+          :bordered="false" aria-label="Open main menu">
+        <span class="sr-only">Open main menu</span>
+        <div class="burger-menu">
+          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0,0,256,256">
+            <g fill="#63e2b7" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M2,9v2h46v-2zM2,24v2h46v-2zM2,39v2h46v-2z"></path></g></g>
+          </svg></div>
+      </n-button>
 
-    </n-button>
 
   </div>
+
   <div class="hidden md:flex" id="navbar-default">
 <n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" style="height: 60px"/>
   </div>
-  <n-drawer v-model:show="show" class="md:hidden">
+  <n-drawer v-model:show="show" width="50vw"
+            class="md:hidden"
+            max-width="190px">
     <n-drawer-content closable>
       <n-menu v-model:value="activeKey" mode="vertical" :options="navLinks" style="height: 100vh"/>
     </n-drawer-content>
@@ -127,3 +135,15 @@ export default defineComponent({
 });
 </script>
 
+<style>
+.burger-menu {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  overflow: hidden;
+}
+.n-drawer .n-drawer-content .n-drawer-body-content-wrapper {
+  padding: 0;
+}
+
+</style>

@@ -20,6 +20,14 @@ if (debug){
  * @property {number} time
  * @property {number} errors
  */
+
+/**
+ * @typedef {object} schulteSettings
+ * @property {number} size
+ * @property {string} gameMode
+ * @property {boolean} easyMode
+ * @property {string} tableCharsType
+ */
 export default createStore({
     state: {
         theme: null,
@@ -28,7 +36,9 @@ export default createStore({
         locale: 'ru',
         /** @type {schulteResultsItem[]} */
         schulteResults: [],
-        schulteSettings: { size: 5}
+        /** @type {schulteSettings} */
+        schulteSettings: {
+            size: 8, gameMode: 'gorbov', easyMode: false, tableCharsType: 'digits'}
     },
     mutations,
     strict: debug,
