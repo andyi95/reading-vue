@@ -66,6 +66,7 @@ const messages = {
             rateLabel: 'rate',
             resultsLabel: 'Results',
             easyGameTooltip: 'The guessed tiles will disappear',
+            finished: 'Great job! You finished the game in {minutes} minutes {seconds} seconds, making {errors} mistakes. Your speed is {rate} characters per minute.'
         }
     },
     ru: {

@@ -46,7 +46,7 @@ export default defineComponent({
 </script>
 
 <style lang="css">
-@import "@/assets/css/bootstrap.min.css";
+
 
 @tailwind base;
 @tailwind components;

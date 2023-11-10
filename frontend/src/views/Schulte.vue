@@ -3,7 +3,6 @@ import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayout
 import {ref} from "vue";
 import Timer from "@/components/Timer.vue";
 import {mapActions}  from "vuex";
-
 export default {
   name: 'Schulte',
   components: {Timer, NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent},
@@ -44,6 +43,9 @@ export default {
     }
   },
   computed: {
+    backgroundColor(){
+      return this.themeVars.modalColor
+    },
   timerCountFormatted(){
        return new Date(this.timerCount * 1000)
     },
@@ -92,11 +94,11 @@ export default {
       },
     tileFontClass() {
       if (this.size > 15){
-        return 'text-2xl'}
+        return 'text-xl md:text-2xl'}
     if (this.size > 10){
-      return 'text-3xl'
+      return 'text-2xl md:text-3xl'
     }
-      return 'text-sxl'
+      return 'text-2xl md:text-sxl'
     }
   },
   watch: {
@@ -303,7 +305,7 @@ export default {
 
 <template>
 
-<n-grid cols="1 414:6" :x-gap="10">
+<n-grid cols="1 414:6" :x-gap="10" item-responsive>
 <n-grid-item
     content-style="padding: 5px;"
     span="1"
@@ -336,12 +338,15 @@ export default {
     <n-space>
     <n-button @click="start">{{ buttonLabel || this.$t('schulte.start') }}</n-button>
     <n-button @click="reset">{{ this.$t('schulte.reset')}}</n-button></n-space>
-    <span size="small">{{ this.$t('schulte.timeLabel')}}: <n-time :time="timerCountFormatted" format="mm:ss"></n-time></span>
+
+    <div class="timer">
+    <span class="text-xl md:text-2xl">{{ this.$t('schulte.timeLabel')}}: <n-time :time="timerCountFormatted" format="mm:ss"></n-time></span>
+    </div>
 
   </n-space>
 </n-grid-item>
-  <n-grid-item class="responsive-grid" span="5">
-    <div class="centered-container">
+  <n-grid-item class="responsive-grid md:place-self-center" span="5">
+    <div class="centered-container place-self-center">
         <n-card v-if="currentItem" class="current-item mb-1 py-0 max-w-lg"
         content-style="display: flex; align-items: center; justify-content: center; padding: 5px; margin: 5px">
                 <span :class="{red: currentItem.isRed}"
@@ -374,6 +379,14 @@ export default {
 </template>
 
 <style scoped>
+.timer {
+  //margin-top: 20px;
+  margin: 5px;
+  //padding: 10px;
+  background-color: v-bind('backgroundColor');
+  //border-radius: 8px;
+  text-align: center;
+}
 .centered-container{
   display: flex;
   justify-content: center;
@@ -382,9 +395,6 @@ export default {
 }
 :root {
   --grid-max-width: calc(768px * v-bind('maxWidthMultiplier'));
-}
-.responsive-grid {
-  max-width: calc(768px * v-bind('maxWidthMultiplier'));
 }
 @media screen and (max-width: 414px){
   :root {
@@ -396,10 +406,14 @@ export default {
   .responsive-grid {
     max-width: 480px;
   }
-
   aside {
     float: left;
     width: 30%;
+  }
+  .timer {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 8px;
   }
 }
 
@@ -411,19 +425,34 @@ export default {
   .square-container, .current-item {
     max-width: 1090px;
   }
+  .square-container {
+    min-width: 980px;
+  }
   .responsive-grid {
     max-width: 1090px;
+    //min-width: 980px;
   }
   aside {
     float: left;
     width: 30%;
   }
 }
+@media screen and (min-width: 1024px){
+  .square-container {
+    min-width: 80vh;
+  }
+}
+@media screen and (min-width: 768px ) and (max-width: 1024px) {
+  .square-container {
+    min-width: 600px;
+  }
 
+}
 .square-container {
   display: flex;
   flex-wrap: wrap;
   max-width: var(--grid-max-width);
+  //min-width: 80vh;
 }
 .square {
   aspect-ratio: 1/1;
@@ -443,7 +472,7 @@ export default {
   max-width: var(--grid-max-width);
   top: 0;
   bottom: 0;
-  font-size: 3vh;
+  font-size: 2.5vh;
 }
 span .current-item{
   aspect-ratio: 1/1;

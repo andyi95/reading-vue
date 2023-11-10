@@ -6,7 +6,9 @@ import path from 'path'
 export default defineConfig({
     plugins: [
         VueI18nPlugin({
-            include: path.resolve(__dirname, './i18n/**')
+            include: path.resolve(__dirname, './i18n/**'),
+            strictMessage: true,
+            runtimeOnly: false,
         }),
         vue()
     ],
