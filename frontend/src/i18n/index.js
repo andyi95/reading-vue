@@ -67,9 +67,17 @@ const messages = {
             resultsLabel: 'Results',
             easyGameTooltip: 'The guessed tiles will disappear',
             finished: 'Great job! You finished the game in {minutes} minutes {seconds} seconds, making {errors} mistakes. Your speed is {rate} characters per minute.'
+        },
+        anticipation: {
+            selectChars: 'Additional characters',
+            placeHolderSelect: 'Select characters',
         }
     },
     ru: {
+        anticipation: {
+            selectChars: 'Дополнительные символы',
+            placeHolderSelect: 'Выберите символы',
+        },
         schulte: {
             title: 'Таблица Шульте',
             settings: 'Настройки',

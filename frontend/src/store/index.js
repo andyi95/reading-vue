@@ -38,7 +38,7 @@ export default createStore({
         schulteResults: [],
         /** @type {schulteSettings} */
         schulteSettings: {
-            size: 8, gameMode: 'gorbov', easyMode: false, tableCharsType: 'digits'}
+            size: 10, gameMode: 'gorbov', easyMode: true, tableCharsType: 'digits'}
     },
     mutations,
     strict: debug,

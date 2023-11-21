@@ -1,11 +1,11 @@
 <script>
-import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars } from 'naive-ui';
+import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, NButton} from 'naive-ui';
 import {ref} from "vue";
 import Timer from "@/components/Timer.vue";
 import {mapActions}  from "vuex";
 export default {
   name: 'Schulte',
-  components: {Timer, NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent},
+  components: {Timer, NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent, NButton},
 
   data() {
     return {
@@ -93,12 +93,30 @@ export default {
     return 1
       },
     tileFontClass() {
+      if (this.tableCharsType === 'digits'){
+        if (this.size > 15){
+          return 'text-base md:text-lg'
+        }
+        if (this.size > 10){
+          return 'text-lg md:text-xl'
+        }
+      }
       if (this.size > 15){
         return 'text-xl md:text-2xl'}
     if (this.size > 10){
       return 'text-2xl md:text-3xl'
     }
       return 'text-2xl md:text-sxl'
+    },
+
+    gapSize(){
+      if (this.size > 15){
+        return 1
+      }
+      if (this.size > 10){
+        return 3
+      }
+      return 5
     }
   },
   watch: {
@@ -335,9 +353,7 @@ export default {
         v-model:value="tableCharsType"
         @update:value="reset"/>
     </n-form-item>
-    <n-space>
-    <n-button @click="start">{{ buttonLabel || this.$t('schulte.start') }}</n-button>
-    <n-button @click="reset">{{ this.$t('schulte.reset')}}</n-button></n-space>
+    <n-button @click="start" size="large" :type="this.isPlaying ? 'default': 'primary'" style="max-width: 100%; min-width: 100%">{{ buttonLabel || this.$t('schulte.start') }}</n-button>
 
     <div class="timer">
     <span class="text-xl md:text-2xl">{{ this.$t('schulte.timeLabel')}}: <n-time :time="timerCountFormatted" format="mm:ss"></n-time></span>
@@ -353,7 +369,7 @@ export default {
                       class="current-item">{{ currentItem.value }}</span>
         </n-card>
     </div>
-  <n-grid :cols="this.size" :x-gap="5" :y-gap="5" class="square-container">
+  <n-grid :cols="this.size" :x-gap="gapSize" :y-gap="gapSize" class="square-container">
     <n-grid-item v-for="(item, index) in this.shuffledGrid"
                  :key="index" class="square"
                  :class="{ hidden: item.hidden, red: item.isRed}"
@@ -380,11 +396,11 @@ export default {
 
 <style scoped>
 .timer {
-  //margin-top: 20px;
-  margin: 5px;
-  //padding: 10px;
+  margin-top: 5px;
+  padding-bottom: 2px;
+  padding-top: 2px;
   background-color: v-bind('backgroundColor');
-  //border-radius: 8px;
+  border-radius: 2px;
   text-align: center;
 }
 .centered-container{
@@ -439,7 +455,7 @@ export default {
 }
 @media screen and (min-width: 1024px){
   .square-container {
-    min-width: 80vh;
+    min-width: 700px;
   }
 }
 @media screen and (min-width: 768px ) and (max-width: 1024px) {
@@ -472,7 +488,7 @@ export default {
   max-width: var(--grid-max-width);
   top: 0;
   bottom: 0;
-  font-size: 2.5vh;
+  font-size: 2vh;
 }
 span .current-item{
   aspect-ratio: 1/1;

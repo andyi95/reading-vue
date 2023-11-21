@@ -17,11 +17,8 @@
             </n-card>
         </n-space>
         <n-space justify="space-between" size="medium">
-            <BaseButton :label="$t('textparser.paintText')" @button-clicked="updateText()"/>
             <BaseButton :label="$t('common.copyText')" @button-clicked="copyText()"/>
             <BaseButton :label="$t('textparser.cntWords')" @button-clicked="countWords()"/>
-
-
         </n-space>
         <n-space vertical justify="space-between" class="py-2">
             <BaseCheckbox :label="$t('textparser.onlyNouns')" v-model:value="options.onlyNouns"
