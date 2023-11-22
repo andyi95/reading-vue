@@ -7,6 +7,7 @@ on:
 jobs:
   build-and-push:
     name: Deploy images on the destination server
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -48,6 +49,8 @@ jobs:
           echo "APP_VERSION=${{ env.APP_VERSION }}" >> .env
           echo "NODE_ENV=production" >> .env
           echo "REDIS_URL=localhost:6379" >> .env
+          echo "COMPOSE_PROJECT_NAME=reader" >> .env
+          echo "COMPOSE_FILE=docker-compose.yaml:docker-compose.override.yaml:docker-compose.stage.yaml" >> .env
 
       - name: Test start configuration
         env:
