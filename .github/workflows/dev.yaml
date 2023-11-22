@@ -1,10 +1,8 @@
 name: Development version deploy
 
 on:
-  push:
-    tags: [v*]
-    paths-ignore:
-      - 'README.md'
+  workflow_dispatch:
+
 
 env:
   DEPLOY_PATH: reader/
@@ -13,16 +11,17 @@ jobs:
   build_and_push_to_docker_hub:
     name: Build and push image to Docker Hub
     runs-on: ubuntu-latest
+    environment: dev
     strategy:
       matrix:
         include:
           - dockerfile: frontend/stage.Dockerfile
             context: frontend
-            image: registry.se.andyi95.com/text-tools/reading-frontend
+            image: registry.andyi95.com/text-tools/reading-frontend
 
           - dockerfile: backend/Dockerfile
             context: backend
-            image: registry.se.andyi95.com/text-tools/reading-backend
+            image: registry.andyi95.com/text-tools/reading-backend
 
     steps:
       - name: Check out the repo
@@ -47,7 +46,7 @@ jobs:
           images: {{ matrix.image }}
           tags:
             type=sha, sha=${{ github.sha }}
-            type=semver,pattern={{version}}
+            type=ref,event={{branch}}
 
       - name: Build and push frontend
         uses: docker/build-push-action@v4
@@ -61,6 +60,7 @@ jobs:
   deploy:
     name: Deploy images on the destination server
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'}}
     needs: build_and_push_to_docker_hub
     steps:
       - name: Copy files to server
@@ -72,7 +72,7 @@ jobs:
       - name: Deploy to server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DEV_HOST }}
+          host: ${{ env.HOST }}
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
@@ -90,7 +90,7 @@ jobs:
           COMPOSE_FILE: 'docker-compose.yaml:docker-compose.stage.yaml'
           COMPOSE_PROJECT_NAME: 'reader'
         with:
-          host: ${{ secrets.DEV_HOST }}
+          host: ${{ env.HOST }}
           username: ${{ secrets.USER }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
@@ -103,17 +103,7 @@ jobs:
             docker-compose pull frontend backend
             docker-compose up -d --force-recreate --remove-orphans
             echo "Done"
-#            mv -r reader/build/* reader/
-#            cd reader/
-#            echo "Building stage"
-#            echo " "=
-#            bash -c '
-#            set -a;
-#            source .env.dist;
-#            (printenv | grep -v "^_=" | sort)
-#            ' > .env
-#            echo "${{ secrets.ENV_FILE }}" >> .env
-#            docker-compose up -d --force-recreate --remove-orphans
+
   send_message:
     name: send telegram message
     runs-on: ubuntu-latest

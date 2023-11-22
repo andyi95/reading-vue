@@ -1,91 +1,68 @@
 name: deploy
 
 on:
-  push:
-    branches:
-      - main
-
-env:
-  DEPLOY_PATH: reader/
+  pull_request:
+    branches: [ main, dev ]
 
 jobs:
-  deploy:
+  build-and-push:
     name: Deploy images on the destination server
     if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'}}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out the repo
+        uses: actions/checkout@v2
 
-      - name: Copy env vars
-        uses: SpicyPizza/create-envfile@v1.3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
-          envkey_DEBUG: true
-          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          envkey_TRAEFIK_BASIC_AUTH: ${{ secrets.TRAEFIK_BASIC_AUTH }}
-          envkey_TRAEFIK_API_HOST: ${{ secrets.TRAEFIK_API_HOST }}
-          envkey_IP_WHITELIST: ${{ secrets.IP_WHITELIST }}
-          envkey_COMPOSE_FILE: 'docker-compose.yaml'
-          envkey_COMPOSE_PROJECT_NAME: 'reader'
-          file_name: .env.dist
-          fail_on_empty: false
+          registry: registry.andyi95.com
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
 
-      - name: Copy files to server
+      - name: Set APP_VERSION
+        run: echo "APP_VERSION=$(echo ${GITHUB_SHA::8})" >> $GITHUB_ENV
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v2
+        with:
+          context: frontend
+          file: frontend/stage.Dockerfile
+          push: true
+          tags: registry.andyi95.com/text-tools/reading-frontend:${{ env.APP_VERSION }}
+      - name: Build and push backend
+        uses: docker/build-push-action@v2
+        with:
+            context: backend
+            file: backend/Dockerfile
+            push: true
+            tags: registry.andyi95.com/text-tools/reading-backend:${{ env.APP_VERSION }}
+
+      - name: Test start configuration
+        env:
+          COMPOSE_FILE: docker-compose.yaml:docker-compose.override.yaml:docker-compose.stage.yaml
         run: |
-          mkdir ../build
-          cp -TR . ../build
-          tar -cvf deploy.tar ../build/
+          docker-compose up -d
+          docker-compose ps
+          sleep 10
+          if [ $(docker-compose ps -q | wc -l) -ne $(docker-compose config --services | wc -l) ]; then
+            echo "Not all containers are running."
+            docker-compose ps
+            exit 1
+          fi
+          docker-compose down
 
-      - name: Deploy to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          source: "deploy.tar"
-          target: "./"
-  create-envfile:
+  send-telegram-message:
+    name: send-telegram-message
     runs-on: ubuntu-latest
     steps:
-      - name: Create env fie
-        uses: SpicyPizza/create-envfile@1.3
-        with:
-          envkey_
-
-      - name: executing remote ssh commands to deploy
-        uses: appleboy/ssh-action@master
-        env:
-          IP_WHITELIST: ${{ secrets.IP_WHITELIST }}
-          TRAEFIK_BASIC_AUTH: ${{ secrets.TRAEFIK_BASIC_AUTH }}
-          TRAEFIK_API_HOST: ${{ secrets.TRAEFIK_API_HOST }}
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_KEY }}
-          envs: IP_WHITELIST,TRAEFIK_BASIC_AUTH,TRAEFIK_API_HOST
-          script: |
-            mkdir -p reader
-            tar -xvf deploy.tar --strip-components=1 -C reader/
-            mv -r reader/build/* reader/
-            cd reader/
-            echo "Building stage"
-            echo " "
-            env -i \
-            CI_ENVIRONMENT_DOMAIN=$CI_ENVIRONMENT_DOMAIN \
-            CI_PROJECT_NAME=$CI_PROJECT_NAME \
-            CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH \
-            bash -c '
-            set -a;
-            source .env.dist;
-            export DOCKER_USER="1000:1000"
-            (printenv | grep -v "^_=" | sort)
-            ' > .env
-            echo "${{ secrets.ENV_FILE }}" >> .env
-            docker-compose build frontend
-            docker-compose run --rm -T frontend bash -c "npm install --no-save && npm run build"
-            docker-compose up -d --build --force-recreate --remove-orphans
-
       - name: send telegram message
         uses: appleboy/telegram-action@master
         with:
