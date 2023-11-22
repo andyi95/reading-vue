@@ -43,6 +43,11 @@ jobs:
             file: backend/Dockerfile
             push: true
             tags: registry.andyi95.com/text-tools/reading-backend:${{ env.APP_VERSION }}
+      - name: Create .env file
+        run: |
+          echo "APP_VERSION=${{ env.APP_VERSION }}" >> .env
+          echo "NODE_ENV=production" >> .env
+          echo "REDIS_URL=localhost:6379" >> .env
 
       - name: Test start configuration
         env:
