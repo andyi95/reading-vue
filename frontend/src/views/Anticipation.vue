@@ -3,40 +3,41 @@
     <n-form size="medium">
       <BaseInput :label="$t('common.sourceText')" :placeholder="$t('common.textPlaceHolder')"
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
-        <n-space justify="space-between" size="small">
-            <BaseButton :label="$t('common.removeVowels')" @buttonClicked="removeVowels()"/>
-            <BaseButton :label="$t('common.copyText')"  @button-clicked="copyText()"/>
-        </n-space>
-    </n-form>
-<!--    <BaseTextBox title="Текст для чтения"-->
 
-      <BaseTextBox :title="$t('common.textContent')" ref="textContent">
-<!--      <BaseButton label="скопировать" @buttonClicked="copyText()"/>-->
-      <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
-      </BaseTextBox>
+      <div class="py-5 w-1/3">
+      <n-form-item :label="$t('anticipation.selectChars')">
+        <n-select v-model:value="additionalChars"
+                  multiple :options="russianConsonants"
+                  :placeholder="$t('anticipation.placeHolderSelect')"
+                  @update:value="removeVowels"
+        />
+      </n-form-item></div>
+    </n-form>
   </n-space>
+
+      <BaseTextBox ref="textContent" v-if="parsedText.length > 0">
+      <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
+        <div class="py-4">
+          <BaseButton :label="$t('common.copyText')"  @button-clicked="copyText()"/></div>
+      </BaseTextBox>
 </template>
 
 <script>
 import BaseInput from "@/components/BaseInput.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import {NForm, NSpace} from "naive-ui";
+import {NForm, NFormItem, NSelect, NSpace} from "naive-ui";
 import TextParser from "@/helpers/text-parser";
 import BaseTextBox from "@/components/BaseTextBox.vue";
-import {useI18n} from "vue-i18n";
+import charSets from "@/helpers/charSets";
 export default {
   name: "Anticipation",
-  components: {BaseTextBox, BaseButton, BaseInput, NSpace, NForm},
-    setup(){
-      const { t } = useI18n();
-      return{
-          t
-      }
-    },
+  components: {BaseTextBox, BaseButton, BaseInput, NSpace, NForm, NSelect, NFormItem},
   data(){
     return {
       sourceText: '',
-      parsedText: []
+      parsedText: [],
+      additionalChars: [],
+      russianConsonants: charSets.russianAlphabet.selectConsonants
     }
   },
   methods: {
@@ -53,12 +54,13 @@ export default {
       },
     textUpdated(value){
       this.sourceText = value
+      this.removeVowels()
     },
     removeVowels(){
       let parser = new TextParser(this.sourceText)
       let parsedText = parser.replaceVowels()
-      parsedText.forEach(function (item, i, arr){
-        if(item.is_vowel){
+      parsedText.forEach((item, i) => {
+        if (this.additionalChars.includes(item.char.toUpperCase()) || item.is_vowel){
           parsedText[i].char = '●'
         }
       })

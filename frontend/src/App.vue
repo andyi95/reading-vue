@@ -18,9 +18,9 @@
 <script>
 
 
-import Navigation from "@/components/Navigation";
+import Navigation from "@/components/Navigation.vue";
 import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
-import {defineComponent, computed} from "vue";
+import {defineComponent, computed, ref} from "vue";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 
@@ -29,11 +29,13 @@ export default defineComponent({
   components: {Navigation, NConfigProvider, NMessageProvider, darkTheme},
   setup() {
     const store = useStore();
-    const locale = useI18n();
+    const {t} = useI18n();
+    const windowWidth = ref(window.innerWidth);
 
       return {
         darkTheme,
-        // theme: store.state.theme
+        t,
+        windowWidth,
         theme: computed(function (){
           return store.state.theme === 'darkTheme' ? darkTheme : null
         })
@@ -44,12 +46,11 @@ export default defineComponent({
 </script>
 
 <style lang="css">
-@import "~@/assets/css/bootstrap.min.css";
 
-/** {*/
-/*  padding: 0;*/
-/*  margin: 0;*/
-/*}*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body, #app, .n-layout-scroll-container, .n-config-provider, .n-layout--static--positioned{
   min-height: 100vh;

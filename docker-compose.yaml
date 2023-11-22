@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
     frontend:
-        image: registry.launch.andyi95.com/text-tools/reading-frontend
+        image: registry.andyi95.com/text-tools/reading-frontend:${APP_VERSION}
         build:
             context: frontend
             dockerfile: stage.Dockerfile
@@ -10,7 +10,7 @@ services:
             - .env
 
     backend:
-        image: registry.launch.andyi95.com/text-tools/reading-backend
+        image: registry.andyi95.com/text-tools/reading-backend:${APP_VERSION}
         build: backend
         working_dir: /app
         env_file:
@@ -38,4 +38,3 @@ services:
 
 volumes:
     redis-data:
-

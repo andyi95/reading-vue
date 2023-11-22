@@ -1,6 +1,7 @@
 <template>
-  <n-space vertical size="medium" justify="space-between">
+
   <n-form size="medium">
+    <n-space vertical size="medium" justify="space-between">
       <BaseInput :label="$t('spreeder.sourceText')" :placeholder="$t('spreeder.textPlaceHolder')"
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
 
@@ -8,50 +9,107 @@
       <n-slider v-model:value="wordsPerMinute" :step="1" :min="100" :max="900" style="padding-right: 4em"/>
     <n-input-number v-model:value="wordsPerMinute" @update:value="changeSpeed" :validator="speedValidator" :placeholder="$t('spreeder.wordsPerMinute')"/>
     </n-form-item>
+    </n-space>
+    <n-space size="medium" justify="space-between">
+    <BaseButton :label="slider.buttonLabel" @buttonClicked="startShow()"/> <BaseButton :label="$t('spreeder.resetLabel')" @buttonClicked="resetShow()"/>
+    </n-space>
 
-    <BaseButton :label="$t('spreeder.startLabel')" @buttonClicked="startShow()"/>
 
+<n-form-item style="padding-right: 12em">
+  <n-collapse arrow-placement="right">
+    <n-collapse-item title="Настройки" name="settings">
+      <n-form-item label="Размер текста">
+      <n-slider v-model:value="slider.fontSize" :step="1" :min="10" :max="400"/>
+      </n-form-item>
+      <n-form-item label="Ширина области отображеия">
+        <n-slider v-model:value="slider.boxWidth" :step="1" :min="10" :max="150"/>
+      </n-form-item>
+      <n-form-item label="Слов в показе">
+        <n-select v-model:value="chunkSize" :options="chunkSizeOptions"/>
+      </n-form-item>
+    </n-collapse-item>
+  </n-collapse>
+</n-form-item>
   </n-form>
-
-    <n-card style="text-align: center" v-show="slider.currentWord"><span>{{slider.currentWord}}</span></n-card>
-    <n-progress type="line" :percentage="slider.progress" indicator-placement="inside" style="max-width: 80%" v-show="slider.progress > 0"/>
-
-  </n-space>
-
+    <n-card :bordered="false" :style="`display: flex; flex-wrap: wrap; text-align: center; width: ${getBoxWidth()}; padding-bottom: 5em; padding-top: 5em`" v-show="slider.currentWord">
+        <span :style="`font-size: ${cardSize}em`"> {{ slider.currentWord }}</span>
+    </n-card>
+<!--  </div>-->
+  <n-progress type="line" :percentage="slider.progress" indicator-placement="inside" style="max-width: 80%; margin-bottom: 10em; margin-top: 10em;" v-show="slider.progress > 0"/>
 </template>
 
 <script>
-import BaseInput from "@/components/BaseInput";
-import BaseButton from "@/components/BaseButton";
-import {NInputGroup, NSpace, NCard, NInputNumber, NProgress, NForm, NGrid, NGridItem, NSlider} from "naive-ui";
-import {ref, computed} from "vue";
+import BaseInput from "@/components/BaseInput.vue";
+import BaseButton from "@/components/BaseButton.vue";
+import {
+  NCard,
+  NCollapse,
+  NCollapseItem,
+  NForm,
+  NGi,
+  NGrid,
+  NGridItem,
+  NInputGroup,
+  NInputNumber,
+  NProgress,
+  NSelect,
+  NSlider,
+  NSpace
+} from "naive-ui";
+import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 export default {
   name: "Spreeder",
-  components: {BaseButton, BaseInput, NInputGroup, NSpace, NCard, NInputNumber, NProgress, NGrid, NGridItem, NForm, NSlider},
+  components: {
+    BaseButton, BaseInput,
+    NInputGroup, NSpace, NCard, NInputNumber, NProgress, NGrid, NGridItem,
+    NForm, NSlider, NCollapse, NCollapseItem, NSelect, NGi
+  },
 
   methods: {
     sleep(milliseconds){
       return new Promise((resolve) => setTimeout(resolve, milliseconds));
     },
     async displayShow(){
-      for(let i = this.slider.currentIndex; i < this.splittedText.length; i++){
+      let chunkSize = Number(this.chunkSize)
+      for(let i = this.slider.currentIndex; true; i += chunkSize){
         await this.sleep(this.speed);
-        this.slider.currentWord = this.splittedText[i];
-        let progress = i === 0 ? 0 : Math.trunc(i / this.splittedText.length * 100)
-        this.progressUpdate(progress);
-        // this.slider.progress = Math.trunc(i / this.splittedText.length)
-        if (i === this.splittedText.length - 1) i = 0;  // loop show
         if(!this.slider.isShow && i > 1){
-          this.slider.currentIndex = i;
-          console.log(this.slider)
-          break;
+          break
         }
+        let currentChunk = this.splittedText.slice(i, i + chunkSize);
+        this.slider.currentWord = currentChunk.join(' ');
+
+        if(!this.slider.currentWord.trim().length) {
+          this.slider.currentIndex = 0;
+          i = -chunkSize;
+          continue;
+        }
+        let progress = i === 0 ? 0 : Math.max(Math.round(i / this.splittedText.length * 100), 1)
+        this.progressUpdate(progress);
+
+        if(i >= this.splittedText.length - chunkSize) {
+          this.slider.currentIndex = 0;
+          i = -chunkSize;
+        }
+        else {
+          this.slider.currentIndex += chunkSize;
+        }
+
       }
     },
     splitText() {
-      this.splittedText = this.sourceText.replace(/\r\n|\r|\n/, ' ').replace(/[\W_]+/g, ' ').split(' ');
+      let splittedText = this.sourceText.trim()
+          .replace(/[^A-Za-zА-Яа-я0-9\s]/g, ' ')
+          .replace(/[\r\n]/gm, ' ')
+          .replace(/[ ]{2,}/g, ' ')
+          .split(' ');
+      this.splittedText = splittedText.filter(e => e !== ' ')
+      // this.splittedText = Array.from(
+      //     {length: splittedText.length / this.chunkSize},
+      //     (_, i) => splittedText[]
+      // )
     },
     textUpdated(value) {
       this.sourceText = value;
@@ -60,8 +118,14 @@ export default {
     changeSpeed(value){
       this.wordsPerMinute = value;
     },
+    resetShow(){
+      this.slider.buttonLabel = this.$t('spreeder.startLabel')
+      this.slider.isShow = false;
+      this.slider.currentIndex = 0;
+      this.slider.progress = 0;
+    },
     startShow() {
-      this.slider.buttonLabel = this.slider.isShow === true ? "Старт" : "Стоп"
+      this.slider.buttonLabel = this.slider.isShow === true ? this.$t('spreeder.startLabel') : this.$t('spreeder.stopLabel')
       if (this.slider.isShow === true){
         this.slider.isShow = false;
       }
@@ -71,11 +135,16 @@ export default {
       }
     },
     progressUpdate(value){
-      this.slider.progress = value.toFixed(0);
+      this.slider.progress = Number(value.toFixed(0));
     },
-    track(){
-      this.$gtag.pageview({page_path: '/spreeder'})
-    },
+    getBoxWidth() {
+      return this.slider.boxWidth.toFixed(0) + '%';
+    }
+  },
+  computed: {
+    splittedWords() {
+      return [...this.slider.currentWord.split(' ')]
+    }
   },
   data() {
     return {
@@ -85,15 +154,19 @@ export default {
         buttonLabel: "Начать",
         progress: 0,
         currentWord: '',
-        currentIndex: 0
+        currentIndex: 0,
+        wordsPerShow: 1,
+        fontSize: 150,
+        boxWidth: 100
       },
       autoplay: {delay: 250, disableOnInteraction: false,},
-
       speed: computed(() => {
         return 60000 / this.wordsPerMinute
       }),
-      sourceText: ''
-
+      sourceText: '',
+      cardSize: ref(computed(() => {
+        return this.slider.fontSize / 100
+      })),
     }
   },
   setup() {
@@ -101,7 +174,9 @@ export default {
     return {
         t,
       wordsPerMinute: ref(120),
-      speedValidator: (x) => x > 0
+      speedValidator: (x) => x > 0,
+      chunkSize: ref(1),
+      chunkSizeOptions: Array.from({length: 6}, (value, index) => ({label: (index + 1).toString(), value: (index + 1).toString()})),
     };
   },
 }
@@ -112,9 +187,10 @@ export default {
   width: 8em;
   display: flex;
 }
-.n-card.n-card--bordered .n-card__content{
+.n-card.n-card--bordered {
   text-align: center;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   padding-top: 1.5em;
@@ -125,6 +201,34 @@ export default {
   /*display: flex;*/
   justify-content: center;
   align-items: center;
+
+}
+.n-card__content{
+  flex: 1 0 21%;
+  margin: 5px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+}
+
+.n-card.n-card--bordered .n-card__content{
+  padding-top: 0.8em;
+}
+.n-card.n-card--bordered .n-card__content span{
+  font-size: v-bind(cardSize)em;
+  display: grid;
+  overflow-wrap: normal;
+  word-break: normal;
+  width: 14.5ch;
+}
+.centered {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  align-self: center;
 
 }
 

@@ -5,7 +5,9 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN apk update && apk add -u openssl apk-tools zlib busybox && npm install
+RUN apk update && apk add -u openssl apk-tools zlib busybox
+
+RUN npm install
 
 COPY . .
 
