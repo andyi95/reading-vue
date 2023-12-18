@@ -1,4 +1,4 @@
-<script>
+-<script>
 import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, NButton} from 'naive-ui';
 import {ref} from "vue";
 import Timer from "@/components/Timer.vue";
@@ -22,7 +22,10 @@ export default {
       buttonLabel: null,
       easyMode: this.$store.state.schulteSettings.easyMode,
       errors: 0,
-      tableCharsType: this.$store.state.schulteSettings.tableCharsType
+      tableCharsType: this.$store.state.schulteSettings.tableCharsType,
+      windowHeight: 0,
+      windowWidth: 0,
+      tileRefs: [],
     }
   },
   setup(){
@@ -30,6 +33,7 @@ export default {
     const timerCount = ref(0);
     const timer = ref(null);
     const themeVars = useThemeVars();
+    const schulteGridRef = ref(null);
     return {
       timerCount, timer,
       warning(text) {
@@ -39,11 +43,11 @@ export default {
         message.success(
             text, { duration: 5000})
       },
-      themeVars
+      themeVars, schulteGridRef
     }
   },
   computed: {
-    backgroundColor(){
+    backgroundColor() {
       return this.themeVars.modalColor
     },
   timerCountFormatted(){
@@ -66,16 +70,11 @@ export default {
           label: this.$t('schulte.zhLetterOption'),
           value: 'letters-zh'
         },
+        {
+          label: this.$t('schulte.emojiOption'),
+          value: 'emoji'
+        }
       ]
-    },
-    tileFontSize() {
-      if (this.size < 8) {
-        return '60px';
-      }
-      if (this.size > 11) {
-        return '20px';
-      }
-      return '40px';
     },
     tableTypes(){
     return[
@@ -86,37 +85,24 @@ export default {
     getSchulteResults(){
       return this.$store.getters.sortedSchulteResults
     },
-    maxWidthMultiplier(){
-    if (this.size > 10){
-      return 1.1
-    }
-    return 1
-      },
-    tileFontClass() {
-      if (this.tableCharsType === 'digits'){
-        if (this.size > 15){
-          return 'text-base md:text-lg'
-        }
-        if (this.size > 10){
-          return 'text-lg md:text-xl'
-        }
-      }
-      if (this.size > 15){
-        return 'text-xl md:text-2xl'}
-    if (this.size > 10){
-      return 'text-2xl md:text-3xl'
-    }
-      return 'text-2xl md:text-sxl'
-    },
+    gridSizes(){
+      const maxWidth = Math.round(Math.min(this.windowWidth * 0.93, this.windowHeight * 0.93) * 100) / 100;
+      const minWidth = Math.round(Math.min(this.windowWidth * 0.8, this.windowHeight * 0.8) * 100) / 100;
 
-    gapSize(){
-      if (this.size > 15){
-        return 1
+      const gridSizeFactor = 0.2;
+      const windowSizeFactor = 0.001; // Adjusts how much the window size affects the gap
+
+      const baseGap = Math.max(1, 5 - this.size * gridSizeFactor + Math.min(this.windowWidth, this.windowHeight) * windowSizeFactor);
+      const gap = Math.min(Math.max(baseGap, 1), 5);
+
+      return{
+        minHeight: `${this.windowHeight * 0.7}px`,
+        maxHeight: `${Math.round(this.windowHeight * 0.9)}px`,
+        maxWidth: `${maxWidth}px`,
+        minWidth: `${minWidth}px`,
+        fontSize: `${Math.round(maxWidth / this.size * 0.3)}px`,
+        gap: gap
       }
-      if (this.size > 10){
-        return 3
-      }
-      return 5
     }
   },
   watch: {
@@ -185,7 +171,7 @@ export default {
     generateData(){
       const data = this.generateSourceData().slice(0, this.size ** 2)
       this.gridData = []
-      this.gridData = data.map(code => ({
+      this.gridData = data.sort((a, b) => a - b).map(code => ({
         value: code.toString(),
         hidden: false
       }));
@@ -193,19 +179,39 @@ export default {
         this.generateGorbovData()
       }
       this.shuffledGrid = this.shuffleArray(this.gridData)
-
-
     },
     range(start, end) {
       return Array.from({ length: end - start + 1 }, (_, i) => start + i);
     },
-    shuffleArray(array) {
+    shuffleArray(array, biasFactor = 1) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const bias = Math.pow((i + 1) / arr.length, biasFactor);
+        const j = Math.floor(Math.random() * (i + 1) * bias);
         [arr[i], arr[j]] = [arr[j], arr[i]];
       }
       return arr;
+    },
+    generateEmojiRange(){
+      const emojiis = [
+        ...this.range(0x1F600, 0x1F64F),  // smileyes
+        ...this.range(0x1F680, 0x1F6FF), // transport
+        ...this.range(0x1F90F, 0x1F9A2), // body parts
+        ...this.range(0x1F300, 0x1F31F),  // weather
+        ...this.range(0x1F32D, 0x1F392), // food
+        ...this.range(0x1F3A0, 0x1F3C4), // sport
+      ]
+      const excludeEmojis = [
+        0x1F6F8, 0x1F6F9, 0x1F6FA, 0x1F6FB, 0x1F6FC, 0x1F6FD, 0x1F6FE, 0x1F6FF,
+        0x1F9F4, 0x1F9F7, 0x1F9F9, 0x1F9FA, 0x1F9FB, 0x1F9FC, 0x1F9FD, 0x1F9FE, 0x1F9FF,
+        0x1F9D9, 0x1F9DA, 0x1F9DB, 0x1F9DC, 0x1F9DD, 0x1F9DE, 0x1F9DF,
+        0x1F9E0, 0x1F9E1, 0x1F9E2, 0x1F9E3, 0x1F9E4, 0x1F9E5, 0x1F9E6, 0x1F9E7,
+        0x1F9E8, 0x1F9E9, 0x1F9EA, 0x1F9EB, 0x1F9EC, 0x1F9ED, 0x1F9EE, 0x1F9EF,
+        0x1F9F0, 0x1F9F1, 0x1F9F2, 0x1F9F3,
+        0x1F9B8, 0x1F9B9, 0x1F9BA, 0x1F9BB, 0x1F9BC, 0x1F9BD, 0x1F9BE, 0x1F9BF,
+        0x1F9C0, 0x1F9C1, 0x1F9C2, 0x1F9C3, 0x1F9C4, 0x1F9C5
+      ]
+      return this.shuffleArray(emojiis.filter(code => !excludeEmojis.includes(code)), 2)
     },
     generateSourceData(){
       const latinSuppl = [...this.range(0x00C0, 0x00D6), ...this.range(0x00D8, 0x00F6),
@@ -232,6 +238,7 @@ export default {
       const cyrillicLetters = [
           ...this.range(0x0400, 0x04FF)
       ]
+      const emojiis = this.generateEmojiRange()
       const codeGenerators = {
         'letters-en': () => latinLetters.map(code => (
             String.fromCharCode(code)
@@ -242,7 +249,10 @@ export default {
         'letters-zh': () => this.range(0x4E00, 0x9FFF).map(code => (
           String.fromCharCode(code)
         )),
-        'digits': () => this.range(1, this.size ** 2)
+        'digits': () => this.range(1, this.size ** 2),
+        'emoji': () => emojiis.map(code => (
+          String.fromCodePoint(code)
+        )),
       }
       return codeGenerators[this.tableCharsType]()
     },
@@ -312,11 +322,24 @@ export default {
       this.saveResults();
       this.isPlaying = false
       clearInterval(this.timer);
+    },
+    onResize(){
+      this.windowHeight = window.innerHeight;
+      this.windowWidth = window.innerWidth;
     }
   },
   mounted() {
+    this.windowWidth = window.innerWidth;
+    this.windowHeight = window.innerHeight;
     this.reset()
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.onResize);
+    });
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize);
   }
+
 }
 
 </script>
@@ -331,7 +354,8 @@ export default {
 >
   <n-space vertical>
     <n-form-item :label="$t('schulte.size')">
-  <n-input-number v-model:value="size" :min="3" :max="20" :step="1" :default-value="5" @update:value="reset"/>
+  <n-input-number v-model:value="size" :min="3" :max="20" :step="1" :default-value="5" @update:value="reset">
+  </n-input-number>
     </n-form-item>
     <n-form-item :label="$t('schulte.easyGame')">
     <n-tooltip trigger="hover">
@@ -364,17 +388,18 @@ export default {
   <n-grid-item class="responsive-grid md:place-self-center" span="5">
     <div class="centered-container place-self-center">
         <n-card v-if="currentItem" class="current-item mb-1 py-0 max-w-lg"
-        content-style="display: flex; align-items: center; justify-content: center; padding: 5px; margin: 5px">
-                <span :class="{red: currentItem.isRed}"
+        content-style="display: flex; align-items: center; justify-content: center;  padding: 2px; margin: 2px">
+                <span :class="{red: currentItem.isRed, 'emoji': tableCharsType === 'emoji'}"
                       class="current-item">{{ currentItem.value }}</span>
         </n-card>
     </div>
-  <n-grid :cols="this.size" :x-gap="gapSize" :y-gap="gapSize" class="square-container">
+  <n-grid :cols="this.size" :x-gap="gridSizes.gap" :y-gap="gridSizes.gap" class="square-container" ref="schulteGridRef">
     <n-grid-item v-for="(item, index) in this.shuffledGrid"
                  :key="index" class="square"
-                 :class="{ hidden: item.hidden, red: item.isRed}"
+                 :ref="el => { if (el) this.tileRefs[index] = el; }"
+                 :class="{ hidden: item.hidden, red: item.isRed, 'emoji': tableCharsType === 'emoji'}"
                  @click="clickTile(item)">
-      <div :class="tileFontClass" class="content">{{ item.value }}</div>
+      <div class="content">{{ item.value }}</div>
     </n-grid-item>
   </n-grid>
 
@@ -395,6 +420,8 @@ export default {
 </template>
 
 <style scoped>
+
+
 .timer {
   margin-top: 5px;
   padding-bottom: 2px;
@@ -410,66 +437,43 @@ export default {
   flex-direction: column;
 }
 :root {
-  --grid-max-width: calc(768px * v-bind('maxWidthMultiplier'));
+  --grid-max-width: v-bind('gridSizes.maxWidth');
+}
+
+.responsive-grid {
+  max-width: v-bind('gridSizes.maxWidth');
+  min-width: v-bind('gridSizes.minWidth');
 }
 @media screen and (max-width: 414px){
-  :root {
-    --grid-max-width: 480px;
-  }
-  .square-container, .current-item {
-    max-width: 480px;
-  }
-  .responsive-grid {
-    max-width: 480px;
-  }
   aside {
     float: left;
     width: 30%;
   }
   .timer {
-    margin-top: 20px;
+    margin-top: 15px;
+    margin-bottom: 5px;
     padding: 10px;
     border-radius: 8px;
   }
+
 }
 
 
 @media screen and (min-height: 1090px){
-  :root {
-    --grid-max-width: calc(1090px * v-bind('maxWidthMultiplier'));
-  }
-  .square-container, .current-item {
-    max-width: 1090px;
-  }
-  .square-container {
-    min-width: 980px;
-  }
   .responsive-grid {
     max-width: 1090px;
-    //min-width: 980px;
   }
   aside {
     float: left;
     width: 30%;
   }
 }
-@media screen and (min-width: 1024px){
-  .square-container {
-    min-width: 700px;
-  }
-}
-@media screen and (min-width: 768px ) and (max-width: 1024px) {
-  .square-container {
-    min-width: 600px;
-  }
 
-}
 .square-container {
   display: flex;
   flex-wrap: wrap;
-  max-width: var(--grid-max-width);
-  //min-width: 80vh;
 }
+
 .square {
   aspect-ratio: 1/1;
   margin: 1px;
@@ -488,7 +492,7 @@ export default {
   max-width: var(--grid-max-width);
   top: 0;
   bottom: 0;
-  font-size: 2vh;
+  font-size: v-bind('gridSizes.fontSize');
 }
 span .current-item{
   aspect-ratio: 1/1;
@@ -498,7 +502,8 @@ span .current-item{
   display: flex;
   align-content: center;
   align-items: center;
-  color: #ffffff
+  color: #ffffff;
+  font-size: v-bind('gridSizes.fontSize');
 }
 .hidden {
   visibility: hidden;
@@ -512,6 +517,10 @@ span .current-item{
 .red.current-item {
   color: #ff6a6a;
 }
-
-
+.red.current-item.emoji {
+  background-color: #ff6a6a;
+}
+.emoji{
+  font-family: 'Noto Sans', sans-serif;
+}
 </style>
