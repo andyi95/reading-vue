@@ -7,4 +7,4 @@ Set of tools for text processing built with [Vue 3](https://vuejs.org/) as front
 ## Demo
 Check the live deployed project at https://text-tools.ru/
 
-Dev branch available at https://reader.stage.andyi95.com/
+Dev branch available at https://reader.dev.andyi95.com/
