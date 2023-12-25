@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-and-push:
-    name: Deploy images on the destination server
+    name: Build and test run compose configuration
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo

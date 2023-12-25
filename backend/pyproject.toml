@@ -6,7 +6,7 @@ authors = ["Andrey Chernikov"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = "^0.95"
+fastapi = "^0.105"
 pydantic = "^1.9.0"
 pymorphy2 = "^0.9.1"
 pymorphy2-dicts-ru = "^2.4.417127"

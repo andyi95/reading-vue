@@ -1,4 +1,4 @@
-FROM node:17-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -10,4 +10,4 @@ ENV HOST 0.0.0.0
 
 COPY . .
 
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "vite:dev"]

@@ -1,4 +1,5 @@
 import io
+
 import re
 
 import pymorphy2 as py
@@ -15,35 +16,8 @@ stemmer = PorterStemmer()
 morph = py.MorphAnalyzer()
 redis = from_url(f"redis://{REDIS_URL}", encoding="utf-8", decode_responses=True)
 
-colors = {
-    'NOUN': '#0000ff',  # blue
-    'NPRO': '#4B4BF9',
 
-    'ADJF': '#f4a261',
-    'ADJS': '#f4a261',
-
-    'VERB': '#009933',  # green
-    'INFN': '#009933',
-
-    'PRTF': '#00F752', # orange
-    'PRTS': '#00F752',
-    'GRND': '#00C441',  # деепричастие
-#     'NUMR': '#013a20',
-    'ADVB': '#A7B312',
-    'PRED': '#4D4DFF',
-#     'PREP': '#ECF87F',
-#     'CONJ': '#999966',
-}
-
-colors['PRON'] = colors['NPRO']
-colors.update({
-    'PRON': colors['NPRO'], 'PROPN': colors['NPRO'],
-    'ADV': colors['ADVB'],
-})
-
-
-
-async def analize_text(text: str, colorset: dict = None, gray: bool = False) -> list:
+async def analize_text(text: str) -> list:
     async def parse_line(line: str, counter: int):
         words = line.split()
         new_line = []
@@ -62,14 +36,14 @@ async def analize_text(text: str, colorset: dict = None, gray: bool = False) -> 
             if re.search(r'[а-яА-Я]', stripped):
                 parsed = morph.parse(stripped)[0]
                 word.update({
-                    'color': colors.get(parsed.tag.POS, ''),
-                    'tag': parsed.tag.POS
+                    'tag': parsed.tag.POS,
+                    'normal_form': parsed.normal_form
                 })
             else:
                 parsed = pos_tag([stripped.lower()], tagset='universal')
                 word.update({
-                    'color': colors.get(parsed[0][1]),
-                    'tag': parsed[0][1]
+                    'tag': parsed[0][1],
+                    'normal_form': stemmer.stem(stripped.lower())
                 })
             await redis.set(stripped, json.dumps(word))
             new_line.append(word)

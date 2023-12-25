@@ -1,8 +1,9 @@
-import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-import {defineConfig} from "vite";
+import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "url";
 import vue from "@vitejs/plugin-vue";
-import path from 'path'
+import path from 'path';
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
+
 export default defineConfig({
     plugins: [
         VueI18nPlugin({
@@ -17,9 +18,9 @@ export default defineConfig({
             "@": fileURLToPath(new URL('./src', import.meta.url)),
             "@components": path.resolve(__dirname, './components')
         },
-        extensions: ['.js', '.ts', ]
+        extensions: ['.js', '.ts']
     },
     define: {
         'process.env': process.env
     }
-})
+});

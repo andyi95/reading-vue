@@ -5,30 +5,30 @@
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
 
       <div class="py-5 w-1/3">
-      <n-form-item :label="$t('anticipation.selectChars')">
-        <n-select v-model:value="additionalChars"
-                  multiple :options="russianConsonants"
-                  :placeholder="$t('anticipation.placeHolderSelect')"
-                  @update:value="removeVowels"
-        />
-      </n-form-item></div>
+        <n-form-item :label="$t('anticipation.selectChars')">
+          <n-select v-model:value="additionalChars"
+                    multiple :options="russianConsonants"
+                    :placeholder="$t('anticipation.placeHolderSelect')"
+                    @update:value="removeVowels"
+          />
+        </n-form-item></div>
     </n-form>
   </n-space>
 
-      <BaseTextBox ref="textContent" v-if="parsedText.length > 0">
-      <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
-        <div class="py-4">
-          <BaseButton :label="$t('common.copyText')"  @button-clicked="copyText()"/></div>
-      </BaseTextBox>
+  <BaseTextBox ref="textContent" v-if="parsedText.length > 0">
+    <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
+    <div class="py-4">
+      <BaseButton :label="$t('common.copyText')"  @button-clicked="copyText()"/></div>
+  </BaseTextBox>
 </template>
 
 <script>
 import BaseInput from "@/components/BaseInput.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import {NForm, NFormItem, NSelect, NSpace} from "naive-ui";
-import TextParser from "@/helpers/text-parser";
 import BaseTextBox from "@/components/BaseTextBox.vue";
 import charSets from "@/helpers/charSets";
+import TextParser from "@/helpers/parser";
 export default {
   name: "Anticipation",
   components: {BaseTextBox, BaseButton, BaseInput, NSpace, NForm, NSelect, NFormItem},
@@ -41,17 +41,17 @@ export default {
     }
   },
   methods: {
-      copyText() {
-          let textToCopy = this.$refs.textContent;
-          let blob = textToCopy.$el;
-          const range = document.createRange();
-          range.selectNode(blob);
-          window.getSelection().removeAllRanges()
-          const selection = window.getSelection();
-          selection.addRange(range);
-          document.execCommand("copy");
-          window.getSelection().removeAllRanges()
-      },
+    copyText() {
+      let textToCopy = this.$refs.textContent;
+      let blob = textToCopy.$el;
+      const range = document.createRange();
+      range.selectNode(blob);
+      window.getSelection().removeAllRanges()
+      const selection = window.getSelection();
+      selection.addRange(range);
+      document.execCommand("copy");
+      window.getSelection().removeAllRanges()
+    },
     textUpdated(value){
       this.sourceText = value
       this.removeVowels()
@@ -62,6 +62,7 @@ export default {
       parsedText.forEach((item, i) => {
         if (this.additionalChars.includes(item.char.toUpperCase()) || item.is_vowel){
           parsedText[i].char = '●'
+          parsedText[i].is_vowel = true
         }
       })
       this.parsedText = parsedText
