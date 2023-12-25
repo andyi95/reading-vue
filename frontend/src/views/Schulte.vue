@@ -1,11 +1,10 @@
--<script>
-import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, NButton} from 'naive-ui';
+<script>
+import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, NButton, NTime, NFormItem, NTooltip} from 'naive-ui';
 import {ref} from "vue";
-import Timer from "@/components/Timer.vue";
 import {mapActions}  from "vuex";
 export default {
   name: 'Schulte',
-  components: {Timer, NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent, NButton},
+  components: {NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent, NButton, NTime, NFormItem, NTooltip},
 
   data() {
     return {
@@ -86,13 +85,23 @@ export default {
       return this.$store.getters.sortedSchulteResults
     },
     gridSizes(){
+      let wRate = 0.7;
+      if (this.size > 5) {
+        wRate = 0.8;
+      }
+      if (this.size > 10) {
+        wRate = 0.8;
+      }
+      if (this.windowHeight < 600){
+        wRate = 0.7;
+      }
       const maxWidth = Math.round(Math.min(this.windowWidth * 0.93, this.windowHeight * 0.93) * 100) / 100;
-      const minWidth = Math.round(Math.min(this.windowWidth * 0.8, this.windowHeight * 0.8) * 100) / 100;
+      const minWidth = Math.round(Math.min(this.windowWidth * wRate, this.windowHeight * wRate) * 100) / 100;
 
-      const gridSizeFactor = 0.2;
+      const gridSizeFactor = 0.4;
       const windowSizeFactor = 0.001; // Adjusts how much the window size affects the gap
 
-      const baseGap = Math.max(1, 5 - this.size * gridSizeFactor + Math.min(this.windowWidth, this.windowHeight) * windowSizeFactor);
+      const baseGap = Math.round(5 - this.size * gridSizeFactor + Math.min(this.windowWidth, this.windowHeight) * windowSizeFactor);
       const gap = Math.min(Math.max(baseGap, 1), 5);
 
       return{
@@ -100,7 +109,7 @@ export default {
         maxHeight: `${Math.round(this.windowHeight * 0.9)}px`,
         maxWidth: `${maxWidth}px`,
         minWidth: `${minWidth}px`,
-        fontSize: `${Math.round(maxWidth / this.size * 0.3)}px`,
+        fontSize: `${Math.min(Math.round(maxWidth / this.size * 0.4), 32)}px`,
         gap: gap
       }
     }
@@ -197,31 +206,22 @@ export default {
         ...this.range(0x1F600, 0x1F64F),  // smileyes
         ...this.range(0x1F680, 0x1F6FF), // transport
         ...this.range(0x1F90F, 0x1F9A2), // body parts
-        ...this.range(0x1F300, 0x1F31F),  // weather
+        ...this.range(0x1F300, 0x1F320),  // weather
         ...this.range(0x1F32D, 0x1F392), // food
         ...this.range(0x1F3A0, 0x1F3C4), // sport
+        ...this.range(0x1F3C6, 0x1F3CA), // music
+        ...this.range(0x1F3E0, 0x1F3F0), // house
+        ...this.range(0x1F400, 0x1F43E), // animals
+        ...this.range(0x1F440, 0x1F440), // eyes
       ]
       const excludeEmojis = [
-        0x1F6F8, 0x1F6F9, 0x1F6FA, 0x1F6FB, 0x1F6FC, 0x1F6FD, 0x1F6FE, 0x1F6FF,
-        0x1F9F4, 0x1F9F7, 0x1F9F9, 0x1F9FA, 0x1F9FB, 0x1F9FC, 0x1F9FD, 0x1F9FE, 0x1F9FF,
-        0x1F9D9, 0x1F9DA, 0x1F9DB, 0x1F9DC, 0x1F9DD, 0x1F9DE, 0x1F9DF,
-        0x1F9E0, 0x1F9E1, 0x1F9E2, 0x1F9E3, 0x1F9E4, 0x1F9E5, 0x1F9E6, 0x1F9E7,
-        0x1F9E8, 0x1F9E9, 0x1F9EA, 0x1F9EB, 0x1F9EC, 0x1F9ED, 0x1F9EE, 0x1F9EF,
-        0x1F9F0, 0x1F9F1, 0x1F9F2, 0x1F9F3,
-        0x1F9B8, 0x1F9B9, 0x1F9BA, 0x1F9BB, 0x1F9BC, 0x1F9BD, 0x1F9BE, 0x1F9BF,
-        0x1F9C0, 0x1F9C1, 0x1F9C2, 0x1F9C3, 0x1F9C4, 0x1F9C5
+          0x1F6D3, 0x1F6D6,
+          0x1F6D4, ...this.range(0x1F6D8, 0x1F6DB), ...this.range(0x1F6ED, 0x1F6EF),
+              ...this.range(0x1F6FD, 0x1F6FF),
       ]
-      return this.shuffleArray(emojiis.filter(code => !excludeEmojis.includes(code)), 2)
+      return this.shuffleArray(emojiis.filter(code => !excludeEmojis.includes(code)), 0.1)
     },
     generateSourceData(){
-      const latinSuppl = [...this.range(0x00C0, 0x00D6), ...this.range(0x00D8, 0x00F6),
-        ...this.range(0x00F8, 0x00FF)]
-      const latinExtB = [
-          ...this.range(0x0180, 0x027F)
-      ]
-      const greekLetters = [
-          ...(this.range(0x0391, 0x03CE))
-      ]
       const latinParts = [
         this.range(0x00C0, 0x00D6), this.range(0x00D8, 0x00F6),
         this.range(0x00F8, 0x00FF), this.range(0x0180, 0x027F),
@@ -246,7 +246,7 @@ export default {
         'letters-ru': () => cyrillicLetters.map(code => (
           String.fromCharCode(code)
         )),
-        'letters-zh': () => this.range(0x4E00, 0x9FFF).map(code => (
+        'letters-zh': () => this.range(0x4E04, 0x9FFF).map(code => (
           String.fromCharCode(code)
         )),
         'digits': () => this.range(1, this.size ** 2),
@@ -315,12 +315,10 @@ export default {
     stop(){
       this.endTime = new Date()
       let dt = new Date(this.endTime - this.startTime)
-      const rate = this.currentRate / (dt.getMinutes() * 60 + dt.getSeconds())
-
       this.success(this.$t('schulte.finished', {
         minutes: dt.getMinutes(), seconds: dt.getSeconds(), errors: this.errors, rate: this.currentRate}))
-      this.saveResults();
       this.isPlaying = false
+      this.saveResults();
       clearInterval(this.timer);
     },
     onResize(){
@@ -379,8 +377,8 @@ export default {
     </n-form-item>
     <n-button @click="start" size="large" :type="this.isPlaying ? 'default': 'primary'" style="max-width: 100%; min-width: 100%">{{ buttonLabel || this.$t('schulte.start') }}</n-button>
 
-    <div class="timer">
-    <span class="text-xl md:text-2xl">{{ this.$t('schulte.timeLabel')}}: <n-time :time="timerCountFormatted" format="mm:ss"></n-time></span>
+    <div class="timer text-xl md:text-2xl">
+    {{ this.$t('schulte.timeLabel')}}: <n-time :time="timerCountFormatted" format="mm:ss"></n-time>
     </div>
 
   </n-space>
@@ -388,9 +386,9 @@ export default {
   <n-grid-item class="responsive-grid md:place-self-center" span="5">
     <div class="centered-container place-self-center">
         <n-card v-if="currentItem" class="current-item mb-1 py-0 max-w-lg"
-        content-style="display: flex; align-items: center; justify-content: center;  padding: 2px; margin: 2px">
+        content-style="display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;  padding: 2px; margin: 2px">
                 <span :class="{red: currentItem.isRed, 'emoji': tableCharsType === 'emoji'}"
-                      class="current-item">{{ currentItem.value }}</span>
+                      class="current-item">&nbsp;{{ currentItem.value }}&nbsp;</span>
         </n-card>
     </div>
   <n-grid :cols="this.size" :x-gap="gridSizes.gap" :y-gap="gridSizes.gap" class="square-container" ref="schulteGridRef">
@@ -420,7 +418,7 @@ export default {
 </template>
 
 <style scoped>
-
+@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
 
 .timer {
   margin-top: 5px;
@@ -460,9 +458,7 @@ export default {
 
 
 @media screen and (min-height: 1090px){
-  .responsive-grid {
-    max-width: 1090px;
-  }
+
   aside {
     float: left;
     width: 30%;
@@ -490,6 +486,8 @@ export default {
 .current-item {
   align-items: center;
   max-width: var(--grid-max-width);
+  display: flex;
+  justify-content: center;
   top: 0;
   bottom: 0;
   font-size: v-bind('gridSizes.fontSize');
@@ -514,13 +512,17 @@ span .current-item{
 .red:hover:not(.current-item) {
   background-color: #fe8a8a;
 }
-.red.current-item {
+.red.current-item:not(.emoji) {
   color: #ff6a6a;
 }
 .red.current-item.emoji {
   background-color: #ff6a6a;
 }
 .emoji{
-  font-family: 'Noto Sans', sans-serif;
+  font-family: 'Noto Color Emoji', sans-serif;
+  color: #ffffff;
+}
+.emoji.current-item:not(.red) {
+  background-color: #313131;
 }
 </style>

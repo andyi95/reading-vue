@@ -64,7 +64,7 @@ import {parsedText, countedText} from "@/store/mock";
 import {ref} from "vue";
 import BaseTextBox from "@/components/BaseTextBox.vue";
 import {useI18n} from "vue-i18n";
-
+import union from "arr-union";
 const textContent = ref(null);
 
 export default {
@@ -97,7 +97,26 @@ export default {
             },
             grayedText: [],
             sourceText: '',
-            reText: /[A-Za-zА-Яа-я\s]/g
+            reText: /[A-Za-zА-Яа-я\s]/g,
+          colors: {
+                  'NOUN': '#0000ff',
+              'NPRO': '#4B4BF9',
+
+    'ADJF': '#f4a261',
+    'ADJS': '#f4a261',
+
+    'VERB': '#009933',
+    'INFN': '#009933',
+
+    'PRTF': '#00F752',
+    'PRTS': '#00F752',
+    'GRND': '#00C441',
+//     'NUMR': '#013a20',
+    'ADVB': '#A7B312',
+    'PRED': '#4D4DFF',
+//     'PREP': '#ECF87F',
+//     'CONJ': '#999966',
+          }
         }
     },
     computed: {
@@ -118,6 +137,9 @@ export default {
 
     },
     methods: {
+      assignColor(word){
+        return this.colors[word.tag]
+      },
         async updateText() {
           const chunkSize = 100;
           this.fetchedText = [];
@@ -143,6 +165,9 @@ export default {
               j += 1
             })
             this.fetchedText = [...this.fetchedText, ...response.data,]
+            this.fetchedText.forEach(word => {
+              word.color = this.assignColor(word)
+            })
             if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
               this.filterText();
             }
@@ -219,7 +244,6 @@ export default {
             }
             let nouns = [];
             let verbs = [];
-            let union = require('arr-union');
             if (this.options.onlyNouns === true) {
                 nouns = this.fetchedText.filter(function (items) {
                     return items.tag === 'NOUN'
