@@ -20,6 +20,13 @@ class TextModel(BaseModel):
     text: str
 
 
+class TextResponse(BaseModel):
+    id: int
+    word: str
+    tag: Optional[str]
+    normal_form: Optional[str]
+
+
 api = FastAPI()
 app = FastAPI()
 
@@ -36,12 +43,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-analized = str
 
 
 @api.post('/parse/')
 async def create_text(text: TextModel, colors: Optional[dict] = None):
-    analized = await analize_text(text.text, colors)
+    analized = await analize_text(text.text)
     return analized
 
 
@@ -54,11 +60,9 @@ async def count_text(text: TextModel):
     return JSONResponse(res)
 
 
-@api.get('/parse')
-async def get_text():
-    return analized
 
 app.mount('/api', api)
+
 
 @app.on_event('startup')
 async def init_cache():
