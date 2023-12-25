@@ -60,6 +60,7 @@ const messages = {
             classicTable: 'Classic table',
             tableFillment: 'Character set',
             selectOption: 'Game mode',
+            emojiOption: 'Emoji',
             timeLabel: 'Time',
             size: 'Size',
             errorsLabel: 'errors',
@@ -70,13 +71,27 @@ const messages = {
         },
         anticipation: {
             selectChars: 'Additional characters',
-            placeHolderSelect: 'Select characters',
+            placeHolderSelect: 'Select characters'
+        },
+        chaos: {
+            sourceText: 'Source text',
+            textPlaceHolder: 'Enter text...',
+            convertText: 'Convert',
+            mode: 'Mode',
+            dropLetters: 'Hide letters',
+            replaceLetters: 'Replace letters',
+            seamlessText: 'Seamless text',
+            reverseWords: 'Reverse words',
+            substitutionText: 'Substitution letters',
+            shuffleLetters: 'Shuffle letters',
+            normalForm: 'Normal form',
+
         }
     },
     ru: {
         anticipation: {
             selectChars: 'Дополнительные символы',
-            placeHolderSelect: 'Выберите символы',
+            placeHolderSelect: 'Выберите символы'
         },
         schulte: {
             title: 'Таблица Шульте',
@@ -91,6 +106,7 @@ const messages = {
             ruLetterOptions: 'Русские буквы',
             enLetterOptions: 'Английские буквы',
             zhLetterOption: 'Китайские иероглифы',
+            emojiOption: 'Эмодзи',
             gorbovOption: 'Таблица Горбова',
             timeLabel: 'Время',
             size: 'Размер',
@@ -146,7 +162,16 @@ const messages = {
             sourceText: 'Исходный текст',
             textPlaceHolder: 'Введите текст...',
             convertText: 'Конвертировать',
-            enterTextWarning: 'Поле не должно быть пустым'
+            enterTextWarning: 'Поле не должно быть пустым',
+            mode: 'Режим',
+            dropLetters: 'Скрывать буквы',
+            replaceLetters: 'Замена на символы',
+            seamlessText: 'Непрерывный текст',
+            reverseWords: 'Зеркальное написание',
+            substitutionText: 'Замена букв',
+            shuffleLetters: 'Перемешивание букв',
+            normalForm: 'Нормальная форма',
+
         }
     }
 }

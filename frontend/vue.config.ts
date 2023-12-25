@@ -1,7 +1,7 @@
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+import { Configuration } from 'webpack';
 
-module.exports = {
-    chainWebpack: config => {
+const config: Configuration = {
+    chainWebpack: (config) => {
         config.module
             .rule('vue')
             .use('vue-loader')
@@ -27,7 +27,7 @@ module.exports = {
         }
     },
     pluginOptions: {
-        sitemap:{
+        sitemap: {
             urls: [
                 'https://text-tools.ru',
                 'https://text-tools.ru/spreeder',
@@ -36,4 +36,6 @@ module.exports = {
             ]
         }
     }
-}
+};
+
+export default config;
