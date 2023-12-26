@@ -84,8 +84,7 @@ const messages = {
             reverseWords: 'Reverse words',
             substitutionText: 'Substitution letters',
             shuffleLetters: 'Shuffle letters',
-            normalForm: 'Normal form',
-
+            normalForm: 'Lemmatization',
         }
     },
     ru: {
@@ -170,7 +169,7 @@ const messages = {
             reverseWords: 'Зеркальное написание',
             substitutionText: 'Замена букв',
             shuffleLetters: 'Перемешивание букв',
-            normalForm: 'Нормальная форма',
+            normalForm: 'Лемматизация',
 
         }
     }
