@@ -3,7 +3,6 @@ name: Development version deploy
 on:
   workflow_dispatch:
 
-
 env:
   DEPLOY_PATH: reader/
 

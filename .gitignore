@@ -132,3 +132,4 @@ dmypy.json
 .pyre/
 /config.cfg
 /frontend-v1/
+/frontend/node_modules/

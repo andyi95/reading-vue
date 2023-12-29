@@ -29,13 +29,11 @@ export default defineComponent({
   components: {Navigation, NConfigProvider, NMessageProvider, darkTheme},
   setup() {
     const store = useStore();
-    const {t} = useI18n();
-    const windowWidth = ref(window.innerWidth);
+    const { t } = useI18n();
 
       return {
         darkTheme,
         t,
-        windowWidth,
         theme: computed(function (){
           return store.state.theme === 'darkTheme' ? darkTheme : null
         })

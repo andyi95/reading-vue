@@ -10,7 +10,10 @@
     "allowJs": true, // Allows JavaScript files to be imported into TypeScript files
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "@wdio/globals/types", "@wdio/mocha-framework"]
+    "types": ["node", "@wdio/globals/types", "@wdio/mocha-framework"],
+    "paths": {
+        "@/*": ["./src/*"]
+    }
   },
   "include": [
     "src/**/*.ts",
