@@ -10,8 +10,9 @@ stages:
     - test
 
 build-image:
-    image: docker:cli
     stage: build
+    before-script:
+        - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
     script:
         - app/stage/build
     only:
