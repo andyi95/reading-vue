@@ -23,5 +23,5 @@ test-image:
     stage: test
     script:
         - app/stage/test
-    depends-on:
-        -
+    needs:
+        - build-image
