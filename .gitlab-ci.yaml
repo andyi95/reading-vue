@@ -6,6 +6,22 @@ variables:
     GIT_DEPTH: 0
 
 stages:
-    - deploy
-    - linting
+    - build
     - test
+
+build-image:
+    image: docker:cli
+    stage: build
+    before-script:
+        - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
+    script:
+        - app/stage/build
+    only:
+        - dev
+
+test-image:
+    stage: test
+    script:
+        - app/stage/test
+    depends-on:
+        -
