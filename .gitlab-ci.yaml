@@ -11,7 +11,7 @@ stages:
 
 build-image:
     stage: build
-    before-script:
+    before_script:
         - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
     script:
         - app/stage/build
