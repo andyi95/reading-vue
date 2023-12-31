@@ -11,6 +11,9 @@ stages:
 
 build-image:
     stage: build
+    image: docker:cli
+    tags:
+        - shell
     before_script:
         - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
     script:
