@@ -1,0 +1,11 @@
+variables:
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+    GIT_STRATEGY: 'fetch'
+    GIT_CHECKOUT: 'true'
+    GIT_CLEAN_FLAGS: 'none'
+    GIT_DEPTH: 0
+
+stages:
+    - deploy
+    - linting
+    - test

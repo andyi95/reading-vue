@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+echo "Building stage"
+echo " "
+
+env -i \
+CI_ENVIRONMENT_DOMAIN=$CI_ENVIRONMENT_DOMAIN \
+CI_PROJECT_NAME=$CI_PROJECT_NAME \
+CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH \
+APP_VERSION="v2.25"
+bash -c '
+  set -a;
+  source .env.dist;
+
+  export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
+  export DOCKER_USER="1000:1000"
+
+  (printenv | grep -v "^_=" | sort)
+' > .env
+
+cat .env
+
+echo " "
+
+docker-compose build --no-cache
