@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Deploying stage"
+echo $(whoami)
+echo $(curl ifconfig.me)
+echo $(pwd)

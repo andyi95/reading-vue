@@ -10,7 +10,7 @@ stages:
     - test
     - deploy
 
-.common-build: &common-build
+.docker_build: &docker-build
     stage: build
     before_script:
         - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
@@ -22,14 +22,14 @@ stages:
             fi
             export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
 
-build_frontend:
-    <<: *common-build
+build:frontend:
+    <<: *docker-build
     stage: build
     script:
         docker compose build --no-cache frontend
 
-build_backend:
-    <<: *common-build
+build:backend:
+    <<: *docker-build
     stage: build
     script:
         docker compose build --no-cache backend
@@ -41,3 +41,23 @@ test-image:
     needs:
         - build_backend
         - build_frontend
+
+deploy:development:
+    stage: deploy
+    script:
+        - app/stage/deploy
+    needs:
+        - test_image
+    environment:
+        name: development
+        url: https://reader.dev.andyi95.com/
+
+deploy:production:
+    stage: deploy
+    script:
+        - app/stage/deploy
+    needs:
+        - test_image
+    environment:
+        name: production
+        url: https://text-tools.ru/
