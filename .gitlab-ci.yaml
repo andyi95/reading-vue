@@ -33,7 +33,6 @@ build:frontend:
             - .gitlab-ci.yaml
             - docker-compose.yaml
 
-
 build:backend:
     <<: *docker-build
     stage: build
@@ -57,7 +56,7 @@ deploy:development:
     stage: deploy
     when: manual
     script:
-        - app/stage/deploy
+        - app/stage/deploy $APP_VERSION
     needs:
         - test-image
     environment:
@@ -69,7 +68,7 @@ deploy:production:
     stage: deploy
     when: manual
     script:
-        - app/stage/deploy
+        - app/stage/deploy $APP_VERSION
     needs:
         - test-image
     environment:
