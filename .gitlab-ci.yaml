@@ -20,6 +20,7 @@ stages:
             else
               export APP_VERSION=$(git rev-parse --short HEAD)
             fi
+            export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
 
 build_frontend:
     <<: *common-build
