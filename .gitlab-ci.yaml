@@ -27,12 +27,23 @@ build:frontend:
     stage: build
     script:
         docker compose build --no-cache frontend
+    only:
+        changes:
+            - frontend/**/*
+            - .gitlab-ci.yaml
+            - docker-compose.yaml
+
 
 build:backend:
     <<: *docker-build
     stage: build
     script:
         docker compose build --no-cache backend
+    only:
+        changes:
+            - backend/**/*
+            - .gitlab-ci.yaml
+            - docker-compose.yaml
 
 test-image:
     stage: test
