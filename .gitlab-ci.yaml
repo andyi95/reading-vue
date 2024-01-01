@@ -8,18 +8,30 @@ variables:
 stages:
     - build
     - test
+    - deploy
 
-build-image:
+.common-build: &common-build
     stage: build
-    image: docker:cli
-    tags:
-        - shell
     before_script:
         - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
+        - |
+            if [ -n "$(git tag --points-at HEAD)" ]; then
+              export APP_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+            else
+              export APP_VERSION=$(git rev-parse --short HEAD)
+            fi
+
+build_frontend:
+    <<: *common-build
+    stage: build
     script:
-        - app/stage/build
-    only:
-        - dev
+        docker compose build --no-cache frontend
+
+build_backend:
+    <<: *common-build
+    stage: build
+    script:
+        docker compose build --no-cache backend
 
 test-image:
     stage: test
