@@ -39,8 +39,8 @@ test-image:
     script:
         - app/stage/test
     needs:
-        - build_backend
-        - build_frontend
+        - build:backend
+        - build:frontend
 
 deploy:development:
     stage: deploy

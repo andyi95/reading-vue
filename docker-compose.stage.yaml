@@ -8,6 +8,7 @@ services:
         restart: unless-stopped
 
     backend:
+        image: registry.andyi95.com/text-tools/reading-backend:${APP_VERSION}
         restart: unless-stopped
 
     nginx:

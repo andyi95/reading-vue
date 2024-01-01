@@ -1,11 +1,14 @@
 #!/bin/sh
 
-docker-compose up -d
-docker-compose ps
+export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
+CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAdress}}{{end}}' ${COMPOSE_PROJECT_NAME}_nginx_1)
+docker compose up -d
+docker compose ps
 sleep 10
 if [ $(docker-compose ps -q | wc -l) -ne $(docker-compose config --services | wc -l) ]; then
     echo "Not all containers are running."
-    docker-compose ps
+    docker compose ps
     exit 1
 fi
-docker-compose down
+curl $CONTAINER_IP:80
+docker compose down
