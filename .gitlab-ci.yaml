@@ -47,7 +47,7 @@ deploy:development:
     script:
         - app/stage/deploy
     needs:
-        - test_image
+        - test-image
     environment:
         name: development
         url: https://reader.dev.andyi95.com/
@@ -57,7 +57,7 @@ deploy:production:
     script:
         - app/stage/deploy
     needs:
-        - test_image
+        - test-image
     environment:
         name: production
         url: https://text-tools.ru/
