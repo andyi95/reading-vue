@@ -44,20 +44,24 @@ test-image:
 
 deploy:development:
     stage: deploy
+    when: manual
     script:
         - app/stage/deploy
     needs:
         - test-image
     environment:
         name: development
+        deployment_tier: development
         url: https://reader.dev.andyi95.com/
 
 deploy:production:
     stage: deploy
+    when: manual
     script:
         - app/stage/deploy
     needs:
         - test-image
     environment:
         name: production
+        deployment_tier: production
         url: https://text-tools.ru/
