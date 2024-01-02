@@ -5,10 +5,19 @@ CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAdress
 docker compose up -d
 docker compose ps
 sleep 10
-if [ $(docker-compose ps -q | wc -l) -ne $(docker-compose config --services | wc -l) ]; then
+if [ $(docker compose ps -q | wc -l) -ne $(docker compose config --services | wc -l) ]; then
     echo "Not all containers are running."
     docker compose ps
     exit 1
 fi
-curl $CONTAINER_IP:80
+HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $CONTAINER_IP:80)
 docker compose down
+if [ -z "$HTTP_STATUS" ]; then
+    echo "Failed to connect to $CONTAINER_IP:80"
+    exit 1
+fi
+
+if [ $HTTP_STATUS -ne 200 ]; then
+    echo "HTTP status code is not 200."
+    exit 1
+fi

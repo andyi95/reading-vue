@@ -11,7 +11,6 @@ stages:
     - deploy
 
 .docker_build: &docker-build
-    stage: build
     before_script:
         - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
         - |
@@ -24,9 +23,10 @@ stages:
 
 build:frontend:
     <<: *docker-build
-    stage: build
     script:
-        docker compose build --no-cache frontend
+        docker build -t registry.andyi95.com/text-tools/reading-frontend:$COMMIT_SHA -t registry.andyi95.com/text-tools/reading-frontend:$LATEST_TAG -f frontend/stage.Dockerfile frontend/
+        docker push registry.andyi95.com/text-tools/reading-frontend:$COMMIT_SHA
+        docker push registry.andyi95.com/text-tools/reading-frontend:latest
     only:
         changes:
             - frontend/**/*
@@ -35,9 +35,10 @@ build:frontend:
 
 build:backend:
     <<: *docker-build
-    stage: build
     script:
-        docker compose build --no-cache backend
+        docker build -t registry.andyi95.com/text-tools/reading-backend:$COMMIT_SHA -t registry.andyi95.com/text-tools/reading-backend:$LATEST_TAG -f backend/Dockerfile backend/
+        docker push registry.andyi95.com/text-tools/reading-backend:$COMMIT_SHA
+        docker push registry.andyi95.com/text-tools/reading-backend:latest
     only:
         changes:
             - backend/**/*

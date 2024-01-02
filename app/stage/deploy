@@ -1,7 +1,10 @@
 #!/bin/bash
 echo "Deploying stage"
-cd reader/
+cd /home/andrey/reader/
 sed -i "s/^APP_VERSION=.*/APP_VERSION=$1/" .env
 echo $(whoami)
 echo $(curl ifconfig.me)
 echo $(pwd)
+docker compose pull
+docker compose up -d --force-recreate --remove-orphans
+docker compose restart
