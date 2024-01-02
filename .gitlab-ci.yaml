@@ -13,6 +13,8 @@ stages:
 
 .docker_build: &docker-build
     stage: build
+    tags:
+        - docker
     before_script:
         - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
         - |
@@ -39,6 +41,8 @@ build:backend:
 
 test-image:
     stage: test
+    tags:
+        - docker
     script:
         - app/stage/test
     needs:
