@@ -4,6 +4,7 @@ variables:
     GIT_CHECKOUT: 'true'
     GIT_CLEAN_FLAGS: 'none'
     GIT_DEPTH: 0
+    CI_DEBUG_TRACE: "true"
 
 stages:
     - build
@@ -24,8 +25,8 @@ stages:
 build:frontend:
     <<: *docker-build
     script:
-        - docker build -t registry.andyi95.com/text-tools/reading-frontend:$COMMIT_SHA -t registry.andyi95.com/text-tools/reading-frontend:$LATEST_TAG -f frontend/stage.Dockerfile frontend/
-        - docker push registry.andyi95.com/text-tools/reading-frontend:$COMMIT_SHA
+        - docker build -t registry.andyi95.com/text-tools/reading-frontend:$CI_COMMIT_SHORT_SHA -t registry.andyi95.com/text-tools/reading-frontend:latest -f frontend/stage.Dockerfile frontend/
+        - docker push registry.andyi95.com/text-tools/reading-frontend:$CI_COMMIT_SHORT_SHA
         - docker push registry.andyi95.com/text-tools/reading-frontend:latest
     only:
         changes:
@@ -36,8 +37,8 @@ build:frontend:
 build:backend:
     <<: *docker-build
     script:
-        - docker build -t registry.andyi95.com/text-tools/reading-backend:$COMMIT_SHA -t registry.andyi95.com/text-tools/reading-backend:$LATEST_TAG -f backend/Dockerfile backend/
-        - docker push registry.andyi95.com/text-tools/reading-backend:$COMMIT_SHA
+        - docker build -t registry.andyi95.com/text-tools/reading-backend:$CI_COMMIT_SHORT_SHA -t registry.andyi95.com/text-tools/reading-backend:latest -f backend/Dockerfile backend/
+        - docker push registry.andyi95.com/text-tools/reading-backend:$CI_COMMIT_SHORT_SHA
         - docker push registry.andyi95.com/text-tools/reading-backend:latest
     only:
         changes:
