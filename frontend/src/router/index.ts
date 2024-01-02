@@ -17,7 +17,6 @@ const routes: RouteRecordRaw[] = [
   {path: '/schulte', name: 'Schulte', component: Schulte, meta: {
     title: t('nav.schulte')
   }},
-  {path: '/voice', name: 'Voice', component: () => import('@/views/Voice.vue'), meta: {title: t('nav.voice')}},
   {
     path: '/about',
     name: 'About',
