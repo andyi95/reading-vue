@@ -28,11 +28,6 @@ build:frontend:
         - docker build -t registry.andyi95.com/text-tools/reading-frontend:$CI_COMMIT_SHORT_SHA -t registry.andyi95.com/text-tools/reading-frontend:latest -f frontend/stage.Dockerfile frontend/
         - docker push registry.andyi95.com/text-tools/reading-frontend:$CI_COMMIT_SHORT_SHA
         - docker push registry.andyi95.com/text-tools/reading-frontend:latest
-    only:
-        changes:
-            - frontend/**/*
-            - .gitlab-ci.yaml
-            - docker-compose.yaml
 
 build:backend:
     <<: *docker-build
@@ -40,11 +35,6 @@ build:backend:
         - docker build -t registry.andyi95.com/text-tools/reading-backend:$CI_COMMIT_SHORT_SHA -t registry.andyi95.com/text-tools/reading-backend:latest -f backend/Dockerfile backend/
         - docker push registry.andyi95.com/text-tools/reading-backend:$CI_COMMIT_SHORT_SHA
         - docker push registry.andyi95.com/text-tools/reading-backend:latest
-    only:
-        changes:
-            - backend/**/*
-            - .gitlab-ci.yaml
-            - docker-compose.yaml
 
 test-image:
     stage: test
