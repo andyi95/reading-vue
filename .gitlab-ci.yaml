@@ -24,9 +24,9 @@ stages:
 build:frontend:
     <<: *docker-build
     script:
-        docker build -t registry.andyi95.com/text-tools/reading-frontend:$COMMIT_SHA -t registry.andyi95.com/text-tools/reading-frontend:$LATEST_TAG -f frontend/stage.Dockerfile frontend/
-        docker push registry.andyi95.com/text-tools/reading-frontend:$COMMIT_SHA
-        docker push registry.andyi95.com/text-tools/reading-frontend:latest
+        - docker build -t registry.andyi95.com/text-tools/reading-frontend:$COMMIT_SHA -t registry.andyi95.com/text-tools/reading-frontend:$LATEST_TAG -f frontend/stage.Dockerfile frontend/
+        - docker push registry.andyi95.com/text-tools/reading-frontend:$COMMIT_SHA
+        - docker push registry.andyi95.com/text-tools/reading-frontend:latest
     only:
         changes:
             - frontend/**/*
@@ -36,9 +36,9 @@ build:frontend:
 build:backend:
     <<: *docker-build
     script:
-        docker build -t registry.andyi95.com/text-tools/reading-backend:$COMMIT_SHA -t registry.andyi95.com/text-tools/reading-backend:$LATEST_TAG -f backend/Dockerfile backend/
-        docker push registry.andyi95.com/text-tools/reading-backend:$COMMIT_SHA
-        docker push registry.andyi95.com/text-tools/reading-backend:latest
+        - docker build -t registry.andyi95.com/text-tools/reading-backend:$COMMIT_SHA -t registry.andyi95.com/text-tools/reading-backend:$LATEST_TAG -f backend/Dockerfile backend/
+        - docker push registry.andyi95.com/text-tools/reading-backend:$COMMIT_SHA
+        - docker push registry.andyi95.com/text-tools/reading-backend:latest
     only:
         changes:
             - backend/**/*
