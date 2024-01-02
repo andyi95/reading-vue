@@ -12,6 +12,7 @@ stages:
     - deploy
 
 .docker_build: &docker-build
+    stage: build
     before_script:
         - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
         - |
