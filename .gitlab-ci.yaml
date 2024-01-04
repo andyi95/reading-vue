@@ -55,6 +55,9 @@ test-image:
 deploy:development:
     stage: deploy
     when: manual
+    tags:
+        - ssh
+        - dev
     script:
         - app/stage/deploy $APP_VERSION
     needs:
