@@ -2,9 +2,12 @@
 import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, NButton, NTime, NFormItem, NTooltip} from 'naive-ui';
 import {ref} from "vue";
 import {mapActions}  from "vuex";
+import SchulteResults from "@/components/SchulteResults.vue";
 export default {
   name: 'Schulte',
-  components: {NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent, NButton, NTime, NFormItem, NTooltip},
+  components: {
+    SchulteResults,
+    NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent, NButton, NTime, NFormItem, NTooltip},
 
   data() {
     return {
@@ -25,6 +28,7 @@ export default {
       windowHeight: 0,
       windowWidth: 0,
       tileRefs: [],
+      errorsInaRow: 0
     }
   },
   setup(){
@@ -48,9 +52,6 @@ export default {
   computed: {
     backgroundColor() {
       return this.themeVars.modalColor
-    },
-  timerCountFormatted(){
-       return new Date(this.timerCount * 1000)
     },
     trainingDataOptions(){
       return [
@@ -123,6 +124,14 @@ export default {
       else {
         this.buttonLabel = this.$t('schulte.start')
 
+      }
+    },
+    errorsInaRow(value){
+      if (value > 5){
+        const timeout = setTimeout(() => {
+          this.errorsInaRow = 0;
+          clearTimeout(timeout)
+        }, 5000)
       }
     }
   },
@@ -298,6 +307,7 @@ export default {
       if(this.currentItem !== value){
         this.warning(this.$t('schulte.wrong'))
         this.errors ++;
+        this.errorsInaRow ++;
         return 0
       }
       if (this.easyMode) {
@@ -307,6 +317,7 @@ export default {
         this.stop();
         return 0
       }
+      this.errorsInaRow = 0;
       this.currentIndex ++ ;
       this.currentRate ++;
       this.saveResults()
@@ -343,7 +354,19 @@ export default {
 </script>
 
 <template>
-
+<n-modal
+    :show="errorsInaRow > 5"
+>
+  <n-card style="width: 600px;"
+          :bordered="false"
+          size="huge"
+          role="dialog"
+          class="text-center"
+          :title="$t('schulte.tooManyErrorsTitle')"
+          aria-modal="true">
+    {{$t('schulte.tooManyErrors')}}
+  </n-card>
+</n-modal>
 <n-grid cols="1 414:6" :x-gap="10" item-responsive>
 <n-grid-item
     content-style="padding: 5px;"
@@ -376,10 +399,7 @@ export default {
         @update:value="reset"/>
     </n-form-item>
     <n-button @click="start" size="large" :type="this.isPlaying ? 'default': 'primary'" style="max-width: 100%; min-width: 100%">{{ buttonLabel || this.$t('schulte.start') }}</n-button>
-
-    <div class="timer text-xl md:text-2xl">
-    {{ this.$t('schulte.timeLabel')}}: <n-time :time="timerCountFormatted" format="mm:ss"></n-time>
-    </div>
+    <SchulteResults :errors="errors" :correct="currentRate" :time="timerCount"/>
 
   </n-space>
 </n-grid-item>
@@ -420,14 +440,6 @@ export default {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
 
-.timer {
-  margin-top: 5px;
-  padding-bottom: 2px;
-  padding-top: 2px;
-  background-color: v-bind('backgroundColor');
-  border-radius: 2px;
-  text-align: center;
-}
 .centered-container{
   display: flex;
   justify-content: center;
@@ -446,12 +458,6 @@ export default {
   aside {
     float: left;
     width: 30%;
-  }
-  .timer {
-    margin-top: 15px;
-    margin-bottom: 5px;
-    padding: 10px;
-    border-radius: 8px;
   }
 
 }

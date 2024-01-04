@@ -12,7 +12,8 @@ const messages = {
             parser: 'Color text',
             theme: 'Change theme',
             schulte: 'Schulte table',
-            title: 'Text tools'
+            title: 'Text tools',
+            voice: 'Voice Recorder'
         },
         common:{
             textContent: 'Text for reading',
@@ -67,7 +68,9 @@ const messages = {
             rateLabel: 'rate',
             resultsLabel: 'Results',
             easyGameTooltip: 'The guessed tiles will disappear',
-            finished: 'Great job! You finished the game in {minutes} minutes {seconds} seconds, making {errors} mistakes. Your speed is {rate} characters per minute.'
+            finished: 'Great job! You finished the game in {minutes} minutes {seconds} seconds, making {errors} mistakes. Your speed is {rate} characters per minute.',
+            tooManyErrors: 'Too many errors! Get ready!',
+            tooManyErrorsTitle: 'Too many errors!'
         },
         anticipation: {
             selectChars: 'Additional characters',
@@ -116,6 +119,8 @@ const messages = {
             rateLabel: 'угадано',
             resultsLabel:'Результаты',
             easyGameTooltip: 'Угаданные плитки будут исчезать',
+            tooManyErrors: 'Слишком много ошибок! Соберись!',
+            tooManyErrorsTitle: 'Много ошибок!'
         },
         nav: {
             textparser: 'Подсчёт слов',
@@ -125,7 +130,8 @@ const messages = {
             parser: 'Цветной текст',
             theme: 'Сменить тему',
             schulte: 'Таблица Шульте',
-            title: 'Текстовые инструменты'
+            title: 'Текстовые инструменты',
+            voice: 'Запись голоса'
         },
         common:{
             textContent: 'Текст для чтения',
@@ -170,7 +176,10 @@ const messages = {
             substitutionText: 'Замена букв',
             shuffleLetters: 'Перемешивание букв',
             normalForm: 'Лемматизация',
-
+        },
+        voice: {
+            title: 'Запись голоса',
+            settings: 'Настройки',
         }
     }
 }

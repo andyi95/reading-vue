@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {CloudDownloadOutline, MicCircleSharp, PlayCircleOutline, StopCircleSharp} from '@vicons/ionicons5'
-import {NIcon, NSpace, SelectOption, useMessage, useThemeVars} from "naive-ui";
+import {MicCircleSharp, CogOutline} from '@vicons/ionicons5'
+import {SelectOption, useMessage, useThemeVars} from "naive-ui";
 import {computed, onMounted, ref, watch} from "vue";
 import WaveSurfer from 'wavesurfer.js'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js'
@@ -12,7 +12,6 @@ let waveSurfer = <WaveSurfer | null>null;
 const isRecording = ref(false)
 const playbackRate = ref(1)
 const mediaRecorder = ref<RecordPlugin | null>(null)
-const downloadUrl = ref<string | null>(null)
 const audioChunks = ref<Blob[]>([])
 const message = useMessage();
 const deviceOptions = ref<SelectOption[]>([])
@@ -56,7 +55,6 @@ const startRecording = async () => {
 
   try {
     audioChunks.value = []
-    mediaRecorder.value.startMic()
     mediaRecorder.value.startRecording();
     mediaRecorder.value.on('record-end', (event) => {
       audioChunks.value.push(event)
@@ -69,7 +67,6 @@ const startRecording = async () => {
 }
 const stopRecording = async () => {
   mediaRecorder.value?.stopRecording();
-  mediaRecorder.value?.stopMic();
   if (audioChunks.value.length === 0) {
     return
   }
@@ -89,7 +86,7 @@ const createWaveSurfer = () => {
   })
   mediaRecorder.value = waveSurfer.registerPlugin(RecordPlugin.create({
     renderRecordedAudio: false,
-    scrollingWaveform: false,
+    scrollingWaveform: true,
   }));
 }
 onMounted(async () => {
@@ -103,17 +100,28 @@ onMounted(async () => {
     selectedDevice.value = microphones[0].deviceId
   })
 });
-
+const showSettings = ref(false)
 </script>
 
 <template>
-  <n-select :options="deviceOptions" placeholder="Select a microphone" v-model:value="selectedDevice"/>
+
   <div class="flex flex-col items-center">
-  <n-space size="large">
-    <n-icon size="100" :color="microphoneColor"><MicCircleSharp @click="toggleRecording"/></n-icon>
-  </n-space>
+    <div class="flex-1 items-center">
+    <n-icon size="100" :color="microphoneColor"><MicCircleSharp @click="toggleRecording"/></n-icon></div>
   </div>
-  <div id="waveform" ref="waveformRef"></div>
+  <div class="flex justify-end">
+    <n-icon size="50" :color="themeVars.actionColor"><CogOutline @click="showSettings = !showSettings"/></n-icon>
+
+    <n-modal v-model:show="showSettings">
+      <n-card
+      :title="$t('voice.settings')"
+      aria-modal="true"
+      style="width: 400px; position: fixed; right: 100px; top: 100px">
+        <n-select :options="deviceOptions" placeholder="Select a microphone" v-model:value="selectedDevice"/>
+      </n-card>
+    </n-modal>
+  </div>
+  <div id="waveform" ref="waveformRef" v-show="isRecording"></div>
 <Playback v-if="!isRecording && audioChunks.length > 0" :audio-blob="audioChunks[0]"></Playback>
 
 

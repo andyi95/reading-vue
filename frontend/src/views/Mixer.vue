@@ -2,13 +2,14 @@
     <n-space vertical size="medium" justify="space-between">
         <n-form size="medium">
             <BaseInput :label="$t('common.sourceText')" :placeholder="$t('common.textPlaceHolder')" v-model:post-body="postBody" @input-updated="textUpdated($event)"/>
+          <div class="py-5 w-1/3">
           <n-form-item :label="$t('chaos.mode')">
             <n-select v-model:value="cipherMode"
                       :options="cipherModeOptions"
                       @update:value="modeChanged"
             />
 
-          </n-form-item>
+          </n-form-item></div>
         </n-form>
         <n-card  ref="textContent" v-if="convertedText && convertedText.length > 1">
             <span>{{ convertedText }}</span>

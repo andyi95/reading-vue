@@ -28,9 +28,10 @@
 <script>
 import {computed, defineComponent, h, ref} from "vue";
 import {RouterLink } from 'vue-router';
-import {NMenu, NButton, useThemeVars} from 'naive-ui';
+import {NMenu, NButton, NIcon, useThemeVars} from 'naive-ui';
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
+import {Moon, Sunny} from "@vicons/ionicons5";
 
 export default defineComponent({
   name: 'Navigation',
@@ -43,13 +44,16 @@ export default defineComponent({
           return store.state.locale
       })
     const themeVars = useThemeVars();
-
+    const isDarkTheme = computed(function (){
+              return store.state.theme === 'darkTheme'
+          })
 
     return {
           t,
       windowWidth,
       activeKey: ref(null),
-        locale, themeVars, show: ref(false)
+        locale, themeVars, show: ref(false),
+      isDarkTheme
     };
   },
     data(){
@@ -109,10 +113,15 @@ export default defineComponent({
                   h(RouterLink, {to: {name: 'Schulte'}}, {default: () => this.$t('nav.schulte')}),
               key: 'schulte'
             },
+            {
+              label: () =>
+                  h(RouterLink, {to: {name: 'Voice'}}, {default: () => this.$t('nav.voice')}),
+              key: 'voice'
+            },
             {label: () => h(
-                NButton,
-                  {onClick: () => this.changeTheme()},
-                  { default: () => this.$t('nav.theme')}), key: 'themeToggle'},
+                NIcon,
+                  {onClick: () => this.changeTheme(), size: '30'},
+                  {default: () => this.isDarkTheme ? h(Moon) : h(Sunny), key: 'themeToggle'})},
             {label: () => h(
                 NButton,
                   {onClick: () => this.changeLocale()},

@@ -39,6 +39,9 @@ export default defineComponent({
         })
       }
     },
+  mounted(){
+    console.log(process.env.VITE_GTAG_ID)
+  }
 
   })
 </script>

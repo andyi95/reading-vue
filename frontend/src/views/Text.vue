@@ -59,7 +59,7 @@ import WordCounter from "@/components/WordCounter.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import BaseCheckbox from "@/components/BaseCheckbox.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import {useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag} from "naive-ui";
+import {useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag, NSwitch} from "naive-ui";
 import {parsedText, countedText} from "@/store/mock";
 import {ref} from "vue";
 import BaseTextBox from "@/components/BaseTextBox.vue";
@@ -70,18 +70,17 @@ const textContent = ref(null);
 export default {
     setup() {
         const message = useMessage();
-        const { t } = useI18n();
         return {
-            t: ref(t),
-            warning(text) {
-                message.warning(text)
-            },
             textContent,
+          warning(text) {
+            message.warning(text)
+          },
 
         }
     },
     name: "Text",
     components: {
+      NSwitch,
         BaseTextBox,
         BaseButton, BaseCheckbox, WordCounter, BaseInput, NSpace, NForm, NFormItem, NListItem, NList, NTag},
     data() {

@@ -2,7 +2,7 @@
 import {ref, onMounted, watch, computed, defineProps} from "vue";
 import WaveSurfer from "wavesurfer.js";
 import {CloudDownloadOutline, PlayCircleOutline, StopCircleSharp} from '@vicons/ionicons5';
-import {NIcon, useThemeVars} from "naive-ui"
+import {NGrid, NIcon, useThemeVars} from "naive-ui"
 import {saveAs} from "file-saver";
 
 const props = defineProps({
@@ -12,13 +12,12 @@ const props = defineProps({
   }
 })
 const playbackWaveRef = ref<HTMLElement | null>(null);
-const playbackWaveformRef = ref(null);
 let playbackWaveSurfer = <WaveSurfer | null>null;
 const isPlaying = ref(false);
 const playbackRate = ref(1);
 const themeVars = useThemeVars();
 const downloadUrl = computed(() => {
-  return playbackWaveSurfer?.exportWAV(44100, 16, 1, true, {type: 'audio/wav'})
+  return URL.createObjectURL(props.audioBlob)
 });
 const downloadAudio = () => {
   saveAs(downloadUrl.value, `audio-${Date.now()}.wav`)
@@ -52,23 +51,29 @@ onMounted(() => {
     playbackWaveSurfer.setPlaybackRate(playbackRate.value);
   });
 });
+const speedOptions = [1, 1.5, 2, 2.5]
 </script>
 
 <template>
-<n-space vertical>
   <div ref="playbackWaveRef" id="playbackWaveRef"></div>
-  <div class="py-1 my-1">
-    <n-slider v-model:value="playbackRate" :step="0.1" :min="0.5" :max="2" />
-    <n-icon size="50" :color="themeVars.primaryColor">
-      <PlayCircleOutline v-if="!isPlaying" @click="playAudio"/>
-      <StopCircleSharp v-else @click="playAudio"/>
-    </n-icon>
+  <div class="flex items-center py-1 my-1 justify-between">
+        <n-icon size="50" :color="themeVars.primaryColor">
+          <PlayCircleOutline v-if="!isPlaying" @click="playAudio"/>
+          <StopCircleSharp v-else @click="playAudio"/>
+        </n-icon>
+
+<div class="flex items-center space-x-2">
+    <n-button
+        v-for="speedOption in speedOptions"
+        :key="speedOption"
+        :type="playbackRate === speedOption ? 'primary' : 'default'"
+        @click="playbackRate = speedOption">{{ speedOption }}x
+    </n-button>
+</div>
     <n-icon size="50">
       <CloudDownloadOutline @click="downloadAudio"/>
     </n-icon>
-
   </div>
-</n-space>
 </template>
 
 <style scoped>

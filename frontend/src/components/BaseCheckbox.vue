@@ -1,29 +1,19 @@
 <template>
-  <div>
-<n-switch :id="id" @update:value="$emit('n-switched', $event)"></n-switch>
+  <div class="my-0.5 space-x-2">
+<n-switch :id="id" @update:value="$emit('n-switched', $event)"/>
   <label class="form-check-label" :for="id">{{ label }}</label>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { defineProps, defineEmits, ref, computed } from 'vue';
 import { NSwitch } from "naive-ui";
 
-export default {
-  name: "BaseCheckbox",
-  emits: ['n-switched'],
-  props:{
-    label: '',
-  },
-  components: {
-    NSwitch
-  },
-  data(){
-    return{
-      id: null
-    }
-  },
-  mounted() {
-    this.id = this._.uid
-  }
-}
+const props = defineProps({
+  label: String
+});
+
+const emit = defineEmits(['n-switched']);
+
+const id = ref(`ns-${Math.random().toString(36).substr(2, 9)}`);
 </script>
