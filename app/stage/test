@@ -2,13 +2,14 @@
 
 env -i \
 CI_PROJECT_NAME=$CI_PROJECT_NAME \
-bash -c '
+sh -c '
   set -a;
   source .env.dist;
 
   export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
-  export COMPOSE_PROJECT_NAME=reader-tesst
+  export COMPOSE_PROJECT_NAME=reader-test
   export APP_VERSION=${APP_VERSION:-latest}
+  export DEPLOYMENT_HOST=reader-test.home.andyi95.com
   (printenv | grep -v "^_=" | sort)
 ' > .env
 cat .env
