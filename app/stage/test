@@ -1,23 +1,41 @@
 #!/bin/sh
+# Load variables from .env.dist
+if [ -f ".env.dist" ]; then
+    source .env.dist
+else
+    echo ".env.dist file not found"
+    exit 1
+fi
 
-env -i \
-CI_PROJECT_NAME=$CI_PROJECT_NAME \
-sh -c '
-  set -a;
-  source .env.dist;
+# Define additional variables
+export COMPOSE_FILE="docker-compose.yaml;docker-compose.stage.yaml"
+export COMPOSE_PROJECT_NAME="reader-test"
+export APP_VERSION=${APP_VERSION:-latest}
+export DEPLOYMENT_HOST="reader-test.home.andyi95.com"
 
-  export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
-  export COMPOSE_PROJECT_NAME=reader-test
-  export APP_VERSION=${APP_VERSION:-latest}
-  export DEPLOYMENT_HOST=reader-test.home.andyi95.com
-  (printenv | grep -v "^_=" | sort)
-' > .env
-cat .env
+# Create or clear the .env file
+> .env
+
+# Function to add a variable to the .env file
+add_to_env() {
+    echo "$1='$2'" >> .env
+}
+
+# Add variables from .env.dist to .env
+while IFS='=' read -r key value; do
+    add_to_env "$key" "$value"
+done < .env.dist
+
+# Add the additional variables to .env
+add_to_env "COMPOSE_FILE" "docker-compose.yaml:docker-compose.stage.yaml"
+add_to_env "COMPOSE_PROJECT_NAME" "reader-test"
+add_to_env "APP_VERSION" ${APP_VERSION:-latest}
+add_to_env "DEPLOYMENT_HOST" "reader-test.home.andyi95.com"
 
 docker compose up -d
+sleep 10
 CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' reader-test-nginx-1)
 docker compose ps
-sleep 10
 if [ $(docker compose ps -q | wc -l) -ne $(docker compose config --services | wc -l) ]; then
     echo "Not all containers are running."
     docker compose ps
@@ -32,5 +50,6 @@ fi
 
 if [ $HTTP_STATUS -ne 200 ]; then
     echo "HTTP status code is not 200."
+    echo "HTTP status code: $HTTP_STATUS"
     exit 1
 fi
