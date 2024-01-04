@@ -24,7 +24,7 @@ if [ $(docker compose ps -q | wc -l) -ne $(docker compose config --services | wc
     exit 1
 fi
 HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $CONTAINER_IP:80)
-docker compose down
+#docker compose down
 if [ -z "$HTTP_STATUS" ]; then
     echo "Failed to connect to $CONTAINER_IP:80"
     exit 1
