@@ -39,6 +39,8 @@ build:backend:
         - docker push registry.andyi95.com/text-tools/reading-backend:latest
 
 test-image:
+    before_script:
+        - apk update && apk add curl
     stage: test
     tags:
         - docker
@@ -47,8 +49,8 @@ test-image:
     needs:
         - build:backend
         - build:frontend
-    after_script:
-        - docker compose down --remove-orphans
+#    after_script:
+#        - docker compose down --remove-orphans
 
 deploy:development:
     stage: deploy
