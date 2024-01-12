@@ -15,7 +15,7 @@ stages:
     tags:
         - docker
     before_script:
-        - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
+        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
         - |
             if [ -n "$(git tag --points-at HEAD)" ]; then
               export APP_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
