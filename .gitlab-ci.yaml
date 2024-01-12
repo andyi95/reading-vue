@@ -15,7 +15,7 @@ stages:
     tags:
         - docker
     before_script:
-        - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD registry.andyi95.com
+        - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
         - |
             if [ -n "$(git tag --points-at HEAD)" ]; then
               export APP_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
@@ -23,6 +23,7 @@ stages:
               export APP_VERSION=$(git rev-parse --short HEAD)
             fi
             export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
+        - app/stage/vars $CI_COMMIT_REF_SLUG
 
 build:frontend:
     <<: *docker-build
