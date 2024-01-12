@@ -1,35 +1,28 @@
 #!/bin/sh
 
-# Path to the .env file
 ENV_FILE=".env"
 
-# List of variables to update in the .env file
-# Add more variables to this list as needed
-VARIABLES_TO_UPDATE=("APP_VERSION" "ANOTHER_VAR" "YET_ANOTHER_VAR")
-
-# Function to update or add a variable in the .env file
-update_env_variable() {
+# Function to add or update a variable in the .env file
+add_or_update_env() {
     local var_name=$1
-    local new_value=$(eval echo "\$$var_name")
+    local var_value=$2
 
     if grep -q "^$var_name=" "$ENV_FILE"; then
         # Variable exists, update it
-        sed -i "s/^$var_name=.*/$var_name=$new_value/" "$ENV_FILE"
+        sed -i "s/^$var_name=.*/$var_name=$var_value/" "$ENV_FILE"
     else
         # Variable does not exist, add it
-        echo "$var_name=$new_value" >> "$ENV_FILE"
+        echo "$var_name=$var_value" >> "$ENV_FILE"
     fi
 }
 
 # Check if the .env file exists
 if [ ! -f "$ENV_FILE" ]; then
-    echo "No .env file found"
-    exit 1
+    touch "$ENV_FILE"
 fi
 
-# Loop over each variable and update it in the .env file
-for var_name in "${VARIABLES_TO_UPDATE[@]}"; do
-    update_env_variable $var_name
-done
+add_or_update_env "COMPOSE_FILE" "docker-compose.yaml:docker-compose.stage.yaml"
+add_or_update_env "COMPOSE_PROJECT_NAME" "reader"
+add_or_update_env "APP_VERSION" "$1"
 
-echo "Updated variables in $ENV_FILE"
+echo "Updated .env file with the necessary variables."

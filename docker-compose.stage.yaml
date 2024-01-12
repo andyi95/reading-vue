@@ -1,14 +1,14 @@
 version: '3.4'
 services:
     frontend:
-        image: registry.andyi95.com/text-tools/reading-frontend:${APP_VERSION}
+        image: ${CI_REGISTRY_IMAGE}/frontend:${TAG:-latest}
         build:
             context: frontend
             dockerfile: stage.Dockerfile
         restart: unless-stopped
 
     backend:
-        image: registry.andyi95.com/text-tools/reading-backend:${APP_VERSION}
+        image: ${CI_REGISTRY_IMAGE}/backend:${TAG:-latest}
         restart: unless-stopped
 
     nginx:

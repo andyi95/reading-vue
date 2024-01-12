@@ -1,6 +1,6 @@
 variables:
     GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
-    GIT_STRATEGY: 'fetch'
+    GIT_STRATEGY: 'pull'
     GIT_CHECKOUT: 'true'
     GIT_CLEAN_FLAGS: 'none'
     GIT_DEPTH: 0
@@ -27,54 +27,102 @@ stages:
 build:frontend:
     <<: *docker-build
     script:
-        - docker build -t registry.andyi95.com/text-tools/reading-frontend:$CI_COMMIT_SHORT_SHA -t registry.andyi95.com/text-tools/reading-frontend:latest -f frontend/stage.Dockerfile frontend/
-        - docker push registry.andyi95.com/text-tools/reading-frontend:$CI_COMMIT_SHORT_SHA
-        - docker push registry.andyi95.com/text-tools/reading-frontend:latest
+        - TAG=${CI_COMMIT_REF_SLUG} docker compose build frontend
+        - TAG=${CI_COMMIT_REF_SLUG} docker compose push frontend
+    only:
+        changes:
+            - frontend/**/*
+            - app/**/*
+            - .gitlab-ci.yml
 
 build:backend:
     <<: *docker-build
     script:
-        - docker build -t registry.andyi95.com/text-tools/reading-backend:$CI_COMMIT_SHORT_SHA -t registry.andyi95.com/text-tools/reading-backend:latest -f backend/Dockerfile backend/
-        - docker push registry.andyi95.com/text-tools/reading-backend:$CI_COMMIT_SHORT_SHA
-        - docker push registry.andyi95.com/text-tools/reading-backend:latest
+        - TAG=${CI_COMMIT_REF_SLUG} docker compose build backend
+        - TAG=${CI_COMMIT_REF_SLUG} docker compose push backend
+    only:
+        changes:
+            - app/**/*
+            - backend/**/*
+            - .gitlab-ci.yml
 
-test-image:
-    before_script:
-        - apk update && apk add curl
+test:frotend:
     stage: test
     tags:
         - docker
     script:
-        - app/stage/test
-    needs:
-        - build:backend
-        - build:frontend
-    after_script:
-        - docker compose down --remove-orphans
+        - TAG=${CI_COMMIT_REF_SLUG} docker compose pull frontend
+        - TAG=${CI_COMMIT_REF_SLUG} docker compose up -d frontend
+        - docker compose ps
+        - sleep 10
+        - docker compose down
 
-deploy:development:
+test:backend:
+    stage: test
+    tags:
+        - docker
+    script:
+        - TAG=${CI_COMMIT_REF_SLUG} docker compose pull backend
+        - TAG=${CI_COMMIT_REF_SLUG} docker compose up -d backend
+        - docker compose ps
+        - sleep 10
+        - docker compose down
+
+.deploy_script: &deploy_script
+    variables:
+        GIT_STRATEGY: 'none'
+        GIT_CHECKOUT: 'false'
+        GIT_CLEAN_FLAGS: 'none'
+        GIT_DEPTH: 0
+    script:
+        - app/stage/deploy $DEPLOY_COMPONENT
     stage: deploy
     when: manual
     tags:
         - ssh
         - dev
-    script:
-        - app/stage/deploy $APP_VERSION
+
+deploy:development:frontend:
+    <<: *deploy_script
+    variables:
+        DEPLOY_COMPONENT: frontend
     needs:
-        - test-image
+        - test:frontend
     environment:
         name: development
         deployment_tier: development
         url: https://reader.dev.andyi95.com/
 
-deploy:production:
-    stage: deploy
-    when: manual
-    script:
-        - app/stage/deploy $APP_VERSION
+deploy:development:backend:
+    <<: *deploy_script
+    variables:
+        DEPLOY_COMPONENT: backend
     needs:
-        - test-image
+        - test:backend
+    environment:
+        name: development
+        deployment_tier: development
+        url: https://reader.dev.andyi95.com/
+
+deploy:production:backend:
+    <<: *deploy_script
+    variables:
+        DEPLOY_COMPONENT: backend
+    needs:
+        - test:backend
     environment:
         name: production
         deployment_tier: production
         url: https://text-tools.ru/
+
+deploy:production:frontend:
+    <<: *deploy_script
+    variables:
+        DEPLOY_COMPONENT: frontend
+    needs:
+        - test:frontend
+    environment:
+        name: production
+        deployment_tier: production
+        url: https://text-tools.ru/
+

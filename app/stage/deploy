@@ -1,10 +1,10 @@
 #!/bin/sh
 echo "Deploying stage"
+DEPLOY_COMPONENT=$1
 cd /home/andrey/reader/
-sed -i "s/^APP_VERSION=.*/APP_VERSION=$1/" .env
 echo $(whoami)
 echo $(curl ifconfig.me)
 echo $(pwd)
-docker compose pull
-docker compose up -d --force-recreate --remove-orphans
+docker compose pull $DEPLOY_COMPONENT
+docker compose up -d --force-recreate --remove-orphans $DEPLOY_COMPONENT
 docker compose restart
