@@ -28,14 +28,14 @@ stages:
 build:frontend:
     <<: *docker-build
     script:
-        - TAG=${CI_COMMIT_REF_SLUG} docker compose build frontend
-        - TAG=${CI_COMMIT_REF_SLUG} docker compose push frontend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build frontend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose push frontend
 
 build:backend:
     <<: *docker-build
     script:
-        - TAG=${CI_COMMIT_REF_SLUG} docker compose build backend
-        - TAG=${CI_COMMIT_REF_SLUG} docker compose push backend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build backend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose push backend
 
 test:frontend:
     stage: test
@@ -57,6 +57,7 @@ test:backend:
         GIT_CHECKOUT: 'false'
         GIT_CLEAN_FLAGS: 'none'
         GIT_DEPTH: 0
+        GIT_CLONE_PATH: 'none'
     script:
         - app/stage/deploy $DEPLOY_COMPONENT
     stage: deploy
