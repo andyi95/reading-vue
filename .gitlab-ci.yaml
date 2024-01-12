@@ -44,6 +44,8 @@ test:frontend:
         - docker
     script:
         - app/stage/test frontend
+    after_script:
+        - docker compose down
 
 test:backend:
     stage: test
@@ -51,6 +53,8 @@ test:backend:
         - docker
     script:
         - app/stage/test backend
+    after_script:
+        - docker compose down
 
 .deploy_script: &deploy_script
     variables:
