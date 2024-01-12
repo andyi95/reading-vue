@@ -76,8 +76,8 @@ deploy:development:frontend:
     <<: *deploy_script
     variables:
         DEPLOY_COMPONENT: frontend
-    needs:
-        - test:frontend
+#    needs:
+#        - test:frontend
     environment:
         name: development
         deployment_tier: development
@@ -87,8 +87,8 @@ deploy:development:backend:
     <<: *deploy_script
     variables:
         DEPLOY_COMPONENT: backend
-    needs:
-        - test:backend
+#    needs:
+#        - test:backend
     environment:
         name: development
         deployment_tier: development
