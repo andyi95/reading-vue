@@ -46,7 +46,7 @@ build:backend:
             - backend/**/*
             - .gitlab-ci.yml
 
-test:frotend:
+test:frontend:
     stage: test
     tags:
         - docker
