@@ -1,5 +1,5 @@
 #!/bin/sh
-# Load variables from .env.dist
+
 if [ -f ".env.dist" ]; then
     source .env.dist
 else
@@ -12,7 +12,6 @@ export COMPOSE_FILE="docker-compose.yaml:docker-compose.stage.yaml"
 export COMPOSE_PROJECT_NAME="reader-test"
 export APP_VERSION=${APP_VERSION:-latest}
 export DEPLOYMENT_HOST="reader-test.home.andyi95.com"
-
 # Create or clear the .env file
 > .env
 

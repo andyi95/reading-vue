@@ -29,44 +29,26 @@ build:frontend:
     script:
         - TAG=${CI_COMMIT_REF_SLUG} docker compose build frontend
         - TAG=${CI_COMMIT_REF_SLUG} docker compose push frontend
-    only:
-        changes:
-            - frontend/**/*
-            - app/**/*
-            - .gitlab-ci.yml
 
 build:backend:
     <<: *docker-build
     script:
         - TAG=${CI_COMMIT_REF_SLUG} docker compose build backend
         - TAG=${CI_COMMIT_REF_SLUG} docker compose push backend
-    only:
-        changes:
-            - app/**/*
-            - backend/**/*
-            - .gitlab-ci.yml
 
 test:frontend:
     stage: test
     tags:
         - docker
     script:
-        - TAG=${CI_COMMIT_REF_SLUG} docker compose pull frontend
-        - TAG=${CI_COMMIT_REF_SLUG} docker compose up -d frontend
-        - docker compose ps
-        - sleep 10
-        - docker compose down
+        - app/stage/test frontend
 
 test:backend:
     stage: test
     tags:
         - docker
     script:
-        - TAG=${CI_COMMIT_REF_SLUG} docker compose pull backend
-        - TAG=${CI_COMMIT_REF_SLUG} docker compose up -d backend
-        - docker compose ps
-        - sleep 10
-        - docker compose down
+        - app/stage/test backend
 
 .deploy_script: &deploy_script
     variables:
