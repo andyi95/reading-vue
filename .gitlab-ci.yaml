@@ -1,9 +1,4 @@
-variables:
-    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
-    GIT_STRATEGY: 'pull'
-    GIT_CHECKOUT: 'true'
-    GIT_CLEAN_FLAGS: 'none'
-    GIT_DEPTH: 0
+
 
 stages:
     - build
@@ -11,6 +6,12 @@ stages:
     - deploy
 
 .docker_build: &docker-build
+    variables:
+        GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+        GIT_STRATEGY: 'pull'
+        GIT_CHECKOUT: 'true'
+        GIT_CLEAN_FLAGS: 'none'
+        GIT_DEPTH: 0
     stage: build
     tags:
         - docker
@@ -55,7 +56,6 @@ test:backend:
     variables:
         GIT_STRATEGY: 'none'
         GIT_CHECKOUT: 'false'
-        GIT_CLEAN_FLAGS: 'none'
         GIT_DEPTH: 0
         GIT_CLONE_PATH: 'none'
     script:
