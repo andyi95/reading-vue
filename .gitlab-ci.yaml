@@ -3,7 +3,8 @@
 stages:
     - build
     - test
-    - deploy
+    - deploy:development
+    - deploy:production
 
 .docker_build: &docker-build
     variables:
@@ -65,8 +66,8 @@ test:backend:
     before_script:
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     script:
+        - app/stage/vars ${CI_COMMIT_SHORT_SHA}
         - app/stage/deploy $DEPLOY_COMPONENT
-    stage: deploy
     when: manual
     tags:
         - ssh
@@ -74,6 +75,7 @@ test:backend:
 
 deploy:development:frontend:
     <<: *deploy_script
+    stage: deploy:development
     variables:
         DEPLOY_COMPONENT: frontend
 #    needs:
@@ -85,6 +87,7 @@ deploy:development:frontend:
 
 deploy:development:backend:
     <<: *deploy_script
+    stage: deploy:development
     variables:
         DEPLOY_COMPONENT: backend
 #    needs:
@@ -96,6 +99,7 @@ deploy:development:backend:
 
 deploy:production:backend:
     <<: *deploy_script
+    stage: deploy:production
     variables:
         DEPLOY_COMPONENT: backend
     needs:
@@ -107,6 +111,7 @@ deploy:production:backend:
 
 deploy:production:frontend:
     <<: *deploy_script
+    stage: deploy:production
     variables:
         DEPLOY_COMPONENT: frontend
     needs:
