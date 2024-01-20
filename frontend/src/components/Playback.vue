@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onMounted, watch, computed, defineProps} from "vue";
+import {ref, onMounted, watch, computed} from "vue";
 import WaveSurfer from "wavesurfer.js";
 import {CloudDownloadOutline, PlayCircleOutline, StopCircleSharp} from '@vicons/ionicons5';
 import {NGrid, NIcon, useThemeVars} from "naive-ui"
@@ -19,8 +19,10 @@ const themeVars = useThemeVars();
 const downloadUrl = computed(() => {
   return URL.createObjectURL(props.audioBlob)
 });
+
 const downloadAudio = () => {
-  saveAs(downloadUrl.value, `audio-${Date.now()}.wav`)
+  saveAs(downloadUrl.value, `audio-${Date.now()}.weba`)
+
 }
 const playAudio = () => {
   playbackWaveSurfer?.playPause()
@@ -57,7 +59,7 @@ const speedOptions = [1, 1.5, 2, 2.5]
 <template>
   <div ref="playbackWaveRef" id="playbackWaveRef"></div>
   <div class="flex items-center py-1 my-1 justify-between">
-        <n-icon size="50" :color="themeVars.primaryColor">
+        <n-icon size="100" :color="themeVars.primaryColor">
           <PlayCircleOutline v-if="!isPlaying" @click="playAudio"/>
           <StopCircleSharp v-else @click="playAudio"/>
         </n-icon>

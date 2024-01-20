@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {MicCircleSharp, CogOutline} from '@vicons/ionicons5'
+import {MicCircleSharp, CogOutline, PauseCircleOutline, StopCircleOutline} from '@vicons/ionicons5'
 import {SelectOption, useMessage, useThemeVars} from "naive-ui";
 import {computed, onMounted, ref, watch} from "vue";
 import WaveSurfer from 'wavesurfer.js'
@@ -16,7 +16,7 @@ const audioChunks = ref<Blob[]>([])
 const message = useMessage();
 const deviceOptions = ref<SelectOption[]>([])
 const selectedDevice = ref<string | null>(null)
-
+const isPaused = ref(false)
 const warning = (text: string) => {
   message.warning(text)
 }
@@ -28,14 +28,36 @@ const setPlaybackRate = debounce((rate: number) => {
   waveSurfer?.setPlaybackRate(rate, true);
   waveSurfer?.play()
 }, 100)
-
+const showModalRef = ref(false)
 const toggleRecording = async () => {
-  isRecording.value = !isRecording.value
-  if (isRecording.value) {
-    await startRecording()
-  } else {
+  isPaused.value = false
+  if (!isRecording.value){
+    if (audioChunks.value.length > 0){
+      showModalRef.value = true
+      return
+    }
+    else {
+      await startNewRecording()
+    }
+  }
+  else {
     await stopRecording()
   }
+}
+const cancelNewRecording = () => {
+  showModalRef.value = false
+}
+const startNewRecording = async () => {
+  isPaused.value = false
+  isRecording.value = true
+  await startRecording()
+}
+const pauseRecording = () => {
+  mediaRecorder.value?.isPaused() ? mediaRecorder.value?.resumeRecording() : mediaRecorder.value?.pauseRecording()
+  isPaused.value = !isPaused.value
+}
+const resumeRecording = () => {
+  mediaRecorder.value?.resumeRecording()
 }
 
 const isPlaying = ref(false)
@@ -66,6 +88,7 @@ const startRecording = async () => {
   }
 }
 const stopRecording = async () => {
+  isRecording.value = false;
   mediaRecorder.value?.stopRecording();
   if (audioChunks.value.length === 0) {
     return
@@ -87,36 +110,64 @@ const createWaveSurfer = () => {
   mediaRecorder.value = waveSurfer.registerPlugin(RecordPlugin.create({
     renderRecordedAudio: false,
     scrollingWaveform: true,
+    audioBitsPerSecond: 128000,
   }));
 }
 onMounted(async () => {
-  RecordPlugin.getAvailableAudioDevices().then((microphones) => {
-    microphones.forEach((microphone) => {
-      deviceOptions.value.push({
-        label: microphone.label,
-        value: microphone.deviceId
-      })
-    });
-    selectedDevice.value = microphones[0].deviceId
+  navigator.mediaDevices.enumerateDevices().then((devices) => {
+    devices.forEach((device) => {
+      if (device.kind === 'audioinput') {
+        deviceOptions.value.push({
+          label: device.label,
+          value: device.deviceId
+        })
+      }
+    })
+    selectedDevice.value = devices[0].deviceId
   })
 });
 const showSettings = ref(false)
 </script>
 
 <template>
-
+<n-modal
+    v-model:show="showModalRef"
+    :mask-closable="false"
+    preset="dialog"
+    :title="$t('voice.resetAlertTitle')"
+    :content="$t('voice.resetAlert')"
+    :positive-text="$t('common.yesLabel')"
+    :negative-text="$t('common.noLabel')"
+    @positive-click="startNewRecording"
+    @negative-click="cancelNewRecording"
+/>
   <div class="flex flex-col items-center">
     <div class="flex-1 items-center">
-    <n-icon size="100" :color="microphoneColor"><MicCircleSharp @click="toggleRecording"/></n-icon></div>
+      <n-button v-if="!isRecording" text @click="toggleRecording">
+    <n-icon depth="2" size="100"><MicCircleSharp/></n-icon>
+    </n-button>
+      <n-button v-if="isRecording && !isPaused" text @click="pauseRecording">
+        <n-icon depth="2" size="100"><PauseCircleOutline/></n-icon>
+      </n-button>
+      <n-button v-if="isRecording && isPaused" text @click="pauseRecording">
+        <n-icon depth="2" size="100"><MicCircleSharp/></n-icon>
+      </n-button>
+      <n-button v-if="isRecording" text @click="toggleRecording">
+        <n-icon depth="2" size="100"><StopCircleOutline/></n-icon>
+      </n-button>
+    </div>
   </div>
   <div class="flex justify-end">
-    <n-icon size="50" :color="themeVars.actionColor"><CogOutline @click="showSettings = !showSettings"/></n-icon>
+    <n-button text
+              @click="showSettings = !showSettings">
+      <n-icon depth="3" size="50"><CogOutline/></n-icon>
+    </n-button>
 
     <n-modal v-model:show="showSettings">
       <n-card
       :title="$t('voice.settings')"
       aria-modal="true"
-      style="width: 400px; position: fixed; right: 100px; top: 100px">
+      class="w-80 fixed right-10 top-10 md:w-1/3 md:right-0.5 md:top-1">
         <n-select :options="deviceOptions" placeholder="Select a microphone" v-model:value="selectedDevice"/>
       </n-card>
     </n-modal>

@@ -21,7 +21,9 @@ const messages = {
             convert: 'Convert',
             sourceText: 'Source text',
             textPlaceHolder: 'Start text input...',
-            removeVowels: 'Remove vowels'
+            removeVowels: 'Remove vowels',
+            yesLabel: 'Yes',
+            noLabel: 'No'
         },
         textparser: {
             sourceText: 'Source text',
@@ -64,8 +66,8 @@ const messages = {
             emojiOption: 'Emoji',
             timeLabel: 'Time',
             size: 'Size',
-            errorsLabel: 'errors',
-            rateLabel: 'rate',
+            errorsLabel: 'Error',
+            rateLabel: 'Correct',
             resultsLabel: 'Results',
             easyGameTooltip: 'The guessed tiles will disappear',
             finished: 'Great job! You finished the game in {minutes} minutes {seconds} seconds, making {errors} mistakes. Your speed is {rate} characters per minute.',
@@ -88,6 +90,12 @@ const messages = {
             substitutionText: 'Substitution letters',
             shuffleLetters: 'Shuffle letters',
             normalForm: 'Lemmatization',
+        },
+        voice: {
+            title: 'Voice Recorder',
+            settings: 'Settings',
+            resetAlert: 'Current record will be reset. Continue?',
+            resetAlertTitle: 'New record'
         }
     },
     ru: {
@@ -115,8 +123,8 @@ const messages = {
             classicTable: 'Обычная таблица',
             tableFillment: 'Набор символов',
             finished: 'Отличная работа! Вы закончили игру за {minutes} минут {seconds} секунд, совершив {errors} ошибок. Ваша скорость {rate} символов в минуту.',
-            errorsLabel: 'ошибок',
-            rateLabel: 'угадано',
+            errorsLabel: 'Ошибок',
+            rateLabel: 'Угадано',
             resultsLabel:'Результаты',
             easyGameTooltip: 'Угаданные плитки будут исчезать',
             tooManyErrors: 'Слишком много ошибок! Соберись!',
@@ -139,7 +147,9 @@ const messages = {
             convert: 'Конвертировать',
             sourceText: 'Исходный текст',
             textPlaceHolder: 'Введите текст...',
-            removeVowels: 'Убрать гласные'
+            removeVowels: 'Убрать гласные',
+            yesLabel: 'Да',
+            noLabel: 'Нет'
         },
         textparser: {
             sourceText: 'Исходный текст',
@@ -180,10 +190,11 @@ const messages = {
         voice: {
             title: 'Запись голоса',
             settings: 'Настройки',
+            resetAlert: 'Текущая запись будет сброшена. Продолжить?',
+            resetAlertTitle: 'Новая запись'
         }
     }
 }
-const storage = JSON.parse(localStorage.getItem('store'))
 
 const storedLocale = store.state.locale || "ru"
 export default createI18n({
