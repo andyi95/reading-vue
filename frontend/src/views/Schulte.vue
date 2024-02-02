@@ -1,12 +1,12 @@
 <script>
 import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, NButton, NTime, NFormItem, NTooltip} from 'naive-ui';
-import {ref} from "vue";
+import {defineAsyncComponent, defineComponent, ref} from "vue";
+import debounce from "debounce";
 import {mapActions}  from "vuex";
-import SchulteResults from "@/components/SchulteResults.vue";
 export default {
   name: 'Schulte',
   components: {
-    SchulteResults,
+    SchulteResults: defineAsyncComponent(() => import('@/components/SchulteResults.vue')),
     NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent, NButton, NTime, NFormItem, NTooltip},
 
   data() {
@@ -27,8 +27,8 @@ export default {
       tableCharsType: this.$store.state.schulteSettings.tableCharsType,
       windowHeight: 0,
       windowWidth: 0,
-      tileRefs: [],
-      errorsInaRow: 0
+      errorsInaRow: 0,
+      showResults: false
     }
   },
   setup(){
@@ -149,6 +149,7 @@ export default {
         this.errors = 0;
         this.currentItem = this.gridData[this.currentIndex];
         this.timerCount = 0;
+        this.showResults = true;
         this.updateSchulteResults({
           startTime: this.startTime,
           endTime: null,
@@ -224,7 +225,9 @@ export default {
         ...this.range(0x1F440, 0x1F440), // eyes
       ]
       const excludeEmojis = [
-          0x1F6D3, 0x1F6D6,
+          0x1F6D3, 0x1F6D6, ...this.range(0x1f6d7, 0x1f6df),0x1f6fb, 0x1f6fb,
+          ...this.range(0x1f6c6, 0x1f6fc), 0x1f972,
+        ...this.range(0x1f977, 0x1f979), 0x1f946,
           0x1F6D4, ...this.range(0x1F6D8, 0x1F6DB), ...this.range(0x1F6ED, 0x1F6EF),
               ...this.range(0x1F6FD, 0x1F6FF),
       ]
@@ -332,10 +335,11 @@ export default {
       this.saveResults();
       clearInterval(this.timer);
     },
-    onResize(){
+    onResize: debounce(function (){
       this.windowHeight = window.innerHeight;
       this.windowWidth = window.innerWidth;
-    }
+    }, 100
+    )
   },
   mounted() {
     this.windowWidth = window.innerWidth;
@@ -411,10 +415,9 @@ export default {
                       class="current-item">&nbsp;{{ currentItem.value }}&nbsp;</span>
         </n-card>
     </div>
-  <n-grid :cols="this.size" :x-gap="gridSizes.gap" :y-gap="gridSizes.gap" class="square-container" ref="schulteGridRef">
+  <n-grid :cols="this.size" :x-gap="gridSizes.gap" :y-gap="gridSizes.gap" class="square-container">
     <n-grid-item v-for="(item, index) in this.shuffledGrid"
                  :key="index" class="square"
-                 :ref="el => { if (el) this.tileRefs[index] = el; }"
                  :class="{ hidden: item.hidden, red: item.isRed, 'emoji': tableCharsType === 'emoji'}"
                  @click="clickTile(item)">
       <div class="content">{{ item.value }}</div>
@@ -434,7 +437,6 @@ export default {
 
   </n-grid-item></div>
 </n-grid>
-
 </template>
 
 <style scoped>
@@ -457,9 +459,7 @@ export default {
     float: left;
     width: 30%;
   }
-
 }
-
 
 @media screen and (min-height: 1090px){
 
