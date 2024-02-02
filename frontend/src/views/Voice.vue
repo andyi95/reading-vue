@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {MicCircleSharp, CogOutline, PauseCircleOutline, StopCircleOutline} from '@vicons/ionicons5'
 import {SelectOption, useMessage, useThemeVars} from "naive-ui";
 import {computed, onMounted, ref, watch} from "vue";
 import WaveSurfer from 'wavesurfer.js'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js'
 import { debounce } from 'lodash-es';
 import Playback from "@/components/Playback.vue";
+import RecordingControl from "@/components/RecordingControl.vue";
 const waveformRef = ref<HTMLElement | null>(null);
 let waveSurfer = <WaveSurfer | null>null;
 
@@ -143,18 +143,12 @@ const showSettings = ref(false)
 />
   <div class="flex flex-col items-center">
     <div class="flex-1 items-center">
-      <n-button v-if="!isRecording" text @click="toggleRecording">
-    <n-icon depth="2" size="100"><MicCircleSharp/></n-icon>
-    </n-button>
-      <n-button v-if="isRecording && !isPaused" text @click="pauseRecording">
-        <n-icon depth="2" size="100"><PauseCircleOutline/></n-icon>
-      </n-button>
-      <n-button v-if="isRecording && isPaused" text @click="pauseRecording">
-        <n-icon depth="2" size="100"><MicCircleSharp/></n-icon>
-      </n-button>
-      <n-button v-if="isRecording" text @click="toggleRecording">
-        <n-icon depth="2" size="100"><StopCircleOutline/></n-icon>
-      </n-button>
+      <RecordingControl
+          :is-recording="isRecording"
+          :is-paused="isPaused"
+          @toggle-recording="toggleRecording"
+          @pause-recording="pauseRecording"
+          />
     </div>
   </div>
   <div class="flex justify-end">

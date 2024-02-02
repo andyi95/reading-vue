@@ -7,6 +7,7 @@ const Text = () => import('@/views/Text.vue')
 const Spreeder = () => import('@/views/Spreeder.vue')
 const ChaosChars = () => import('@/views/Mixer.vue')
 const Schulte = () => import('@/views/Schulte.vue')
+const Diff = () => import('@/views/Diff.vue')
 
 const routes: RouteRecordRaw[] = [
   {path: '/', name: 'TextParser', component: Text, meta: {title: t('nav.textparser')}},
@@ -23,6 +24,7 @@ const routes: RouteRecordRaw[] = [
     name: 'About',
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
+  {path: '/diff', name: 'Diff', component: Diff, meta: {title: t('nav.diff')}},
   {path: '/:catchAll(.*)', redirect: '/text'}
 
 ]

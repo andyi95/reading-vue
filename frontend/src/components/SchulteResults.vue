@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, defineProps} from 'vue';
+import {computed} from 'vue';
 import {NTime} from "naive-ui";
 
 const props = defineProps({
@@ -19,6 +19,7 @@ const props = defineProps({
 const timerCountFormatted = computed(() => {
   return new Date(props.time * 1000)
 });
+
 </script>
 
 <template>
