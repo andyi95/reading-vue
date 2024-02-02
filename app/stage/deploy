@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+
 echo "Deploying stage"
 DEPLOY_COMPONENT=$1
 cd /home/andrey/reader/
