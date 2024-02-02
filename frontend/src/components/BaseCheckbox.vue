@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, computed } from 'vue';
+import { ref } from 'vue';
 import { NSwitch } from "naive-ui";
 
 const props = defineProps({

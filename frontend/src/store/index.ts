@@ -25,10 +25,10 @@ const storeOptions: StoreOptions<State> = {
         locale: 'ru',
         schulteResults: [],
         schulteSettings: {
-            size: 10,
+            size: 15,
             gameMode: 'gorbov',
             easyMode: true,
-            tableCharsType: 'digits',
+            tableCharsType: 'emoji',
         },
         schulteContext: {
             currentRate: 1,

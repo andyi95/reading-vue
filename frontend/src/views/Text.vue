@@ -154,7 +154,7 @@ export default {
                 }
               })
             } catch (error) {
-              this.warning('Что-то прошло не так')
+              this.warning(this.$t('common.warnMessage'))
               console.log(error)
               continue
             }

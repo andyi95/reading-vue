@@ -13,7 +13,8 @@ const messages = {
             theme: 'Change theme',
             schulte: 'Schulte table',
             title: 'Text tools',
-            voice: 'Voice Recorder'
+            voice: 'Voice Recorder',
+            diff: 'Compare texts'
         },
         common:{
             textContent: 'Text for reading',
@@ -23,7 +24,11 @@ const messages = {
             textPlaceHolder: 'Start text input...',
             removeVowels: 'Remove vowels',
             yesLabel: 'Yes',
-            noLabel: 'No'
+            noLabel: 'No',
+            metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder.',
+            metaTitle: 'Text tools',
+            metaTags: 'text, tools, reading, learning, memorizing, word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder',
+            warnMessage: 'Something went wrong. Please try again later.'
         },
         textparser: {
             sourceText: 'Source text',
@@ -96,6 +101,12 @@ const messages = {
             settings: 'Settings',
             resetAlert: 'Current record will be reset. Continue?',
             resetAlertTitle: 'New record'
+        },
+        diff:{
+            title: 'Compare texts',
+            compareLabel: 'Compare',
+            firstTextPH: 'Enter first text...',
+            secondTextPH: 'Enter second text...',
         }
     },
     ru: {
@@ -139,7 +150,8 @@ const messages = {
             theme: 'Сменить тему',
             schulte: 'Таблица Шульте',
             title: 'Текстовые инструменты',
-            voice: 'Запись голоса'
+            voice: 'Запись голоса',
+            diff: 'Сравнение текстов'
         },
         common:{
             textContent: 'Текст для чтения',
@@ -149,7 +161,11 @@ const messages = {
             textPlaceHolder: 'Введите текст...',
             removeVowels: 'Убрать гласные',
             yesLabel: 'Да',
-            noLabel: 'Нет'
+            noLabel: 'Нет',
+            metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса.',
+            metaTitle: 'Текстовые инструменты',
+            metaTags: 'текст, инструменты, чтение, обучение, запоминание, подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса',
+            warnMessage: 'Что-то пошло не так. Попробуйте позже.'
         },
         textparser: {
             sourceText: 'Исходный текст',
@@ -192,6 +208,13 @@ const messages = {
             settings: 'Настройки',
             resetAlert: 'Текущая запись будет сброшена. Продолжить?',
             resetAlertTitle: 'Новая запись'
+        },
+        diff: {
+            title: 'Сравнение текстов',
+            compareLabel: 'Сравнить',
+            firstTextPH: 'Введите первый текст...',
+            secondTextPH: 'Введите второй текст...',
+
         }
     }
 }

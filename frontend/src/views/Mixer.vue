@@ -63,15 +63,6 @@ export default {
       this.postBody = value;
       this.modeChanged()
     },
-    async fetchNormalForms(text) {
-      const chunkSize = 100;
-      let words = text.split(' ')
-      for (let i = 0; i < words.length; i += chunkSize) {
-        const chunk = words.slice(i, i + chunkSize).join(' ')
-        api.post('/parse/', {text: {text: chunk}})
-      }
-
-    },
     copyText() {
       let textToCopy = this.$refs.textContent;
       let blob = textToCopy.$el;
@@ -105,47 +96,10 @@ export default {
           this.convertedText = res.data.map(item => item.normal_form).join(' ')
 
         }).catch(err => {
-          this.warning(err.response.data.message)
+          this.warning(this.$t('common.warnMessage'))
         })
       }
     },
-    chaosChars() {
-      const reg = /^[a-zа-я]+$/i;
-
-      function getRandomInt(n) {
-        var min = Math.ceil(1)
-        var max = Math.floor(n - 1)
-        return Math.floor(Math.random() * (max - min) + min);
-      }
-
-      function shuffleWord(word) {
-        var output = ''
-        var isGet = 1
-        var arr = word.split('')
-        var n = arr.length;
-        for (var i = 0; i < n; ++i) {
-          if (i === 0 || i >= n - 1 || !reg.test(arr[i])) {
-            continue
-          }
-          var j = getRandomInt(n);
-          var temp = arr[i];
-          arr[i] = arr[j];
-          arr[j] = temp;
-        }
-        return arr.join('');
-      }
-
-      var words = this.postBody.replace(/[^a-zа-я0-9]|\r\n|\n|\r/gi, ' ').split(' ')
-      var newArr = []
-      for (var word of words) {
-        if (word.length < 3) {
-          newArr.push(word)
-          continue;
-        }
-        newArr.push(shuffleWord(word.replace(/[^a-zа-я0-9]/gi, '')))
-      }
-      this.convertedText = newArr.join(' ')
-    }
   }
 }
 </script>
