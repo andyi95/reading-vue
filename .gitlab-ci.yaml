@@ -6,6 +6,20 @@ stages:
     - deploy:development
     - deploy:production
 
+variables:
+    DEPLOY_ENVIRONMENT:
+        value: "development"
+        options:
+            - "development"
+            - "production"
+            - "home"
+        description: "Environment for deploy"
+
+workflow:
+    rules:
+        - if: '$DEPLOY_ENVIRONMENT == "development"'
+          variables:
+
 .docker_build: &docker-build
     variables:
         GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME

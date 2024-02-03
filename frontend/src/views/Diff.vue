@@ -1,7 +1,8 @@
 <script lang="ts">
 import DiffMatchPatch from 'diff-match-patch';
 import { ref } from 'vue';
-
+import { mapState } from 'vuex';
+import TextParser from "@/helpers/parser";
 export default {
   methods: {
     copyText() {
@@ -16,34 +17,40 @@ export default {
       window.getSelection().removeAllRanges()
     },
   },
+  computed: {
+    ...mapState(['theme']),
+    isDark() {
+      return this.theme === 'darkTheme';
+    }
+  },
   setup() {
     const text1 = ref('');
     const text2 = ref('');
-    const diffResult = ref('');
-
-    const dmp = new DiffMatchPatch();
+    const diffResult = ref([]);
     const generateDiffHtml = (diffs: []) => {
-      let html = [];
+      let result = [];
       for (let i = 0; i < diffs.length; i++) {
         let operation = diffs[i][0];
         let text = diffs[i][1];
+        let cssClass = '';
         switch (operation) {
           case DiffMatchPatch.DIFF_INSERT:
-            html[i] = '<ins class="diff-ins">' + text + '</ins>';
+            cssClass = 'diff-ins';
             break;
           case DiffMatchPatch.DIFF_DELETE:
-            html[i] = '<del class="diff-del">' + text + '</del>';
+            cssClass = 'diff-del'
             break;
           case DiffMatchPatch.DIFF_EQUAL:
-            html[i] = '<span>' + text + '</span>';
+            cssClass = 'diff-equal';
             break;
         }
+        result.push({text: text, cssClass: cssClass});
       }
-      return html.join('');
+      return result
     };
-
+    const textContent = ref(null);
     const compareTexts = () => {
-      const diff = dmp.diff_main(text1.value, text2.value);
+      const diff = TextParser.compareTexts(text1.value, text2.value);
       diffResult.value = generateDiffHtml(diff);
     };
 
@@ -51,7 +58,7 @@ export default {
       text1,
       text2,
       diffResult,
-      compareTexts
+      compareTexts, textContent
     };
   }
 };
@@ -63,19 +70,30 @@ export default {
     <n-input v-model:value="text1" :placeholder="$t('diff.firstTextPH')" class="w-full h-32" type="textarea"></n-input>
       <n-input v-model:value="text2" :placeholder="$t('diff.secondTextPH')" class="w-full h-32" type="textarea"></n-input>
   </div>
-  <n-button @click="compareTexts" type="primary">Compare</n-button>
-    <n-card>
-      <div v-html="diffResult"></div>
-      <n-button type="primary" @click="copyText">{{ $t('common.copyText')}}</n-button>
+  <n-button @click="compareTexts" type="primary">{{ $t('diff.compareLabel') }}</n-button>
+    <n-card class="text-2xl" v-if="diffResult.length > 0" content-class="text-2xl" :ref="textContent">
+      <span class="text-2xl" v-for="(item, index) in diffResult" :key="index"
+            :class="[item.cssClass, {'dark': isDark}]">{{ item.text }}</span>
+      <template #footer>
+      <n-button type="primary" @click="copyText">{{ $t('common.copyText')}}</n-button></template>
     </n-card>
   </n-space>
 </template>
 
 <style scoped>
+
 .diff-del {
-  background-color: #fe8a8a;
+  background-color: #ffff00;
+  text-decoration-line: line-through;
 }
 .diff-ins {
-  background-color: #b4fbb8;
+  background-color: #00ff00;
+  text-decoration-line: underline;
+}
+.diff-del.dark{
+  background-color: #fe8a8a;
+}
+.diff-ins.dark {
+  background-color: #6699cc;
 }
 </style>
