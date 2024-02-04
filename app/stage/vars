@@ -2,7 +2,6 @@
 
 set -e
 
-cd /home/andrey/reader/
 ENV_FILE=".env"
 
 # Function to add or update a variable in the .env file

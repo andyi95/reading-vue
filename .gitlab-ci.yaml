@@ -65,9 +65,10 @@ test:backend:
         GIT_CLONE_PATH: 'none'
     before_script:
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    script:
-        - app/stage/vars $CI_COMMIT_REF_SLUG
-        - app/stage/deploy $DEPLOY_COMPONENT
+    script: |
+    cd /home/andrey/reader &&
+    app/stage/vars $CI_COMMIT_REF_SLUG &&
+    app/stage/deploy $DEPLOY_COMPONENT 
     when: manual
     tags:
         - ssh
