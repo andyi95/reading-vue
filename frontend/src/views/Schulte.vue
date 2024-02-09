@@ -1,5 +1,5 @@
 <script>
-import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, NLayout, NLayoutContent, useThemeVars, NButton, NTime, NFormItem, NTooltip} from 'naive-ui';
+import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, useThemeVars, NButton, NTime, NFormItem} from 'naive-ui';
 import {defineAsyncComponent, defineComponent, ref} from "vue";
 import debounce from "debounce";
 import {mapActions}  from "vuex";
@@ -7,7 +7,7 @@ export default {
   name: 'Schulte',
   components: {
     SchulteResults: defineAsyncComponent(() => import('@/components/SchulteResults.vue')),
-    NGrid, NGi, NGridItem, NInputNumber, NCard, NLayout, NLayoutContent, NButton, NTime, NFormItem, NTooltip},
+    NGrid, NGi, NGridItem, NInputNumber, NCard, NButton, NTime, NFormItem},
 
   data() {
     return {
@@ -36,7 +36,6 @@ export default {
     const timerCount = ref(0);
     const timer = ref(null);
     const themeVars = useThemeVars();
-    const schulteGridRef = ref(null);
     return {
       timerCount, timer,
       warning(text) {
@@ -46,13 +45,10 @@ export default {
         message.success(
             text, { duration: 5000})
       },
-      themeVars, schulteGridRef
+      themeVars
     }
   },
   computed: {
-    backgroundColor() {
-      return this.themeVars.modalColor
-    },
     trainingDataOptions(){
       return [
         {
@@ -86,6 +82,9 @@ export default {
       return this.$store.getters.sortedSchulteResults
     },
     gridSizes(){
+      function sleep (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+      }
       let wRate = 0.7;
       if (this.size > 5) {
         wRate = 0.8;

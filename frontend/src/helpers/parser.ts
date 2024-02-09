@@ -1,3 +1,6 @@
+import DiffMatchPatch from "diff-match-patch";
+import { Diff } from "diff-match-patch";
+
 type ParsedCharacter = {
     char: string;
     idx: number;
@@ -32,12 +35,21 @@ export default class TextParser {
             'X': '%', 'Y': 'Y', 'Z': '2'
         };
     }
-    private removePuntuation(text: string): string {
+    private removePunctuation(text: string): string {
         return text.replace(/[^\w\sа-яa-z]|_/giu, '');
+    }
+    static removePunctuation(text: string): string {
+        return text.replace(/[^\w\sа-яa-z]|_/giu, ' ');
+    }
+    static compareTexts(text1: string, text2: string): Diff[] {
+        const dmp = new DiffMatchPatch();
+        return dmp.diff_main(
+            TextParser.removePunctuation(text1).toLowerCase(),
+            TextParser.removePunctuation(text2).toLowerCase());
     }
 
     replaceVowels(): ParsedCharacter[] {
-        const cleanedText = this.removePuntuation(this.text)
+        const cleanedText = this.removePunctuation(this.text)
         return cleanedText.split('').map((item, idx) => ({
             char: item,
             idx,
@@ -46,12 +58,12 @@ export default class TextParser {
     }
 
     replaceLetters(): string {
-        const cleanedText = this.removePuntuation(this.text)
+        const cleanedText = this.removePunctuation(this.text)
         return cleanedText.toUpperCase().split('').map((item, idx) => (this.replaceMap[item] || item)).join('');
     }
 
     seamlessText(): string {
-        const cleanedText = this.removePuntuation(this.text)
+        const cleanedText = this.removePunctuation(this.text)
         return cleanedText
             .toUpperCase()
             .split('')
@@ -91,7 +103,7 @@ export default class TextParser {
             return arr.join('');
         }
 
-        const words = this.removePuntuation(this.text).replace(/[^a-zа-я0-9]|\r\n|\n|\r/gi, ' ').split(' ')
+        const words = this.removePunctuation(this.text).replace(/[^a-zа-я0-9]|\r\n|\n|\r/gi, ' ').split(' ')
         const newArr = words.map(word =>
             word.length < 3 ? word : shuffleWord(word.replace(/[^a-zа-я0-9]/gi, ''))
         );
@@ -100,7 +112,7 @@ export default class TextParser {
     }
 
     reverseWords(): string {
-        const words = this.removePuntuation(this.text).split(/\s+/);
+        const words = this.removePunctuation(this.text).split(/\s+/);
         return words.map(word => word.split('').reverse().join('')).join(' ');
     }
     async fetchNormalForms(): Promise<string[]> {

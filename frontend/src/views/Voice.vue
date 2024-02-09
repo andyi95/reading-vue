@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {SelectOption, useMessage, useThemeVars} from "naive-ui";
+import { CogOutline } from '@vicons/ionicons5'
 import {computed, onMounted, ref, watch} from "vue";
 import WaveSurfer from 'wavesurfer.js'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js'

@@ -10,7 +10,7 @@ import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig(({command, mode}) => {
-    const parent = path.resolve(process.cwd(), '..');
+    const parent = path.resolve(process.cwd(), '.');
       const env = loadEnv(mode, parent, 'VITE_')
         return {
             plugins: [
@@ -24,7 +24,7 @@ export default defineConfig(({command, mode}) => {
                     changefreq: 'weekly',
                     hostname: 'https://text-tools.ru',
                     dynamicRoutes: [
-                        '/', '/text', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice'
+                        '/', '/text', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice', '/diff'
                     ]
                 }),
                 TailwindCSSVitePlugin(),
@@ -56,10 +56,10 @@ export default defineConfig(({command, mode}) => {
                 extensions: ['.js', '.ts']
             },
             define: {
-                'process.env': env
-            },
-            build: {
-                target: 'es2021',
+                'process.env': {
+                    VITE_BASE_URL: process.env.VITE_BASE_URL,
+                    VITE_GTAG_ID: process.env.VITE_GTAG_ID
+                }
             }
         }
     }

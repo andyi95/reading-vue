@@ -7,7 +7,7 @@
            style="height: 60px">
         <Navigation/>
       </header>
-      <n-layout-content content-style="flex-1 overflow-hidden px-3">
+      <n-layout-content>
         <slot/>
       </n-layout-content>
     </article>

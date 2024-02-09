@@ -1,81 +1,141 @@
-<script lang="ts">
+<script setup lang="ts">
 import DiffMatchPatch from 'diff-match-patch';
-import { ref } from 'vue';
+import { ref, watch, computed, nextTick } from 'vue';
+import {useStore} from 'vuex';
+import TextParser from "@/helpers/parser";
+import {MicCircleSharp} from '@vicons/ionicons5'
+import { useSpeechRecognition} from "@vueuse/core";
+import { useThemeVars} from "naive-ui";
 
-export default {
-  methods: {
-    copyText() {
-      let textToCopy = this.$refs.textContent;
-      let blob = textToCopy.$el;
-      const range = document.createRange();
-      range.selectNode(blob);
-      window.getSelection().removeAllRanges()
-      const selection = window.getSelection();
-      selection.addRange(range);
-      document.execCommand("copy");
-      window.getSelection().removeAllRanges()
-    },
-  },
-  setup() {
-    const text1 = ref('');
-    const text2 = ref('');
-    const diffResult = ref('');
-
-    const dmp = new DiffMatchPatch();
-    const generateDiffHtml = (diffs: []) => {
-      let html = [];
-      for (let i = 0; i < diffs.length; i++) {
-        let operation = diffs[i][0];
-        let text = diffs[i][1];
-        switch (operation) {
-          case DiffMatchPatch.DIFF_INSERT:
-            html[i] = '<ins class="diff-ins">' + text + '</ins>';
-            break;
-          case DiffMatchPatch.DIFF_DELETE:
-            html[i] = '<del class="diff-del">' + text + '</del>';
-            break;
-          case DiffMatchPatch.DIFF_EQUAL:
-            html[i] = '<span>' + text + '</span>';
-            break;
-        }
-      }
-      return html.join('');
-    };
-
-    const compareTexts = () => {
-      const diff = dmp.diff_main(text1.value, text2.value);
-      diffResult.value = generateDiffHtml(diff);
-    };
-
-    return {
-      text1,
-      text2,
-      diffResult,
-      compareTexts
-    };
+const store = useStore();
+const theme = computed(() => store.state.theme);
+const isDark = computed(() => theme.value === 'darkTheme')
+const text1 = ref('');
+const text2 = ref('');
+const text1Ref = ref(null);
+const diffResult = ref([]);
+const textContent = ref(null);
+const currentSegment = ref('');
+const lastSegmentLength = ref(0);
+const isListening = computed(() => speech.isListening.value)
+const toggleSpeechRecognition = () => {
+  if (isListening.value){
+    speech.stop()
   }
+  else {
+    lastSegmentLength.value = 0;
+    speech.start()
+  }
+}
+const copyText = () => {
+  if (!textContent.value) return;
+  const range = document.createRange();
+  range.selectNode(textContent.value.$el);
+  window.getSelection()?.removeAllRanges();
+  const selection = window.getSelection();
+  selection?.addRange(range);
+  document.execCommand('copy');
+  selection?.removeAllRanges();
+}
+const scrollTextInput = () => {
+  nextTick(() => {
+    const textInputElement = text1Ref.value;
+    if (textInputElement){
+      text1Ref.value.scrollTo({top: text1Ref.value.value.length})
+    }
+  })
+}
+const speech = useSpeechRecognition({
+  continuous: true,
+  interimResults: true,
+  lang: store.getters.localeCode
+});
+
+
+watch(speech.result, (result) => {
+  if(speech.isListening.value){
+    scrollTextInput()
+  }
+  currentSegment.value = result.substring(lastSegmentLength.value);
+})
+watch(speech.isFinal, (isFinal) => {
+  if (true) {
+    text1.value += currentSegment.value;
+    lastSegmentLength.value = text1.value.length;
+    currentSegment.value = '';
+    scrollTextInput()
+  }
+})
+
+const themeVars = useThemeVars();
+const generateDiffHtml = (diffs: []) => {
+  let result = [];
+  for (let i = 0; i < diffs.length; i++) {
+    let operation = diffs[i][0];
+    let text = diffs[i][1];
+    let cssClass = '';
+    switch (operation) {
+      case DiffMatchPatch.DIFF_INSERT:
+        cssClass = 'diff-ins';
+        break;
+      case DiffMatchPatch.DIFF_DELETE:
+        cssClass = 'diff-del'
+        break;
+      case DiffMatchPatch.DIFF_EQUAL:
+        cssClass = 'diff-equal';
+        break;
+    }
+    result.push({text: text, cssClass: cssClass});
+  }
+  return result
 };
+const compareTexts = () => {
+  const diff = TextParser.compareTexts(text1.value, text2.value);
+  diffResult.value = generateDiffHtml(diff);
+};
+
+
 </script>
 
 <template>
   <n-space vertical justify="space-between">
   <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
-    <n-input v-model:value="text1" :placeholder="$t('diff.firstTextPH')" class="w-full h-32" type="textarea"></n-input>
-      <n-input v-model:value="text2" :placeholder="$t('diff.secondTextPH')" class="w-full h-32" type="textarea"></n-input>
+    <n-input v-model:value="text1" :placeholder="$t('diff.firstTextPH')"
+             class="w-full" type="textarea" ref="text1Ref">
+      <template #suffix>
+              <n-button text class="absolute bottom-0 left-0" @click="toggleSpeechRecognition">
+        <n-icon depth="2" size="30" :color="isListening? themeVars.errorColor: themeVars.primaryColor"><MicCircleSharp/></n-icon>
+      </n-button>
+      </template>
+    </n-input>
+
+
+      <n-input v-model:value="text2" :placeholder="$t('diff.secondTextPH')" class="w-full" type="textarea"></n-input>
   </div>
-  <n-button @click="compareTexts" type="primary">Compare</n-button>
-    <n-card>
-      <div v-html="diffResult"></div>
-      <n-button type="primary" @click="copyText">{{ $t('common.copyText')}}</n-button>
+  <n-button @click="compareTexts" type="primary">{{ $t('diff.compareLabel') }}</n-button>
+    <n-card class="text-2xl" v-if="diffResult.length > 0" content-class="text-2xl" ref="textContent">
+      <span class="text-2xl" v-for="(item, index) in diffResult" :key="index"
+            :class="[item.cssClass, {'dark': isDark}]">{{ item.text }}</span>
+      <template #footer>
+      <n-button type="primary" @click="copyText">{{ $t('common.copyText')}}</n-button></template>
     </n-card>
   </n-space>
 </template>
 
 <style scoped>
+
 .diff-del {
-  background-color: #fe8a8a;
+  background-color: #ffff00;
+  text-decoration-line: line-through;
 }
 .diff-ins {
-  background-color: #b4fbb8;
+  background-color: #00ff00;
+  text-decoration-line: underline;
+}
+.diff-del.dark{
+  background-color: #fe8a8a;
+}
+.diff-ins.dark {
+  background-color: #6699cc;
 }
 </style>

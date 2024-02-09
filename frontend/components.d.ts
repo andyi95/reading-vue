@@ -40,7 +40,6 @@ declare module 'vue' {
     NSpace: typeof import('naive-ui')['NSpace']
     NSwitch: typeof import('naive-ui')['NSwitch']
     NTag: typeof import('naive-ui')['NTag']
-    NTextarea: typeof import('naive-ui')['NTextarea']
     NTooltip: typeof import('naive-ui')['NTooltip']
     Playback: typeof import('./src/components/Playback.vue')['default']
     RecordingControl: typeof import('./src/components/RecordingControl.vue')['default']
