@@ -2,7 +2,7 @@
 
 import { createStore, createLogger, StoreOptions } from 'vuex';
 import VuexPersistence from 'vuex-persist';
-import { State, SchulteResultsItem, SchulteSettings } from '../helpers/types';
+import { State, SchulteResultsItem } from '@/helpers/types';
 import { mutations } from './mutations';
 
 const debug = process.env["NODE_ENV"] !== 'production';
@@ -60,7 +60,15 @@ const storeOptions: StoreOptions<State> = {
             return state.schulteResults.sort((a: SchulteResultsItem, b: SchulteResultsItem) => {
                 return a.time - b.time;
             });
+        },
+        localeCode: (state) => {
+            const localeCodes: Record<string, string> = {
+                'ru': 'ru-RU',
+                'en': 'en-US',
+            };
+            return localeCodes[state.locale];
         }
+
     },
 };
 

@@ -42,7 +42,10 @@ const messages = {
             onlyNouns: 'Show only nouns',
             onlyVerbs: 'Show only verbs',
             grayScale: 'Use gray scale',
-            textContent: 'Text for reading'
+            textContent: 'Text for reading',
+            metaTitle: 'Text tools',
+            metaTags: 'text, reading, word counter, text colorizer, morphemes, morphological analysis',
+            metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, morphological analysis.'
         },
         spreeder: {
             sourceText: 'Source text',
@@ -50,7 +53,10 @@ const messages = {
             wordsPerMinute: 'words per minute',
             startLabel: 'Start',
             stopLabel: 'Stop',
-            resetLabel: 'Reset'
+            resetLabel: 'Reset',
+            metaTitle: 'Spreader',
+            metaTags: 'text, reading, speed reading, spreader, words per minute',
+            metaDescription: 'Spreader is a tool for speed reading. It helps to read faster and understand better.'
         },
         schulte: {
             title: 'Schulte table',
@@ -77,11 +83,17 @@ const messages = {
             easyGameTooltip: 'The guessed tiles will disappear',
             finished: 'Great job! You finished the game in {minutes} minutes {seconds} seconds, making {errors} mistakes. Your speed is {rate} characters per minute.',
             tooManyErrors: 'Too many errors! Get ready!',
-            tooManyErrorsTitle: 'Too many errors!'
+            tooManyErrorsTitle: 'Too many errors!',
+            metaTitle: 'Schulte table',
+            metaTags: 'table, game, memory, speed reading, attention, concentration, schulte table, schulte',
+            metaDescription: 'Schulte table is a tool for training attention and memory. It is also used for speed reading.'
         },
         anticipation: {
             selectChars: 'Additional characters',
-            placeHolderSelect: 'Select characters'
+            placeHolderSelect: 'Select characters',
+            metaTitle: 'Anticipation',
+            metaTags: 'text, reading, anticipation, speed reading, attention, concentration',
+            metaDescription: 'Anticipation is a tool for training attention and speed reading. It helps to read faster and understand better.'
         },
         chaos: {
             sourceText: 'Source text',
@@ -95,24 +107,36 @@ const messages = {
             substitutionText: 'Substitution letters',
             shuffleLetters: 'Shuffle letters',
             normalForm: 'Lemmatization',
+            metaTitle: 'Text mixer',
+            metaTags: 'text, reading, text mixer, text converter, text chaos, text transformation',
+            metaDescription: 'Text mixer is a tool for text transformation. It helps to read and understand the text better.'
         },
         voice: {
             title: 'Voice Recorder',
             settings: 'Settings',
             resetAlert: 'Current record will be reset. Continue?',
-            resetAlertTitle: 'New record'
+            resetAlertTitle: 'New record',
+            metaTitle: 'Voice Recorder',
+            metaTags: 'text, reading, voice recorder, voice, sound, speech, speed reading',
+            metaDescription: 'Voice recorder is a tool for recording and listening to voice messages. It helps to improve pronunciation and speech.'
         },
         diff:{
             title: 'Compare texts',
             compareLabel: 'Compare',
             firstTextPH: 'Enter first text...',
             secondTextPH: 'Enter second text...',
+            metaTitle: 'Compare texts',
+            metaTags: 'text, reading, compare texts, text comparison, text analysis, speech recognition',
+            metaDescription: 'Compare texts is a tool for comparing two texts with speech recognition. It helps to find differences and similarities between texts.'
         }
     },
     ru: {
         anticipation: {
             selectChars: 'Дополнительные символы',
-            placeHolderSelect: 'Выберите символы'
+            placeHolderSelect: 'Выберите символы',
+            metaTitle: 'Антиципация',
+            metaTags: 'текст, чтение, антиципация, скорочтение, внимание, концентрация',
+            metaDescription: 'Антиципация - это инструмент для тренировки внимания и скорочтения. Он помогает читать быстрее и понимать лучше.'
         },
         schulte: {
             title: 'Таблица Шульте',
@@ -139,7 +163,10 @@ const messages = {
             resultsLabel:'Результаты',
             easyGameTooltip: 'Угаданные плитки будут исчезать',
             tooManyErrors: 'Слишком много ошибок! Соберись!',
-            tooManyErrorsTitle: 'Много ошибок!'
+            tooManyErrorsTitle: 'Много ошибок!',
+            metaTitle: 'Таблица Шульте',
+            metaTags: 'таблица, игра, память, скорочтение, внимание, концентрация, таблица Шульте, Шульте',
+            metaDescription: 'Таблица Шульте - это инструмент для тренировки внимания и памяти. Также используется для скорочтения.'
         },
         nav: {
             textparser: 'Подсчёт слов',
@@ -179,7 +206,11 @@ const messages = {
             onlyNouns: 'Показать только существительные',
             onlyVerbs: 'Показать только глаголы',
             grayScale: 'Оттенки серого',
-            removeVowels: 'Убрать гласные'
+            removeVowels: 'Убрать гласные',
+            textContent: 'Текст для чтения',
+            metaTitle: 'Подсчёт слов',
+            metaTags: 'текст, чтение, подсчёт слов, раскраска текста, морфемы, морфологический анализ',
+            metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, морфологический анализ.'
         },
         spreeder: {
             sourceText: 'Исходный текст',
@@ -187,7 +218,11 @@ const messages = {
             wordsPerMinute: 'слов в минуту',
             startLabel: 'Начать',
             stopLabel: 'Стоп',
-            resetLabel: 'Сброс'
+            resetLabel: 'Сброс',
+            metaTitle: 'Спридер',
+            metaTags: 'текст, чтение, скорочтение, спридер, слов в минуту',
+            metaDescription: 'Спридер - это инструмент для скорочтения. Он помогает читать быстрее и понимать лучше.'
+
         },
         chaos: {
             sourceText: 'Исходный текст',
@@ -202,19 +237,28 @@ const messages = {
             substitutionText: 'Замена букв',
             shuffleLetters: 'Перемешивание букв',
             normalForm: 'Лемматизация',
+            metaTitle: 'Дешифровщик',
+            metaTags: 'текст, чтение, дешифровщик, конвертер текста, хаос текста, трансформация текста',
+            metaDescription: 'Дешифровщик - это инструмент для трансформации текста. Он помогает читать и понимать текст лучше.'
+
         },
         voice: {
             title: 'Запись голоса',
             settings: 'Настройки',
             resetAlert: 'Текущая запись будет сброшена. Продолжить?',
-            resetAlertTitle: 'Новая запись'
+            resetAlertTitle: 'Новая запись',
+            metaTitle: 'Запись голоса',
+            metaTags: 'текст, чтение, запись голоса, голос, звук, речь, скорочтение',
+            metaDescription: 'Запись голоса - это инструмент для записи и прослушивания с настройкой скорости. Он помогает улучшить произношение и речь.'
         },
         diff: {
             title: 'Сравнение текстов',
             compareLabel: 'Сравнить',
             firstTextPH: 'Введите первый текст...',
             secondTextPH: 'Введите второй текст...',
-
+            metaTitle: 'Сравнение текстов',
+            metaTags: 'текст, чтение, сравнение текстов, анализ текста, распознавание речи',
+            metaDescription: 'Сравнение текстов - это инструмент для сравнения двух текстов с распознаванием речи. Он помогает найти различия и сходства между текстами.'
         }
     }
 }

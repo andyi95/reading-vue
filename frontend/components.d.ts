@@ -47,6 +47,8 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SchulteResults: typeof import('./src/components/SchulteResults.vue')['default']
+    Test1: typeof import('./src/components/Test1.vue')['default']
+    Test2: typeof import('./src/components/Test2.vue')['default']
     Timer: typeof import('./src/components/Timer.vue')['default']
     WordCard: typeof import('./src/components/WordCard.vue')['default']
     WordCounter: typeof import('./src/components/WordCounter.vue')['default']

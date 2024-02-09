@@ -2,7 +2,7 @@
 import {ref, onMounted, watch, computed} from "vue";
 import WaveSurfer from "wavesurfer.js";
 import {CloudDownloadOutline, PlayCircleOutline, StopCircleSharp} from '@vicons/ionicons5';
-import {NGrid, NIcon, useThemeVars} from "naive-ui"
+import { useThemeVars} from "naive-ui"
 import {saveAs} from "file-saver";
 
 const props = defineProps({
@@ -50,6 +50,7 @@ onMounted(() => {
   }
 
   playbackWaveSurfer.on('ready', () => {
+    if (!playbackWaveSurfer) return;
     playbackWaveSurfer.setPlaybackRate(playbackRate.value);
   });
 });

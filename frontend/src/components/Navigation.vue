@@ -142,6 +142,11 @@ export default defineComponent({
               label: () =>
                   h(RouterLink, {to: {name: 'Voice'}}, {default: () => this.$t('nav.voice')}),
               key: 'voice'
+            },
+            {
+              label: () =>
+                  h(RouterLink, {to: {name: 'Diff'}}, {default: () => this.$t('nav.diff')}),
+              key: 'diff'
             }
           ]
       }

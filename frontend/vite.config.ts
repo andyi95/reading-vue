@@ -24,7 +24,7 @@ export default defineConfig(({command, mode}) => {
                     changefreq: 'weekly',
                     hostname: 'https://text-tools.ru',
                     dynamicRoutes: [
-                        '/', '/text', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice'
+                        '/', '/text', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice', '/diff'
                     ]
                 }),
                 TailwindCSSVitePlugin(),
@@ -57,9 +57,6 @@ export default defineConfig(({command, mode}) => {
             },
             define: {
                 'process.env': env
-            },
-            build: {
-                target: 'es2021',
             }
         }
     }

@@ -63,7 +63,6 @@ import {useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag, NSwitch} f
 import {parsedText, countedText} from "@/store/mock";
 import {ref} from "vue";
 import BaseTextBox from "@/components/BaseTextBox.vue";
-import {useI18n} from "vue-i18n";
 import union from "arr-union";
 const textContent = ref(null);
 
@@ -254,9 +253,6 @@ export default {
                 });
             }
             this.fetchedText = union(nouns, verbs)
-        },
-        removeVowels() {
-
         },
         copyText() {
             let textToCopy = this.$refs.textContent;

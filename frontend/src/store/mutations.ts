@@ -1,6 +1,4 @@
-// mutations.ts
-
-import {SchulteContext, SchulteResultsItem, SchulteSettings, State} from '../helpers/types';
+import {SchulteContext, SchulteResultsItem, SchulteSettings, State} from '@/helpers/types';
 
 export const mutations = {
     SWITCH_THEME(state: State) {
