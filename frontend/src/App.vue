@@ -18,7 +18,7 @@
 <script>
 import Navigation from "@/components/Navigation.vue";
 import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
-import {defineComponent, computed, ref} from "vue";
+import {defineComponent, computed, ref, onMounted} from "vue";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {useHead, useSeoMeta} from "@unhead/vue";
@@ -28,10 +28,13 @@ export default defineComponent({
   components: {Navigation, NConfigProvider, NMessageProvider, darkTheme},
   setup() {
     const store = useStore();
-    const { t } = useI18n();
+    const {t} = useI18n();
     const windowWidth = ref(window.innerWidth);
     const windowHeight = ref(window.innerHeight);
     const route = useRoute();
+    onMounted(() => {
+      console.log(process.env.VITE_GTAG_ID)
+    })
     const currentLanguage = computed(() => store.state.locale)
     useSeoMeta({
       title: computed(() => t('common.metaTitle')),
@@ -56,23 +59,23 @@ export default defineComponent({
             link: [
               {
                 rel: 'canonical',
-                href: `https://reader.dev.andyi95.com${newPath}`
+                href: process.env.VITE_BASE_URL + newPath
               }
             ],
           });
         },
-        { immediate: true }
+        {immediate: true}
     );
 
-      return {
-        darkTheme,
-        t,
-        windowWidth, windowHeight,
-        theme: computed(function (){
-          return store.state.theme === 'darkTheme' ? darkTheme : null
-        })
-      }
+    return {
+      darkTheme,
+      t,
+      windowWidth, windowHeight,
+      theme: computed(function () {
+        return store.state.theme === 'darkTheme' ? darkTheme : null
+      })
     }
+  }
 
   })
 </script>

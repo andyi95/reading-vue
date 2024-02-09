@@ -10,7 +10,7 @@ import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig(({command, mode}) => {
-    const parent = path.resolve(process.cwd(), '..');
+    const parent = path.resolve(process.cwd(), '.');
       const env = loadEnv(mode, parent, 'VITE_')
         return {
             plugins: [
@@ -56,7 +56,10 @@ export default defineConfig(({command, mode}) => {
                 extensions: ['.js', '.ts']
             },
             define: {
-                'process.env': env
+                'process.env': {
+                    VITE_BASE_URL: process.env.VITE_BASE_URL,
+                    VITE_GTAG_ID: process.env.VITE_GTAG_ID
+                }
             }
         }
     }
