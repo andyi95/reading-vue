@@ -40,6 +40,10 @@ workflow:
             fi
             export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
         - app/stage/vars $CI_COMMIT_REF_SLUG
+    only:
+        - dev
+        - develop
+        - master
 
 build:frontend:
     <<: *docker-build

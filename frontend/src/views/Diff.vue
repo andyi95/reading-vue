@@ -90,18 +90,22 @@ const generateDiffHtml = (diffs: []) => {
   return result
 };
 const compareTexts = () => {
+  if (!text1.value || !text2.value){
+    return;
+  }
   const diff = TextParser.compareTexts(text1.value, text2.value);
+  // @ts-ignore
   diffResult.value = generateDiffHtml(diff);
 };
-
 
 </script>
 
 <template>
   <n-space vertical justify="space-between">
   <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
-    <n-input v-model:value="text1" :placeholder="$t('diff.firstTextPH')"
-             class="w-full" type="textarea" ref="text1Ref">
+    <n-input v-model:value="text1"
+             :placeholder="$t('diff.firstTextPH')"
+             class="w-full" type="textarea" ref="text1Ref" :autosize="{minRows: 4, maxRows: 15}">
       <template #suffix>
               <n-button text class="absolute bottom-0 left-0" @click="toggleSpeechRecognition">
         <n-icon depth="2" size="30" :color="isListening? themeVars.errorColor: themeVars.primaryColor"><MicCircleSharp/></n-icon>
@@ -110,7 +114,9 @@ const compareTexts = () => {
     </n-input>
 
 
-      <n-input v-model:value="text2" :placeholder="$t('diff.secondTextPH')" class="w-full" type="textarea"></n-input>
+      <n-input
+          v-model:value="text2" :placeholder="$t('diff.secondTextPH')" class="w-full" type="textarea"
+          :autosize="{minRows: 4, maxRows: 15}" />
   </div>
   <n-button @click="compareTexts" type="primary">{{ $t('diff.compareLabel') }}</n-button>
     <n-card class="text-2xl" v-if="diffResult.length > 0" content-class="text-2xl" ref="textContent">
