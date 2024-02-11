@@ -6,7 +6,7 @@ import TextParser from "@/helpers/parser";
 import {MicCircleSharp} from '@vicons/ionicons5'
 import { useSpeechRecognition} from "@vueuse/core";
 import { useThemeVars} from "naive-ui";
-
+import {SwapHorizontalOutline} from "@vicons/ionicons5";
 const store = useStore();
 const theme = computed(() => store.state.theme);
 const isDark = computed(() => theme.value === 'darkTheme')
@@ -57,15 +57,12 @@ watch(speech.result, (result) => {
     scrollTextInput()
   }
   currentSegment.value = result.substring(lastSegmentLength.value);
+  text1.value += currentSegment.value;
+  lastSegmentLength.value += result.length - lastSegmentLength.value;
+  currentSegment.value = '';
+  scrollTextInput()
 })
-watch(speech.isFinal, (isFinal) => {
-  if (true) {
-    text1.value += currentSegment.value;
-    lastSegmentLength.value = text1.value.length;
-    currentSegment.value = '';
-    scrollTextInput()
-  }
-})
+
 
 const themeVars = useThemeVars();
 const generateDiffHtml = (diffs: []) => {
@@ -97,12 +94,27 @@ const compareTexts = () => {
   // @ts-ignore
   diffResult.value = generateDiffHtml(diff);
 };
+const swapTexts = () => {
+  [text1.value, text2.value] = [text2.value, text1.value];
 
+}
+const colors = computed(() => ({
+  diffDel: isDark.value ? '#fe8a8a' : '#ffff00',
+  diffIns: isDark.value ? '#6699cc' : '#00ff00'
+}))
 </script>
 
 <template>
   <n-space vertical justify="space-between">
+
+    <n-form size="medium">
   <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+
+      <n-form-item>
+        <template #label>
+          <div class="inline-flex items-center">
+            <span class="w-3 h-3 inline-block rounded-full me-2" :style="{backgroundColor: colors.diffIns}"></span>{{$t('diff.text1Label')}}</div>
+        </template>
     <n-input v-model:value="text1"
              :placeholder="$t('diff.firstTextPH')"
              class="w-full" type="textarea" ref="text1Ref" :autosize="{minRows: 4, maxRows: 15}">
@@ -112,13 +124,22 @@ const compareTexts = () => {
       </n-button>
       </template>
     </n-input>
-
-
+      </n-form-item>
+      <n-form-item>
+        <template #label>
+          <div class="inline-flex items-center">
+            <span class="w-3 h-3 inline-block rounded-full me-2" :style="{backgroundColor: colors.diffDel}"></span>{{$t('diff.text2Label')}}</div>
+        </template>
       <n-input
           v-model:value="text2" :placeholder="$t('diff.secondTextPH')" class="w-full" type="textarea"
-          :autosize="{minRows: 4, maxRows: 15}" />
+          :autosize="{minRows: 4, maxRows: 15}" /></n-form-item>
   </div>
+    </n-form>
+    <n-space>
   <n-button @click="compareTexts" type="primary">{{ $t('diff.compareLabel') }}</n-button>
+      <n-button @click="swapTexts" secondary type="primary">
+        <span class="pr-1"><n-icon><SwapHorizontalOutline/></n-icon></span>{{$t('diff.swapLabel')}}</n-button>
+    </n-space>
     <n-card class="text-2xl" v-if="diffResult.length > 0" content-class="text-2xl" ref="textContent">
       <span class="text-2xl" v-for="(item, index) in diffResult" :key="index"
             :class="[item.cssClass, {'dark': isDark}]">{{ item.text }}</span>

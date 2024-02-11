@@ -127,7 +127,10 @@ const messages = {
             secondTextPH: 'Enter second text...',
             metaTitle: 'Compare texts',
             metaTags: 'text, reading, compare texts, text comparison, text analysis, speech recognition',
-            metaDescription: 'Compare texts is a tool for comparing two texts with speech recognition. It helps to find differences and similarities between texts.'
+            metaDescription: 'Compare texts is a tool for comparing two texts with speech recognition. It helps to find differences and similarities between texts.',
+            text1Label: 'First text',
+            text2Label: 'Second text',
+            swapLabel: 'Swap texts'
         }
     },
     ru: {
@@ -258,7 +261,10 @@ const messages = {
             secondTextPH: 'Введите второй текст...',
             metaTitle: 'Сравнение текстов',
             metaTags: 'текст, чтение, сравнение текстов, анализ текста, распознавание речи',
-            metaDescription: 'Сравнение текстов - это инструмент для сравнения двух текстов с распознаванием речи. Он помогает найти различия и сходства между текстами.'
+            metaDescription: 'Сравнение текстов - это инструмент для сравнения двух текстов с распознаванием речи. Он помогает найти различия и сходства между текстами.',
+            text1Label: 'Первый текст',
+            text2Label: 'Второй текст',
+            swapLabel: 'Поменять тексты местами'
         }
     }
 }
