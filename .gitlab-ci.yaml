@@ -42,7 +42,7 @@ workflow:
         - app/stage/vars $CI_COMMIT_REF_SLUG
     only:
         - dev
-        - develop
+        - development
         - master
 
 build:frontend:
