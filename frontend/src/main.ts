@@ -17,8 +17,8 @@ app.use(naive)
 if (process.env.NODE_ENV !== 'development') {
     app.use(VueGtagPlugin, {
         config: {
-            // 'cookie_domain': 'text-tools.ru',
-            cookie_domain: 'reader.dev.andyi95.com',
+            'cookie_domain': 'text-tools.ru',
+            // cookie_domain: 'reader.dev.andyi95.com',
             id: 'G-181EZLB3NP',  // prod7
             // id: process.env.VITE_GTAG_ID  // dev
         }

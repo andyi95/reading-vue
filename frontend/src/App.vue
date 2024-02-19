@@ -21,7 +21,6 @@ import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
 import {defineComponent, computed, ref, onMounted} from "vue";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {useRoute} from "vue-router";
 
 export default defineComponent({
   components: {Navigation, NConfigProvider, NMessageProvider, darkTheme},
@@ -30,10 +29,6 @@ export default defineComponent({
     const {t} = useI18n();
     const windowWidth = ref(window.innerWidth);
     const windowHeight = ref(window.innerHeight);
-    const route = useRoute();
-    onMounted(() => {
-      console.log(process.env.VITE_GTAG_ID)
-    })
 
     return {
       darkTheme,
