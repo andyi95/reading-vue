@@ -37,10 +37,7 @@ export default defineConfig(({command, mode}) => {
                         'vue-router',
                         {
                             'naive-ui': [
-                                'useDialog',
-                                'useMessage',
-                                'useNotification',
-                                'useLoadingBar']
+                                'useMessage',]
                         },
                     ]
                 }),

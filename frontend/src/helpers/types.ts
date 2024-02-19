@@ -32,4 +32,8 @@ export interface State {
     schulteResults: SchulteResultsItem[];
     schulteSettings: SchulteSettings;
     schulteContext: SchulteContext;
+    editorContent: {
+        lastSaved: Date,
+        content: string
+    }
 }

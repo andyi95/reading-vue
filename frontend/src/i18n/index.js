@@ -14,7 +14,8 @@ const messages = {
             schulte: 'Schulte table',
             title: 'Text tools',
             voice: 'Voice Recorder',
-            diff: 'Compare texts'
+            diff: 'Compare texts',
+            editor: 'Text editor'
         },
         common:{
             textContent: 'Text for reading',
@@ -131,6 +132,12 @@ const messages = {
             text1Label: 'First text',
             text2Label: 'Second text',
             swapLabel: 'Swap texts'
+        },
+        editor: {
+            title: 'Text editor',
+            description: 'Simple online text editor',
+            metaTitle: 'Text editor',
+            metaTags: 'text. editing, editor, online editor, text editor, free online editor, text processor, online text editor, text editor, ',
         }
     },
     ru: {
@@ -181,7 +188,8 @@ const messages = {
             schulte: 'Таблица Шульте',
             title: 'Текстовые инструменты',
             voice: 'Запись голоса',
-            diff: 'Сравнение текстов'
+            diff: 'Сравнение текстов',
+            editor: 'Редактор'
         },
         common:{
             textContent: 'Текст для чтения',
@@ -265,6 +273,12 @@ const messages = {
             text1Label: 'Первый текст',
             text2Label: 'Второй текст',
             swapLabel: 'Поменять тексты местами'
+        },
+        editor: {
+            title: 'Текстовый редактор',
+            description: 'Простой онлайн редактор текста',
+            metaTitle: 'Текстовый редактор',
+            metaTags: 'текст. редактирование, редактор, онлайн редактор, текстовый редактор, бесплатный онлайн редактор, редактор текста, он-лайн редактор, текстовый процессор',
         }
     }
 }

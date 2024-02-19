@@ -1,13 +1,13 @@
 <script>
-import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, useThemeVars, NButton, NTime, NFormItem} from 'naive-ui';
-import {defineAsyncComponent, defineComponent, ref} from "vue";
+import {useMessage, useThemeVars} from 'naive-ui';
+import {defineAsyncComponent, ref} from "vue";
 import debounce from "debounce";
 import {mapActions}  from "vuex";
 export default {
   name: 'Schulte',
   components: {
     SchulteResults: defineAsyncComponent(() => import('@/components/SchulteResults.vue')),
-    NGrid, NGi, NGridItem, NInputNumber, NCard, NButton, NTime, NFormItem},
+    },
 
   data() {
     return {

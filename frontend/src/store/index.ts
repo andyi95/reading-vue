@@ -30,6 +30,10 @@ const storeOptions: StoreOptions<State> = {
             easyMode: true,
             tableCharsType: 'emoji',
         },
+        editorContent: {
+            lastSaved: new Date(),
+            content: '',
+        },
         schulteContext: {
             currentRate: 1,
             shuffledGrid: [],
@@ -53,6 +57,9 @@ const storeOptions: StoreOptions<State> = {
         },
         updateSchulteContext(context, payload){
             context.commit('UPDATE_SCHULTE_CONTEXT', payload)
+        },
+        saveEditorContent( context, payload){
+            context.commit('UPDATE_EDITOR_CONTENT', payload)
         }
     },
     getters: {
