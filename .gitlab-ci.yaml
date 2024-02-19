@@ -41,21 +41,34 @@ workflow:
             export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
         - app/stage/vars $CI_COMMIT_REF_SLUG
     only:
-        - dev
-        - development
-        - master
+        refs:
+            - dev
+            - development
+            - master
 
 build:frontend:
     <<: *docker-build
     script:
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose build frontend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push frontend
+    only:
+        changes:
+            - frontend/**/*
+            - docker-compose.yaml
+            - docker-compose.stage.yaml
+            - .gitlab-ci.yaml
 
 build:backend:
     <<: *docker-build
     script:
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose build backend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push backend
+    only:
+        changes:
+            - backend/**/*
+            - docker-compose.yaml
+            - docker-compose.stage.yaml
+            - .gitlab-ci.yaml
 
 test:frontend:
     stage: test
