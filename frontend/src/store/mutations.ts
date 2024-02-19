@@ -22,4 +22,10 @@ export const mutations = {
     UPDATE_SCHULTE_CONTEXT(state: State, context: SchulteContext) {
         state.schulteContext = context;
     },
+    UPDATE_EDITOR_CONTENT(state: State, content: string){
+        state.editorContent = {
+            lastSaved: new Date(),
+            content: content,
+        };
+    }
 };

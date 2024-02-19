@@ -21,7 +21,6 @@ import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
 import {defineComponent, computed, ref, onMounted} from "vue";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {useHead, useSeoMeta} from "@unhead/vue";
 import {useRoute} from "vue-router";
 
 export default defineComponent({
@@ -35,37 +34,6 @@ export default defineComponent({
     onMounted(() => {
       console.log(process.env.VITE_GTAG_ID)
     })
-    const currentLanguage = computed(() => store.state.locale)
-    useSeoMeta({
-      title: computed(() => t('common.metaTitle')),
-      description: computed(() => t('common.metaDescription')),
-      keywords: computed(() => t('common.metaTags')),
-    })
-    useHead({
-      htmlAttrs: {
-        lang: currentLanguage.value
-      },
-      meta: [
-        {
-          "http-equiv": 'content-language',
-          content: currentLanguage.value
-        }
-      ]
-    })
-    watch(
-        () => route.path,
-        (newPath) => {
-          useHead({
-            link: [
-              {
-                rel: 'canonical',
-                href: process.env.VITE_BASE_URL + newPath
-              }
-            ],
-          });
-        },
-        {immediate: true}
-    );
 
     return {
       darkTheme,

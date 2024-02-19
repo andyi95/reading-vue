@@ -44,125 +44,180 @@
   </n-drawer>
 </template>
 
-<script>
-import {computed, defineComponent, h, ref} from "vue";
+<script setup lang="ts">
+import {computed, watch, h, ref} from "vue";
 import {RouterLink } from 'vue-router';
-import {NMenu, NButton, NIcon, useThemeVars} from 'naive-ui';
+import {useThemeVars} from 'naive-ui';
 import {useStore} from "vuex";
 import {useRoute, useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {Moon, Sunny} from "@vicons/ionicons5";
+import {useHead, useSeoMeta} from "@unhead/vue";
 
-export default defineComponent({
-  name: 'Navigation',
-  setup() {
-      const { t } = useI18n();
-      const store = useStore();
-      const router = useRouter();
-      const route = useRoute();
-      const activeKey = computed(() => {
-        return route.name?.toLowerCase() || 'textparser'
-      });
-    const windowWidth = ref(window.innerWidth);
-
-    let locale = computed(function (){
-          return store.state.locale
-      })
-    const themeVars = useThemeVars();
-    const isDarkTheme = computed(function (){
-              return store.state.theme === 'darkTheme'
-          })
-
-    return {
-          t,
-      windowWidth,
-      activeKey,
-        locale, themeVars, show: ref(false),
-      isDarkTheme
-    };
-  },
-    data(){
-      return {
-          navLinks: [
-              {
-                  label: () =>
-                      h(
-                          RouterLink,
-                          {
-                              to: {
-                                  name: 'TextParser'
-                              }
-                          },
-                          {default: () => this.$t('nav.textparser')}
-                      ),
-                  key: 'text'
-              },
-              {
-                  label: () =>
-                      h(
-                          RouterLink,
-                          {
-                              to: {
-                                  name: 'Spreeder'
-                              },
-                          },{ default: () => this.$t('nav.spreeder')}
-                      ),
-                  key: 'spreeder'
-              },
-              {
-                  label: () =>
-                      h(
-                          RouterLink,
-                          {
-                              to: {
-                                  name: 'Anticipation'
-                              },
-                          },{ default: () => this.$t('nav.anticipation')}
-                      ),
-                  key: 'anticipation'
-              },
-              {
-                  label: () =>
-                      h(
-                          RouterLink,
-                          {
-                              to: {
-                                  name: 'Mixer'
-                              },
-                          },{ default: () => this.$t('nav.mixer')}
-                      ),
-                  key: 'mixer'
-              },
-            {
-              label: () =>
-                  h(RouterLink, {to: {name: 'Schulte'}}, {default: () => this.$t('nav.schulte')}),
-              key: 'schulte'
+const  navLinks = [
+  {
+    label: () =>
+        h(
+        RouterLink,
+        {
+          to: {
+            name: 'TextParser'
+          }
+        },
+        {default: () => t('nav.textparser')}
+),
+key: 'text'
+},
+{
+  label: () =>
+      h(
+          RouterLink,
+          {
+            to: {
+              name: 'Spreeder'
             },
-            {
-              label: () =>
-                  h(RouterLink, {to: {name: 'Voice'}}, {default: () => this.$t('nav.voice')}),
-              key: 'voice'
+          },{ default: () => t('nav.spreeder')}
+      ),
+      key: 'spreeder'
+},
+{
+  label: () =>
+      h(
+          RouterLink,
+          {
+            to: {
+              name: 'Anticipation'
             },
-            {
-              label: () =>
-                  h(RouterLink, {to: {name: 'Diff'}}, {default: () => this.$t('nav.diff')}),
-              key: 'diff'
-            }
-          ]
-      }
-    },
-  methods: {
-    changeTheme(){
-      this.$store.commit('SWITCH_THEME')
-        this.$i18n.locale = this.locale
-    },
-      changeLocale(){
-        this.$store.commit('SWITCH_LOCALE')
-          this.$i18n.locale = this.locale
-      }
-  },
-  components: {NMenu, NButton, Sunny, Moon}
+          },{ default: () => t('nav.anticipation')}
+      ),
+      key: 'anticipation'
+},
+{
+  label: () =>
+      h(
+          RouterLink,
+          {
+            to: {
+              name: 'Mixer'
+            },
+          },{ default: () => t('nav.mixer')}
+      ),
+      key: 'mixer'
+},
+{
+  label: () =>
+      h(RouterLink, {to: {name: 'Schulte'}}, {default: () => t('nav.schulte')}),
+      key: 'schulte'
+},
+{
+  label: () =>
+      h(RouterLink, {to: {name: 'Voice'}}, {default: () => t('nav.voice')}),
+      key: 'voice'
+},
+{
+  label: () =>
+      h(RouterLink, {to: {name: 'Diff'}}, {default: () => t('nav.diff')}),
+      key: 'diff'
+},
+  {
+    label: () =>
+        h(RouterLink, {to: {name: 'Editor'}}, {default: () => t('nav.editor')}), key: 'editor'
+  }
+]
+const { t, locale } = useI18n();
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
+const show = ref(false);
+const activeKey = computed(() => {
+  return route.name?.toString().toLowerCase() || 'textparser'
 });
+
+const c_locale = computed(function (){
+  return store.state.locale
+})
+const isDarkTheme = computed(function (){
+  return store.state.theme === 'darkTheme'
+})
+const changeTheme = () => {
+  store.commit('SWITCH_THEME')
+  locale.value = c_locale.value
+}
+const changeLocale = () => {
+  store.commit('SWITCH_LOCALE')
+  locale.value = c_locale.value
+}
+const currentLanguage = computed(() => store.state.locale)
+useSeoMeta({
+  title: computed(() => t('common.metaTitle')),
+  description: computed(() => t('common.metaDescription')),
+  keywords: computed(() => t('common.metaTags')),
+})
+watch(
+    () => route.path,
+    (newPath) => {
+      useHead({
+        title: route.meta.title,
+        link: [
+          {
+            rel: 'canonical',
+            href: process.env.VITE_BASE_URL + route.path
+          }
+        ],
+        htmlAttrs: {
+          lang: currentLanguage.value
+        },
+        meta: [
+          {
+            "http-equiv": 'content-language',
+            content: currentLanguage.value
+          },
+          {
+            name: 'description',
+            content: route.meta.description as string
+          },
+          {
+            name: 'keywords',
+            content: route.meta.tags as string
+          }
+        ]
+      })
+    })
+useHead({
+  title: route.meta.title,
+  link: [
+    {
+      rel: 'canonical',
+      href: 'https://text-tools.ru' + route.path
+    }
+  ],
+  htmlAttrs: {
+    lang: currentLanguage.value
+  },
+  meta: [
+    {
+      "http-equiv": 'content-language',
+      content: currentLanguage.value
+    },
+    {
+      name: 'description',
+      content: route.meta.description as string
+    },
+    {
+      name: 'keywords',
+      content: route.meta.tags as string
+    }
+  ]
+})
+router.beforeEach(async (to, from, next) => {
+  const description = to.meta.description ? to.meta.description : t('common.metaDescription');
+  const tags = to.meta.tags ? to.meta.tags : t('common.metaTags');
+  const title = to.meta.title ? to.meta.title : t('common.metaTitle');
+
+  // @ts-ignore
+  // document.title = to.meta.title ? to.meta.title : t('nav.title');
+  next();
+})
 </script>
 
 <style>

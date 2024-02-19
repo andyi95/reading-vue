@@ -53,16 +53,13 @@
 </template>
 
 <script>
-import {api, copyText} from "@/helpers";
+import {api} from "@/helpers";
 import debounce from "debounce";
-import WordCounter from "@/components/WordCounter.vue";
-import BaseInput from "@/components/BaseInput.vue";
-import BaseCheckbox from "@/components/BaseCheckbox.vue";
-import BaseButton from "@/components/BaseButton.vue";
+
+
 import {useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag, NSwitch} from "naive-ui";
 import {parsedText, countedText} from "@/store/mock";
 import {ref} from "vue";
-import BaseTextBox from "@/components/BaseTextBox.vue";
 import union from "arr-union";
 const textContent = ref(null);
 
@@ -80,8 +77,10 @@ export default {
     name: "Text",
     components: {
       NSwitch,
-        BaseTextBox,
-        BaseButton, BaseCheckbox, WordCounter, BaseInput, NSpace, NForm, NFormItem, NListItem, NList, NTag},
+      BaseTextBox: defineAsyncComponent(() => import('@/components/BaseTextBox.vue')),
+      BaseInput: defineAsyncComponent(() => import('@/components/BaseInput.vue')),
+      WordCounter: defineAsyncComponent(() => import('@/components/WordCounter.vue')),
+      NSpace, NForm, NFormItem, NListItem, NList, NTag},
     data() {
         return {
             fetchedText: [],

@@ -1,6 +1,5 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import i18n from "@/i18n";
-import {useHead, Meta} from "@unhead/vue";
 
 const {t, locale} = i18n.global
 const Anticipation = () => import('@/views/Anticipation.vue')
@@ -12,7 +11,7 @@ const Diff = () => import('@/views/Diff.vue')
 
 const routes: RouteRecordRaw[] = [
   {path: '/', name: 'TextParser', component: Text, meta: {title: t('nav.textparser'),
-    tags: t('text.metaTags'), description: t('text.metaDescription')
+    tags: t('textparser.metaTags'), description: t('textparser.metaDescription')
   }},
   {path: '/anticipation', name: 'Anticipation', component: Anticipation, meta: {
     title: t('nav.anticipation'), tags: t('anticipation.metaTags'), description: t('anticipation.metaDescription')
@@ -36,7 +35,7 @@ const routes: RouteRecordRaw[] = [
       title: t('nav.diff'), tags: t('diff.metaTags'), description: t('diff.metaDescription')
     }},
   {path: '/editor', name: 'Editor', component: () => import('@/views/Editor.vue'), meta: {
-    title: t('nav.editor'), tags: t('editor.metaTags'), description: t('editor.metaDescription')}
+    title: t('editor.metaTitle'), tags: t('editor.metaTags'), description: t('editor.metaDescription')}
     },
   {
     path: '/about',
@@ -52,26 +51,6 @@ const router = createRouter({
   linkActiveClass: 'active',
   routes
 });
-router.beforeEach(async (to, from, next) => {
-  const description = to.meta.description ? to.meta.description : t('common.metaDescription');
-    const tags = to.meta.tags ? to.meta.tags : t('common.metaTags');
-    const title = to.meta.title ? to.meta.title : t('common.metaTitle');
-    useHead({
-      title: to.meta.title ? to.meta.title : t('nav.title'),
-      meta: [
-        {
-          name: 'description',
-          content: description as string
-        },
-        {
-          name: 'keywords',
-          content: tags as string
-        }
-      ]
-    })
-  // @ts-ignore
-  document.title = to.meta.title ? to.meta.title : t('nav.title');
-  next();
-})
+
 
 export default router

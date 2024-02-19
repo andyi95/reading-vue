@@ -57,7 +57,6 @@ import {
   NSpace
 } from "naive-ui";
 import {computed, ref} from "vue";
-import {useI18n} from "vue-i18n";
 
 export default {
   name: "Spreeder",
@@ -170,9 +169,7 @@ export default {
     }
   },
   setup() {
-      const { t } = useI18n();
     return {
-        t,
       wordsPerMinute: ref(120),
       speedValidator: (x) => x > 0,
       chunkSize: ref(1),

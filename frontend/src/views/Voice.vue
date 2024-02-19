@@ -57,11 +57,7 @@ const pauseRecording = () => {
   mediaRecorder.value?.isPaused() ? mediaRecorder.value?.resumeRecording() : mediaRecorder.value?.pauseRecording()
   isPaused.value = !isPaused.value
 }
-const resumeRecording = () => {
-  mediaRecorder.value?.resumeRecording()
-}
 
-const isPlaying = ref(false)
 
 watch(playbackRate, (rate: number) => {
   setPlaybackRate(rate)
