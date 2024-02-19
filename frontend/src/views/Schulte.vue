@@ -210,6 +210,7 @@ export default {
       }
       return arr;
     },
+
     generateEmojiRange(){
       const emojiis = [
         ...this.range(0x1F600, 0x1F64F),  // smileyes
