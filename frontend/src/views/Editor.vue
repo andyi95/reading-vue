@@ -32,9 +32,10 @@ const initOptions: RawEditorOptions = computed(() => {
     branding: false,
     language: 'ru',
     selector: 'textarea#classic',
-    toolbar: 'undo redo | fontsize | bold italic underline | forecolor backcolor | ' +
-        'alignleft aligncenter alignright alignjustify | bullist numlist',
-    plugins: 'lists'
+    toolbar: 'undo redo | fontsize fontfamily | bold italic underline | forecolor backcolor | ' +
+        'alignleft aligncenter alignright alignjustify | bullist numlist | searchreplace charmap emoticons',
+    plugins: 'lists searchreplace charmap emoticons',
+    content_style: 'body { font-family: Arial, sans-serif; font-size: 12pt; }',
   }
 })
 const debouncedSave = debounce((newValue: string) => {

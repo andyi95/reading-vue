@@ -24,7 +24,7 @@ export default defineConfig(({command, mode}) => {
                     changefreq: 'weekly',
                     hostname: 'https://text-tools.ru',
                     dynamicRoutes: [
-                        '/', '/text', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice', '/diff'
+                        '/', '/text', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice', '/diff', '/editor'
                     ]
                 }),
                 TailwindCSSVitePlugin(),
