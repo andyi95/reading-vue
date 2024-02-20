@@ -26,6 +26,7 @@ import {NFormItem, NSelect, useMessage} from "naive-ui";
 import TextParser from "@/helpers/parser";
 import {api} from "@/helpers";
 import {ref} from "vue";
+import {debounce} from "lodash-es";
 
 export default {
   name: "Mixer",
@@ -74,6 +75,17 @@ export default {
       document.execCommand("copy");
       window.getSelection().removeAllRanges()
     },
+    async fetchText(){
+      try{
+        const response = await api.post('/parse/', {text: {text: this.postBody}})
+        this.convertedText = response.data.sort(
+            (a, b) => a.id - b.id).map(
+            item => item.normal_form ? item.normal_form : item.word).join(' ')
+        }
+      catch (e) {
+        this.warning(this.$t('common.warnMessage'))
+      }
+    },
     async modeChanged(value) {
       if (!this.postBody) {
         return
@@ -92,12 +104,7 @@ export default {
         this.convertedText = parser.reverseWords()
       }
       if (this.cipherMode === 'normalForm') {
-        api.post('/parse/', {text: {text: this.postBody}}).then(res => {
-          this.convertedText = res.data.map(item => item.normal_form).join(' ')
-
-        }).catch(err => {
-          this.warning(this.$t('common.warnMessage'))
-        })
+        debounce(this.fetchText, 300)
       }
     },
   }
