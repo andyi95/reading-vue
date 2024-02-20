@@ -26,7 +26,7 @@ import {NFormItem, NSelect, useMessage} from "naive-ui";
 import TextParser from "@/helpers/parser";
 import {api} from "@/helpers";
 import {ref} from "vue";
-import {debounce} from "lodash-es";
+import debounce from "debounce";
 
 export default {
   name: "Mixer",
@@ -35,7 +35,7 @@ export default {
     const message = useMessage();
     const textContent = ref(null);
     return {
-      warning(text) {
+      warning(text = '') {
         message.warning($t('common.warning'))
       },
       textContent
@@ -83,7 +83,7 @@ export default {
             item => item.normal_form ? item.normal_form : item.word).join(' ')
         }
       catch (e) {
-        this.warning(this.$t('common.warnMessage'))
+        this.warning()
       }
     },
     async modeChanged(value) {
