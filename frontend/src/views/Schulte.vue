@@ -1,7 +1,7 @@
 <script>
 import {useMessage, useThemeVars} from 'naive-ui';
 import {defineAsyncComponent, ref} from "vue";
-import debounce from "debounce";
+import {debounce} from "lodash-es";
 import {mapActions}  from "vuex";
 export default {
   name: 'Schulte',

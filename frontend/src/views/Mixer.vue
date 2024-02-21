@@ -26,7 +26,7 @@ import {NFormItem, NSelect, useMessage} from "naive-ui";
 import TextParser from "@/helpers/parser";
 import {api} from "@/helpers";
 import {ref} from "vue";
-import debounce from "debounce";
+import {debounce} from "lodash-es";
 
 export default {
   name: "Mixer",
@@ -36,7 +36,7 @@ export default {
     const textContent = ref(null);
     return {
       warning(text = '') {
-        message.warning($t('common.warning'))
+        message.warning(this.$t('common.warning'))
       },
       textContent
     }
@@ -84,6 +84,7 @@ export default {
         }
       catch (e) {
         this.warning()
+        console.log(e)
       }
     },
     async modeChanged(value) {
@@ -103,8 +104,11 @@ export default {
       if (this.cipherMode === 'reverseWords') {
         this.convertedText = parser.reverseWords()
       }
+      const debouncedFetchText = debounce(async () => {
+        await this.fetchText()
+      }, 300)
       if (this.cipherMode === 'normalForm') {
-        debounce(this.fetchText, 300)
+        debouncedFetchText()
       }
     },
   }

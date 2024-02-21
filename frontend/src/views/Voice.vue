@@ -4,7 +4,7 @@ import { CogOutline } from '@vicons/ionicons5'
 import {computed, onMounted, ref, watch} from "vue";
 import WaveSurfer from 'wavesurfer.js'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js'
-import { debounce } from 'lodash-es';
+import {debounce} from 'lodash-es';
 import Playback from "@/components/Playback.vue";
 import RecordingControl from "@/components/RecordingControl.vue";
 const waveformRef = ref<HTMLElement | null>(null);

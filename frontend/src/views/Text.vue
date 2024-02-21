@@ -54,7 +54,7 @@
 
 <script>
 import {api} from "@/helpers";
-import debounce from "debounce";
+import {debounce} from "lodash-es";
 
 
 import {useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag, NSwitch} from "naive-ui";

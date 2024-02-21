@@ -47,10 +47,15 @@ watch(content, (newValue) => {
   debouncedSave(newValue);
 }, { deep: true , immediate: false});
 
-// onMounted(() => {
-//   content.value = store.state.editorContent || '';
-//   contentLoaded.value = true;
-// })
+onMounted(() => {
+  const tenMinutes = 1000 * 60 * 10;
+  const now = Date.now();
+  if(!store.state.editorContent.content || now - store.state.editorContent.lastSaved > tenMinutes){
+    return;
+  }
+  content.value = store.state.editorContent.content || '';
+  contentLoaded.value = true;
+})
 </script>
 
 <template>
