@@ -25,6 +25,7 @@ const messages = {
             textPlaceHolder: 'Start text input...',
             removeVowels: 'Remove vowels',
             yesLabel: 'Yes',
+            errorMessage: 'Something went wrong. Please try again later.',
             noLabel: 'No',
             metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder.',
             metaTitle: 'Text tools',
@@ -45,8 +46,9 @@ const messages = {
             grayScale: 'Use gray scale',
             textContent: 'Text for reading',
             metaTitle: 'Text tools',
-            metaTags: 'text, reading, word counter, text colorizer, morphemes, morphological analysis',
-            metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, morphological analysis.'
+            metaTags: 'text, reading, word counter, text colorizer, morphemes, morphological analysis, text to speech',
+            metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, morphological analysis, text to speech.',
+            textToSpeech: 'Text to speech'
         },
         spreeder: {
             sourceText: 'Source text',
@@ -220,8 +222,9 @@ const messages = {
             removeVowels: 'Убрать гласные',
             textContent: 'Текст для чтения',
             metaTitle: 'Подсчёт слов',
-            metaTags: 'текст, чтение, подсчёт слов, раскраска текста, морфемы, морфологический анализ',
-            metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, морфологический анализ.'
+            textToSpeech: 'Озвучить текст',
+            metaTags: 'текст, чтение, подсчёт слов, раскраска текста, морфемы, морфологический анализ, озвучка текста, текст в речь',
+            metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, морфологический анализ, озвучка текста.'
         },
         spreeder: {
             sourceText: 'Исходный текст',

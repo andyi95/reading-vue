@@ -19,6 +19,7 @@
         <n-space justify="space-between" size="medium">
             <BaseButton :label="$t('common.copyText')" @button-clicked="copyText()"/>
             <BaseButton :label="$t('textparser.cntWords')" @button-clicked="countWords()"/>
+          <BaseButton :label="$t('textparser.textToSpeech')" @button-clicked="convertToSpeech()"/>
         </n-space>
         <n-space vertical justify="space-between" class="py-2">
             <BaseCheckbox :label="$t('textparser.onlyNouns')" v-model:value="options.onlyNouns"
@@ -29,6 +30,8 @@
                           @n-switched="grayUpdated($event)"></BaseCheckbox>
         </n-space>
     </n-form>
+
+  <Playback v-if="audioSource" :audio-blob="audioSource" :key="playBackKey"/>
 
         <BaseTextBox :label="$t('common.textContent')" ref="textContent">
             <div v-if="grayedText.length && options.grayScale">
@@ -52,229 +55,219 @@
 </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import {api} from "@/helpers";
 import {debounce} from "lodash-es";
-
-
-import {useMessage, NSpace, NForm, NFormItem, NList, NListItem, NTag, NSwitch} from "naive-ui";
-import {parsedText, countedText} from "@/store/mock";
-import {ref} from "vue";
+import {useMessage} from "naive-ui";
+import {ref, computed, Ref, defineAsyncComponent} from "vue";
 import union from "arr-union";
+import {useI18n} from "vue-i18n";
+import BaseButton from "@/components/BaseButton.vue";
+import BaseCheckbox from "@/components/BaseCheckbox.vue";
+import BaseTextBox from "@/components/BaseTextBox.vue";
+
+const message = useMessage();
+const {t} = useI18n();
+const playBackKey = ref(0);
 const textContent = ref(null);
+const Playback = defineAsyncComponent(() => import('@/components/Playback.vue'));
+interface FetchTextItem {
+  id: number;
+  word: string;
+  tag: string;
+  color: string;
+}
+interface GrayedTextItem extends FetchTextItem {
+  gray: string;
+}
+interface CountedWord {
+  word: string;
+  count: number;
+}
+const fetchedText: Ref<Array<FetchTextItem>> = ref([]);
+const cachedText: Ref<Array<FetchTextItem>> = ref([]);
 
-export default {
-    setup() {
-        const message = useMessage();
-        return {
-            textContent,
-          warning(text) {
-            message.warning(text)
-          },
+const countedWords: Ref<Array<CountedWord>> = ref([]);
+const errors = ref([]);
+const options = ref({
+  onlyVerbs: false,
+  onlyNouns: false,
+  grayScale: false,
+});
+const grayedText: Ref<Array<GrayedTextItem>> = ref([]);
+const audioSource = ref('');
+const sourceText = ref('');
+const reText = /[A-Za-zА-Яа-я\s]/g;
+interface Color {
+  [key: string]: string;
+}
+const colors: Color = {
+  'NOUN': '#0000ff',
+  'NPRO': '#4B4BF9',
+  'ADJF': '#f4a261',
+  'ADJS': '#f4a261',
+  'VERB': '#009933',
+  'INFN': '#009933',
+  'PRTF': '#00F752',
+  'PRTS': '#00F752',
+  'GRND': '#00C441',
+  'ADVB': '#A7B312',
+  'PRED': '#4D4DFF',
+};
+const charsTotal = computed(() => {
+  let match = sourceText.value.match(reText);
+  return match ? match.length : 0;
+});
 
+const charsClean = computed(() => {
+  let match = sourceText.value.replace(/ /g, '').match(reText);
+  return match ? match.length : 0;
+});
+
+
+const warning = (text: string) => {
+  message.warning(text);
+};
+
+const convertToSpeech = async () => {
+  try {
+    const response = await api.post(
+        'text-to-speech/',
+        {text: sourceText.value},
+        {responseType: 'blob'}
+    )
+    playBackKey.value++;
+    audioSource.value = response.data;
+  }
+  catch (error) {
+    warning(t('common.errorMessage'))
+    console.log(error)
+  }
+
+};
+
+const assignColor = (word: any) => {
+  return colors[word.tag]
+};
+const textUpdated = (value: string) => {
+  sourceText.value = value;
+  updateText();
+};
+const updateText = debounce(async () => {
+  const chunkSize = 100;
+  fetchedText.value = [];
+  let responses = []
+  let splittedText = sourceText.value.split(' ')
+  for (let i = 0; i < splittedText.length; i += chunkSize) {
+    const chunk = splittedText.slice(i, i + chunkSize)
+    let response = null
+    try {
+      response = await api.post('parse/', {
+        text: {
+          text: chunk.join(' ')
         }
-    },
-    name: "Text",
-    components: {
-      NSwitch,
-      BaseTextBox: defineAsyncComponent(() => import('@/components/BaseTextBox.vue')),
-      BaseInput: defineAsyncComponent(() => import('@/components/BaseInput.vue')),
-      WordCounter: defineAsyncComponent(() => import('@/components/WordCounter.vue')),
-      NSpace, NForm, NFormItem, NListItem, NList, NTag},
-    data() {
-        return {
-            fetchedText: [],
-            cachedText: [],
-            countedWords: [],
-            errors: [],
-            options: {
-                onlyVerbs: false,
-                onlyNouns: false,
-                grayScale: false,
-            },
-            grayedText: [],
-            sourceText: '',
-            reText: /[A-Za-zА-Яа-я\s]/g,
-          colors: {
-                  'NOUN': '#0000ff',
-              'NPRO': '#4B4BF9',
+      })
+    } catch (error) {
+      warning("Что-то пошло не так")
+      console.log(error)
+      continue
+    }
+    let j = fetchedText.value.length
+    response.data.forEach(function (part, idx, arr) {
+      arr[idx]['id'] = j
+      j += 1
+    })
+    fetchedText.value = [...fetchedText.value, ...response.data,]
+    fetchedText.value.forEach(word => {
+      word.color = assignColor(word)
+    })
+    if (options.value.onlyVerbs || options.value.onlyVerbs) {
+      filterText();
+    }
+  }
+}, 300)
 
-    'ADJF': '#f4a261',
-    'ADJS': '#f4a261',
+const grayUpdated = (value: boolean) => {
+  options.value.grayScale = value;
+  let gr_results: GrayedTextItem[] = []
+  const TAGS = ['VERB', 'NOUN', 'INF', 'ADJ'];
+  var grayText = function (tag: string) {
+    if (TAGS.includes(tag)) {
+      return 'not-gray'
+    }
+    return 'grayed'
+  }
+  if (value === true) {
+    gr_results = fetchedText.value.reduce(
+        (firstData, item) => {
+          // @ts-ignore
+          firstData.push({
+            ...item, gray: grayText(item.tag)
+          })
+          return firstData
+        }, [])
+    grayedText.value = gr_results;
+  }
+};
 
-    'VERB': '#009933',
-    'INFN': '#009933',
+const filterText = () => {
+  if (options.value.onlyNouns || options.value.onlyVerbs) {
+    cachedText.value = fetchedText.value
+  }
+  if (!options.value.onlyVerbs && !options.value.onlyNouns) {
+    fetchedText.value = cachedText.value
+    return;
+  }
+  let nouns: [] = [];
+  let verbs: [] = [];
+  if (options.value.onlyNouns === true) {
+    nouns = fetchedText.value.filter(function (items) {
+      return items.tag === 'NOUN'
+    });
+  }
+  if (options.value.onlyVerbs === true) {
+    verbs = fetchedText.value.filter(function (item) {
+      return item.tag === 'VERB' || item.tag === 'INFN'
+    });
+  }
+  fetchedText.value = union(nouns, verbs)
+};
+const countWords = () => {
+  api.post('count/', {text: sourceText.value}).then(response => {
+    countedWords.value = response.data
+  }).catch(error => {
+    warning(t('common.errorMessage'))
+  })
+}
+const radioUpdated = (type: string, value: boolean) => {
+  if (type === 'nouns') {
+    options.value.onlyNouns = value;
+  }
+  if (type === 'verbs') {
+    options.value.onlyVerbs = value;
+  }
+  if (type === 'gray') {
+    options.value.grayScale = value
+    if (value) {
+      grayUpdated(value)
+    }
+  }
 
-    'PRTF': '#00F752',
-    'PRTS': '#00F752',
-    'GRND': '#00C441',
-//     'NUMR': '#013a20',
-    'ADVB': '#A7B312',
-    'PRED': '#4D4DFF',
-//     'PREP': '#ECF87F',
-//     'CONJ': '#999966',
-          }
-        }
-    },
-    computed: {
-        charsTotal() {
-            let match = this.sourceText.match(this.reText);
-            if (match) {
-                return match.length
-            }
-            return 0
-        },
-        charsClean() {
-            let match = this.sourceText.replace(/ /g, '').match(this.reText);
-            if (match) {
-                return match.length
-            }
-            return 0
-        }
-
-    },
-    methods: {
-      assignColor(word){
-        return this.colors[word.tag]
-      },
-        async updateText() {
-          const chunkSize = 100;
-          this.fetchedText = [];
-          let responses = []
-          let splittedText = this.sourceText.split(' ')
-          for (let i = 0; i < splittedText.length; i += chunkSize) {
-            const chunk = splittedText.slice(i, i + chunkSize)
-            let response = null
-            try {
-              response = await api.post('parse/', {
-                text: {
-                  text: chunk.join(' ')
-                }
-              })
-            } catch (error) {
-              this.warning(this.$t('common.warnMessage'))
-              console.log(error)
-              continue
-            }
-            let j = this.fetchedText.length
-            response.data.forEach(function (part, idx, arr) {
-              arr[idx]['id'] = j
-              j += 1
-            })
-            this.fetchedText = [...this.fetchedText, ...response.data,]
-            this.fetchedText.forEach(word => {
-              word.color = this.assignColor(word)
-            })
-            if (this.options.onlyVerbs === true || this.options.onlyVerbs === true) {
-              this.filterText();
-            }
-          }
-          if (this.options.grayScale === true) {
-            this.grayUpdated(true)
-          }
-        },
-        textUpdated(value) {
-            this.sourceText = value;
-            this.updateText();
-        },
-        radioUpdated(type, value) {
-            if (type === 'verbs') {
-                this.options.onlyVerbs = value
-                this.filterText()
-            }
-            if (type === 'nouns') {
-                this.options.onlyNouns = value
-                this.filterText()
-            }
-            if (type === 'gray') {
-                this.options.grayScale = value
-                if (value) {
-                    this.grayUpdated(value)
-                }
-            }
-        },
-        grayUpdated(value) {
-            this.options.grayScale = value;
-            let gr_results = []
-            const TAGS = ['VERB', 'NOUN', 'INF', 'ADJ'];
-            var grayText = function (tag) {
-                if (TAGS.includes(tag)) {
-                    return 'not-gray'
-                }
-                if (this.$store.state.theme === 'darkTheme') {
-                    return 'grayed-dark'
-                }
-
-                return 'grayed'
-            }.bind(this)
-            if (value === true) {
-                gr_results = this.fetchedText.reduce(
-                    (firstData, item) => {
-                        firstData.push({
-                            ...item, gray: grayText(item.tag)
-                        })
-                        return firstData
-                    }, [])
-                this.grayedText = gr_results;
-            }
-        },
-        countWords() {
-            if (process.env.NODE_ENV === 'development') {
-
-                return;
-            }
-            api.post('count/', {text: this.sourceText})
-                .then(response => {
-                    this.countedWords = response.data
-                })
-                .catch(e => {
-                    this.warning("Что-то пошло не так")
-                })
-        },
-        filterText() {
-            if (this.options.onlyNouns || this.options.onlyVerbs) {
-                this.cachedText = this.fetchedText
-            }
-            if (!this.options.onlyVerbs && !this.options.onlyNouns) {
-                this.fetchedText = this.cachedText
-                return;
-            }
-            let nouns = [];
-            let verbs = [];
-            if (this.options.onlyNouns === true) {
-                nouns = this.fetchedText.filter(function (items) {
-                    return items.tag === 'NOUN'
-                });
-            }
-            if (this.options.onlyVerbs === true) {
-                verbs = this.fetchedText.filter(function (item) {
-                    return item.tag === 'VERB' || item.tag === 'INFN'
-                });
-            }
-            this.fetchedText = union(nouns, verbs)
-        },
-        copyText() {
-            let textToCopy = this.$refs.textContent;
-            let blob = textToCopy.$el;
-            const range = document.createRange();
-            range.selectNode(blob);
-            window.getSelection().removeAllRanges()
-            const selection = window.getSelection();
-            selection.addRange(range);
-            document.execCommand("copy");
-            window.getSelection().removeAllRanges()
-        }
-    },
-
-    created() {
-        this.updateText = debounce(this.updateText, 300)
-        if (process.env.NODE_ENV !== 'development') {
-            return;
-        }
-        this.countedWords = countedText.data
-        this.fetchedText = parsedText.data
-        this.sourceText = parsedText.sourceText
-    },
+  filterText();
+};
+const copyText = () => {
+  // @ts-ignore
+  let blob = textContent.value?.$el;
+  if (!blob) {
+    return;
+  }
+  const range = document.createRange();
+  range.selectNode(blob);
+  window.getSelection()?.removeAllRanges()
+  const selection = window.getSelection();
+  selection?.addRange(range);
+  document.execCommand("copy");
+  window.getSelection()?.removeAllRanges()
 }
 </script>
 

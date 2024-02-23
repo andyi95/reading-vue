@@ -1,14 +1,29 @@
 from typing import Optional
-
+import os
+from dotenv import load_dotenv
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from aioredis import from_url, Redis
+from aioredis import from_url
+import uuid
+
+from starlette.background import BackgroundTask
+from starlette.responses import FileResponse
+
 from utils.analize import analize_text, count_words
-from asyncio import sleep
-REDIS_URL = 'redis:6379/0'
+
+from speechkit import model_repository, configure_credentials, creds
+
+load_dotenv()
+
+configure_credentials(
+   yandex_credentials=creds.YandexCredentials(
+      api_key=os.getenv('Y_API_KEY')
+   )
+)
+REDIS_URL = os.getenv('REDIS_URL')
 
 
 class Counted(BaseModel):
@@ -28,7 +43,13 @@ class TextResponse(BaseModel):
 
 
 api = FastAPI()
-app = FastAPI()
+
+app = FastAPI(
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None
+)
+
 
 origins = [
     "http://localhost",
@@ -36,6 +57,7 @@ origins = [
     'backend',
     'nginx'
 ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -60,13 +82,28 @@ async def count_text(text: TextModel):
     return JSONResponse(res)
 
 
+def delete_audio_file(filepath: str):
+    os.remove(filepath)
+
+
+@api.post('/text-to-speech/')
+async def text_to_speech(text: TextModel, voice: Optional[str] = 'anton'):
+    model = model_repository.synthesis_model()
+    model.voice = voice
+    model.role = 'good'
+    filename = f'{uuid.uuid4()}.wav'
+    os.makedirs('temp', exist_ok=True)
+    filepath = f'./temp/{filename}'
+
+    result = model.synthesize(text.text, raw_format=False)
+    result.export(filepath, 'wav')
+    response = FileResponse(path=filepath, filename=filename)
+    response.background = BackgroundTask(delete_audio_file, filepath=filepath)
+    return response
+
 
 app.mount('/api', api)
 
-
-@app.on_event('startup')
-async def init_cache():
-    redis = from_url(f'redis://{REDIS_URL}', encoding="utf8", decode_responses=True)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
