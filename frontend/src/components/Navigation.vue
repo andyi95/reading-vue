@@ -161,7 +161,7 @@ watch(
         link: [
           {
             rel: 'canonical',
-            href: process.env.VITE_BASE_URL + route.path
+            href: 'https://text-tools.ru' + route.path
           }
         ],
         htmlAttrs: {

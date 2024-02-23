@@ -51,24 +51,12 @@ build:frontend:
     script:
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose build --no-cache frontend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push frontend
-    only:
-        changes:
-            - frontend/**/*
-            - docker-compose.yaml
-            - docker-compose.stage.yaml
-            - .gitlab-ci.yaml
 
 build:backend:
     <<: *docker-build
     script:
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose build --no-cache backend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push backend
-    only:
-        changes:
-            - backend/**/*
-            - docker-compose.yaml
-            - docker-compose.stage.yaml
-            - .gitlab-ci.yaml
 
 test:frontend:
     stage: test

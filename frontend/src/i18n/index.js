@@ -140,6 +140,11 @@ const messages = {
             description: 'Simple online text editor',
             metaTitle: 'Text editor',
             metaTags: 'text. editing, editor, online editor, text editor, free online editor, text processor, online text editor, text editor, ',
+            metaDescription: 'Text editor is a tool for editing text. It helps to edit text online.'
+        },
+        mixer: {
+            metaTags: 'text, reading, text mixer, text converter, text chaos, text transformation',
+            metaDescription: 'Text mixer is a tool for text transformation. It helps to read and understand the text better.'
         }
     },
     ru: {
@@ -226,6 +231,10 @@ const messages = {
             metaTags: 'текст, чтение, подсчёт слов, раскраска текста, морфемы, морфологический анализ, озвучка текста, текст в речь',
             metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, морфологический анализ, озвучка текста.'
         },
+        text: {
+            metaTags: 'текст, чтение, подсчёт слов, раскраска текста, морфемы, морфологический анализ, озвучка текста, текст в речь',
+            metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, морфологический анализ, озвучка текста.'
+        },
         spreeder: {
             sourceText: 'Исходный текст',
             textPlaceHolder: 'Вставьте или введите текст для упражнения',
@@ -237,6 +246,10 @@ const messages = {
             metaTags: 'текст, чтение, скорочтение, спридер, слов в минуту',
             metaDescription: 'Спридер - это инструмент для скорочтения. Он помогает читать быстрее и понимать лучше.'
 
+        },
+        mixer: {
+            metaTags: 'текст, чтение, дешифровщик, конвертер текста, хаос текста, трансформация текста',
+            metaDescription: 'Дешифровщик - это инструмент для трансформации текста. Он помогает читать и понимать текст лучше.'
         },
         chaos: {
             sourceText: 'Исходный текст',
@@ -282,6 +295,7 @@ const messages = {
             description: 'Простой онлайн редактор текста',
             metaTitle: 'Текстовый редактор',
             metaTags: 'текст. редактирование, редактор, онлайн редактор, текстовый редактор, бесплатный онлайн редактор, редактор текста, он-лайн редактор, текстовый процессор',
+            metaDescription: 'Текстовый редактор - это инструмент для редактирования текста. Он помогает редактировать текст онлайн.'
         }
     }
 }

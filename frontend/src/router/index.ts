@@ -17,13 +17,13 @@ const routes: RouteRecordRaw[] = [
     title: t('nav.anticipation'), tags: t('anticipation.metaTags'), description: t('anticipation.metaDescription')
   }},
   {path: '/text', name: 'Parser', component: Text, meta: {
-    title: t('nav.textparser'), tags: t('text.metaTags'), description: t('text.metaDescription')
+    title: t('nav.textparser'), tags: t('textparser.metaTags'), description: t('textparser.metaDescription')
   }},
   {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {
     title: t('nav.spreeder'), tags: t('spreeder.metaTags'), description: t('spreeder.metaDescription')
   }},
   {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {
-    title: t('nav.mixer'), tags: t('mixer.metaTags'), description: t('mixer.metaDescription')
+    title: t('nav.mixer'), tags: t('chaos.metaTags'), description: t('chaos.metaDescription')
   }},
   {path: '/schulte', name: 'Schulte', component: Schulte, meta: {
     title: t('nav.schulte'), tags: t('schulte.metaTags'), description: t('schulte.metaDescription')
