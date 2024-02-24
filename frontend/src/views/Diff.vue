@@ -18,11 +18,14 @@ const textContent = ref(null);
 const currentSegment = ref('');
 const lastSegmentLength = ref(0);
 const isListening = computed(() => speech.isListening.value)
+const isStoppedManually = ref(true);
 const toggleSpeechRecognition = () => {
   if (isListening.value){
+    isStoppedManually.value = true;
     speech.stop()
   }
   else {
+    isStoppedManually.value = false;
     lastSegmentLength.value = 0;
     speech.start()
   }
@@ -62,7 +65,11 @@ watch(speech.result, (result) => {
   currentSegment.value = '';
   scrollTextInput()
 })
-
+watch(speech.isListening, (isListening) => {
+  if (!isListening && !isStoppedManually.value){
+    speech.start()
+  }
+}, {immediate: true})
 
 const themeVars = useThemeVars();
 const generateDiffHtml = (diffs: []) => {
