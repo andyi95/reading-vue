@@ -9,6 +9,7 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 WORKDIR /app
 
+RUN apt update && apt install -y ffmpeg
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=$POETRY_HOME python -
 
 COPY poetry.lock pyproject.toml ./

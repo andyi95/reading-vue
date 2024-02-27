@@ -49,13 +49,13 @@ workflow:
 build:frontend:
     <<: *docker-build
     script:
-        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build --no-cache frontend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build frontend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push frontend
 
 build:backend:
     <<: *docker-build
     script:
-        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build --no-cache backend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build backend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push backend
 
 test:frontend:
