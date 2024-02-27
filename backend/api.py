@@ -91,12 +91,13 @@ async def text_to_speech(text: TextModel, voice: Optional[str] = 'anton'):
     model = model_repository.synthesis_model()
     model.voice = voice
     model.role = 'good'
-    filename = f'{uuid.uuid4()}.wav'
+    model.unsafe_mode = True
+    filename = f'{uuid.uuid4()}.mp3'
     os.makedirs('temp', exist_ok=True)
     filepath = f'./temp/{filename}'
 
     result = model.synthesize(text.text, raw_format=False)
-    result.export(filepath, 'wav')
+    result.export(filepath, 'mp3')
     response = FileResponse(path=filepath, filename=filename)
     response.background = BackgroundTask(delete_audio_file, filepath=filepath)
     return response
