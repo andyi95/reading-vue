@@ -30,7 +30,12 @@ const messages = {
             metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder.',
             metaTitle: 'Text tools',
             metaTags: 'text, tools, reading, learning, memorizing, word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder',
-            warnMessage: 'Something went wrong. Please try again later.'
+            warnMessage: 'Something went wrong. Please try again later.',
+            passwordInput: 'Enter password',
+            passwordRequired: 'Password is required',
+            passwordLabel: 'Password',
+            submitForm: 'Submit',
+            invalidPassword: 'Invalid password',
         },
         textparser: {
             sourceText: 'Source text',

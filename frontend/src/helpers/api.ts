@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import {useMessage} from 'naive-ui';
 
 let baseURL: string;
 if (process.env.NODE_ENV === 'development') {

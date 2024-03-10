@@ -1,4 +1,4 @@
-import {defineConfig, loadEnv} from "vite";
+import {defineConfig, splitVendorChunkPlugin} from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from 'path';
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
@@ -11,7 +11,6 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig(({command, mode}) => {
     const parent = path.resolve(process.cwd(), '.');
-      const env = loadEnv(mode, parent, 'VITE_')
         return {
             plugins: [
                 VueI18nPlugin({
@@ -43,7 +42,8 @@ export default defineConfig(({command, mode}) => {
                 }),
                 Components({
                     resolvers: [NaiveUiResolver()]
-                })
+                }),
+                splitVendorChunkPlugin()
             ],
             resolve: {
                 alias: {
@@ -56,6 +56,14 @@ export default defineConfig(({command, mode}) => {
                 'process.env': {
                     VITE_BASE_URL: process.env.VITE_BASE_URL,
                     VITE_GTAG_ID: process.env.VITE_GTAG_ID
+                }
+            },
+            server: {
+                proxy: {
+                    '/api': {
+                        target: 'http://localhost:8000',
+                        changeOrigin: true
+                    }
                 }
             }
         }

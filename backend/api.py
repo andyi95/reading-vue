@@ -2,18 +2,19 @@ from typing import Optional
 import os
 from dotenv import load_dotenv
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException, Depends, Request, Response
+import httpx
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from aioredis import from_url
 import uuid
 
+from grpc._channel import _MultiThreadedRendezvous
 from starlette.background import BackgroundTask
 from starlette.responses import FileResponse
 
+from app.schemas import TextModel
+from settings import Settings, get_settings
 from utils.analize import analize_text, count_words
-
 from speechkit import model_repository, configure_credentials, creds
 
 load_dotenv()
@@ -21,26 +22,7 @@ load_dotenv()
 configure_credentials(
    yandex_credentials=creds.YandexCredentials(
       api_key=os.getenv('Y_API_KEY')
-   )
-)
-REDIS_URL = os.getenv('REDIS_URL')
-
-
-class Counted(BaseModel):
-    count: int
-    word: str
-
-
-class TextModel(BaseModel):
-    text: str
-
-
-class TextResponse(BaseModel):
-    id: int
-    word: str
-    tag: Optional[str]
-    normal_form: Optional[str]
-
+   ))
 
 api = FastAPI()
 
@@ -86,7 +68,20 @@ def delete_audio_file(filepath: str):
     os.remove(filepath)
 
 
-@api.post('/text-to-speech/')
+def authenticate_user(authorization: str = Header(...), settings: Settings = Depends(get_settings)):
+    try:
+        scheme, password = authorization.split()
+        if scheme.lower() != 'password':
+            raise HTTPException(status_code=401, detail='Invalid authorization scheme')
+    except ValueError:
+        raise HTTPException(status_code=401, detail='Invalid authorization header')
+
+    if password != settings.AUTH_PASSWRD:
+        raise HTTPException(status_code=401, detail='Invalid password')
+    return True
+
+
+@api.post('/text-to-speech/', dependencies=[Depends(authenticate_user)])
 async def text_to_speech(text: TextModel, voice: Optional[str] = 'anton'):
     model = model_repository.synthesis_model()
     model.voice = voice
@@ -95,8 +90,10 @@ async def text_to_speech(text: TextModel, voice: Optional[str] = 'anton'):
     filename = f'{uuid.uuid4()}.mp3'
     os.makedirs('temp', exist_ok=True)
     filepath = f'./temp/{filename}'
-
-    result = model.synthesize(text.text, raw_format=False)
+    try:
+        result = model.synthesize(text.text, raw_format=False)
+    except _MultiThreadedRendezvous as e:
+        raise HTTPException(status_code=400, detail=str(e.code()))
     result.export(filepath, 'mp3')
     response = FileResponse(path=filepath, filename=filename)
     response.background = BackgroundTask(delete_audio_file, filepath=filepath)

@@ -1,5 +1,18 @@
 <template>
 <div>
+  <n-modal v-model:show="showModal"
+           :title="$t('common.passwordRequired')"
+           preset="dialog" @positive-click="submitPassword">
+    <n-form :rules="formRules" :model="formContent" ref="formRef">
+      <n-form-item path="password"
+          :label="$t('common.passwordLabel')" :error="passwordError ? $t('common.invalidPassword') : ''">
+        <n-input v-model:value="formContent.password" type="password" clearable/>
+      </n-form-item>
+    </n-form>
+    <template #action>
+      <n-button @click="submitPassword" type="primary">{{$t('common.submitForm')}}</n-button>
+    </template>
+  </n-modal>
     <n-form size="medium">
         <BaseInput :label="$t('textparser.sourceText')" :placeholder='$t("textparser.textPlaceHolder")'
                    v-model:post-body="sourceText" @input-updated="textUpdated($event)">
@@ -58,8 +71,8 @@
 <script setup lang="ts">
 import {api} from "@/helpers";
 import {debounce} from "lodash-es";
-import {useMessage} from "naive-ui";
-import {ref, computed, Ref, defineAsyncComponent} from "vue";
+import {FormRules, useMessage} from "naive-ui";
+import {computed, defineAsyncComponent, Ref, ref} from "vue";
 import union from "arr-union";
 import {useI18n} from "vue-i18n";
 import BaseButton from "@/components/BaseButton.vue";
@@ -88,7 +101,63 @@ const fetchedText: Ref<Array<FetchTextItem>> = ref([]);
 const cachedText: Ref<Array<FetchTextItem>> = ref([]);
 
 const countedWords: Ref<Array<CountedWord>> = ref([]);
-const errors = ref([]);
+const showModal = ref(false);
+const formContent = ref({
+  username: 'default',
+  password: ''
+});
+const formRef = ref(null);
+const passwordError = ref(false);
+
+const hashPassword = async (password: string) => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+};
+const formRules: FormRules = {
+  password: [
+    {required: true, message: t('common.passwordRequired')},
+    {
+      validator: (rule, value) => {
+        if (passwordError.value) {
+          return new Error(t('common.invalidPassword'));
+        }
+      },
+    }
+  ]
+};
+const submitPassword = async () => {
+    const hashedPassword = await hashPassword(formContent.value.password);
+    api.post(
+      'text-to-speech/',
+      { text: sourceText.value },
+      {
+        responseType: 'blob',
+        headers: { 'Authorization': `Password ${hashedPassword}` }
+      }
+    ).then(response => {
+      playBackKey.value++;
+      audioSource.value = response.data;
+      showModal.value = false; // Close modal on success
+    }).catch(error => {
+      if (error.response && error.response.status == 401) {
+        passwordError.value = true;
+      } else {
+        warning(t('common.warnMessage'));
+        console.log(error);
+      }
+    }).finally(() => {
+      formRef.value?.validate();
+    });
+
+};
+const convertToSpeech = async () => {
+    showModal.value = true;
+  formRef.value.password = '';
+  passwordError.value = false;
+};
 const options = ref({
   onlyVerbs: false,
   onlyNouns: false,
@@ -129,22 +198,7 @@ const warning = (text: string) => {
   message.warning(text);
 };
 
-const convertToSpeech = async () => {
-  try {
-    const response = await api.post(
-        'text-to-speech/',
-        {text: sourceText.value},
-        {responseType: 'blob'}
-    )
-    playBackKey.value++;
-    audioSource.value = response.data;
-  }
-  catch (error) {
-    warning(t('common.errorMessage'))
-    console.log(error)
-  }
 
-};
 
 const assignColor = (word: any) => {
   return colors[word.tag]
