@@ -3,7 +3,6 @@ import vue from "@vitejs/plugin-vue";
 import path from 'path';
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import Sitemap from 'vite-plugin-sitemap';
-import {TailwindCSSVitePlugin} from "tailwindcss-vite-plugin";
 import {ViteWebfontDownload} from "vite-plugin-webfont-dl";
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite'
@@ -26,7 +25,6 @@ export default defineConfig(({command, mode}) => {
                         '/', '/text', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice', '/diff', '/editor'
                     ]
                 }),
-                TailwindCSSVitePlugin(),
                 ViteWebfontDownload ([
                     'https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap',
                 ],),
