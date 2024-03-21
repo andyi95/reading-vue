@@ -1,11 +1,11 @@
 <template>
 <div>
   <n-modal v-model:show="showModal"
-           :title="$t('common.passwordRequired')"
+           :title="$t('auth.passwordRequired')"
            preset="dialog" @positive-click="submitPassword">
     <n-form :rules="formRules" :model="formContent" ref="formRef">
       <n-form-item path="password"
-          :label="$t('common.passwordLabel')" :error="passwordError ? $t('common.invalidPassword') : ''">
+          :label="$t('auth.passwordLabel')" :error="passwordError ? $t('auth.invalidPassword') : ''">
         <n-input v-model:value="formContent.password" type="password" clearable/>
       </n-form-item>
     </n-form>
