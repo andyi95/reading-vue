@@ -10,7 +10,7 @@
       </n-form-item>
     </n-form>
     <template #action>
-      <n-button @click="submitPassword" type="primary">{{$t('common.submitForm')}}</n-button>
+      <n-button @click="submitPassword" type="primary">{{$t('auth.submitForm')}}</n-button>
     </template>
   </n-modal>
     <n-form size="medium">
@@ -117,11 +117,11 @@ const hashPassword = async (password: string) => {
 };
 const formRules: FormRules = {
   password: [
-    {required: true, message: t('common.passwordRequired')},
+    {required: true, message: t('auth.passwordRequired')},
     {
       validator: (rule, value) => {
         if (passwordError.value) {
-          return new Error(t('common.invalidPassword'));
+          return new Error(t('auth.invalidPassword'));
         }
       },
     }
