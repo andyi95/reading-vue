@@ -10,14 +10,16 @@ from collections import Counter
 from aioredis import from_url
 import json
 
-REDIS_URL = 'redis:6379/0'
+from settings import Settings
+
 
 stemmer = PorterStemmer()
 morph = py.MorphAnalyzer()
-redis = from_url(f"redis://{REDIS_URL}", encoding="utf-8", decode_responses=True)
 
 
-async def analize_text(text: str) -> list:
+
+async def analize_text(text: str, settings: Settings) -> list:
+    redis = from_url(f"redis://{settings.REDIS_URL}", encoding="utf-8", decode_responses=True)
     async def parse_line(line: str, counter: int):
         words = line.split()
         new_line = []
