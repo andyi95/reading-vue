@@ -1,8 +1,7 @@
-from typing import Optional
+from typing import Annotated, Optional
 import os
-from dotenv import load_dotenv
 import uvicorn
-from fastapi import FastAPI, Header, HTTPException, Depends, Request, Response
+from fastapi import FastAPI, Header, HTTPException, Depends, Request, Response, APIRouter
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -15,16 +14,11 @@ from starlette.responses import FileResponse
 from app.schemas import TextModel
 from settings import Settings, get_settings
 from utils.analize import analize_text, count_words
-from speechkit import model_repository, configure_credentials, creds
+from google.cloud import texttospeech
 
-load_dotenv()
 
-configure_credentials(
-   yandex_credentials=creds.YandexCredentials(
-      api_key=os.getenv('Y_API_KEY')
-   ))
 
-api = FastAPI()
+api = APIRouter(prefix='/api', dependencies=[Depends(get_settings)])
 
 app = FastAPI(
     docs_url=None,
@@ -50,8 +44,8 @@ app.add_middleware(
 
 
 @api.post('/parse/')
-async def create_text(text: TextModel, colors: Optional[dict] = None):
-    analized = await analize_text(text.text)
+async def create_text(text: TextModel, settings: Settings = Depends(get_settings)):
+    analized = await analize_text(text.text, settings)
     return analized
 
 
@@ -82,25 +76,43 @@ def authenticate_user(authorization: str = Header(...), settings: Settings = Dep
 
 
 @api.post('/text-to-speech/', dependencies=[Depends(authenticate_user)])
-async def text_to_speech(text: TextModel, voice: Optional[str] = 'anton'):
-    model = model_repository.synthesis_model()
-    model.voice = voice
-    model.role = 'good'
-    model.unsafe_mode = True
+async def text_to_speech(settings: Annotated[Settings, Depends(get_settings)], text: TextModel, voice: Optional[str]
+= 'anton') -> FileResponse:
+    """ru-RU-Standard-B	"""
+    client = texttospeech.TextToSpeechClient()
+    synthesis_input = texttospeech.SynthesisInput(text=text.text)
+    voice = texttospeech.VoiceSelectionParams(
+        language_code='ru-Ru',
+        ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,
+        name='ru-RU-Standard-B'
+    )
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3
+    )
+
     filename = f'{uuid.uuid4()}.mp3'
     os.makedirs('temp', exist_ok=True)
     filepath = f'./temp/{filename}'
     try:
-        result = model.synthesize(text.text, raw_format=False)
+        response = client.synthesize_speech(
+            input=synthesis_input, voice=voice, audio_config=audio_config
+        )
     except _MultiThreadedRendezvous as e:
         raise HTTPException(status_code=400, detail=str(e.code()))
-    result.export(filepath, 'mp3')
+    with open(filepath, 'wb') as f:
+        f.write(response.audio_content)
     response = FileResponse(path=filepath, filename=filename)
     response.background = BackgroundTask(delete_audio_file, filepath=filepath)
     return response
 
 
-app.mount('/api', api)
+@api.post('token/verify/', dependencies=[Depends(authenticate_user)])
+async def validate_token():
+    return Response(status_code=200)
+
+
+
+app.include_router(api)
 
 
 if __name__ == "__main__":
