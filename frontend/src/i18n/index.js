@@ -4,6 +4,14 @@ import store from "@/store";
 
 const messages = {
     en: {
+        auth: {
+
+            passwordInput: 'Enter password',
+            passwordRequired: 'Password is required',
+            passwordLabel: 'Password',
+            submitForm: 'Submit',
+            invalidPassword: 'Invalid password'
+        },
         nav: {
             textparser: 'Word count',
             spreeder: 'Spreader',
@@ -31,11 +39,6 @@ const messages = {
             metaTitle: 'Text tools',
             metaTags: 'text, tools, reading, learning, memorizing, word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder',
             warnMessage: 'Something went wrong. Please try again later.',
-            passwordInput: 'Enter password',
-            passwordRequired: 'Password is required',
-            passwordLabel: 'Password',
-            submitForm: 'Submit',
-            invalidPassword: 'Invalid password',
         },
         textparser: {
             sourceText: 'Source text',
@@ -160,6 +163,13 @@ const messages = {
             metaTags: 'текст, чтение, антиципация, скорочтение, внимание, концентрация',
             metaDescription: 'Антиципация - это инструмент для тренировки внимания и скорочтения. Он помогает читать быстрее и понимать лучше.'
         },
+        auth: {
+            passwordInput: 'Введите пароль',
+            passwordRequired: 'Введите пароль',
+            passwordLabel: 'Пароль',
+            submitForm: 'Отправить',
+            invalidPassword: 'Неверный пароль',
+        },
         schulte: {
             title: 'Таблица Шульте',
             settings: 'Настройки',
@@ -216,10 +226,6 @@ const messages = {
             metaTitle: 'Текстовые инструменты',
             metaTags: 'текст, инструменты, чтение, обучение, запоминание, подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса',
             warnMessage: 'Что-то пошло не так. Попробуйте позже.',
-            passwordRequired: 'Введите пароль',
-            passwordLabel: 'Пароль',
-            submitForm: 'Отправить',
-            invalidPassword: 'Неверный пароль',
         },
         textparser: {
             sourceText: 'Исходный текст',

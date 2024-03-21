@@ -78,7 +78,6 @@ def authenticate_user(authorization: str = Header(...), settings: Settings = Dep
 @api.post('/text-to-speech/', dependencies=[Depends(authenticate_user)])
 async def text_to_speech(settings: Annotated[Settings, Depends(get_settings)], text: TextModel, voice: Optional[str]
 = 'anton') -> FileResponse:
-    """ru-RU-Standard-B	"""
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text.text)
     voice = texttospeech.VoiceSelectionParams(

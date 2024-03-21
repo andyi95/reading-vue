@@ -55,7 +55,6 @@
             </div>
         </BaseTextBox>
 
-
     <div v-if="countedWords.length" style="padding-top: 2em">
         <n-list hoverable style="padding: 0.8em">
             <n-list-item v-for="word in countedWords">
@@ -215,17 +214,24 @@ const updateText = debounce(async () => {
   for (let i = 0; i < splittedText.length; i += chunkSize) {
     const chunk = splittedText.slice(i, i + chunkSize)
     let response = null
-    try {
-      response = await api.post('parse/', {
-        text: {
-          text: chunk.join(' ')
-        }
-      })
+        try {
+      response = await api.post('parse/', {text: chunk.join(' ')})
     } catch (error) {
       warning("Что-то пошло не так")
       console.log(error)
       continue
     }
+    // try {
+    //   response = await api.post('parse/', {
+    //     text: {
+    //       text: chunk.join(' ')
+    //     }
+    //   })
+    // } catch (error) {
+    //   warning("Что-то пошло не так")
+    //   console.log(error)
+    //   continue
+    // }
     let j = fetchedText.value.length
     response.data.forEach(function (part, idx, arr) {
       arr[idx]['id'] = j
