@@ -94,11 +94,9 @@ test:backend:
         - ssh
         - dev
 
-deploy:development:frontend:
+deploy:development:
     <<: *deploy_script
     stage: deploy:development
-    variables:
-        DEPLOY_COMPONENT: frontend
 #    needs:
 #        - test:frontend
     environment:
@@ -106,17 +104,6 @@ deploy:development:frontend:
         deployment_tier: development
         url: https://reader.dev.andyi95.com/
 
-deploy:development:backend:
-    <<: *deploy_script
-    stage: deploy:development
-    variables:
-        DEPLOY_COMPONENT: backend
-#    needs:
-#        - test:backend
-    environment:
-        name: development
-        deployment_tier: development
-        url: https://reader.dev.andyi95.com/
 
 deploy:production:backend:
     <<: *deploy_script

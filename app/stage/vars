@@ -26,5 +26,6 @@ fi
 add_or_update_env "COMPOSE_FILE" "docker-compose.yaml:docker-compose.stage.yaml"
 add_or_update_env "COMPOSE_PROJECT_NAME" "reader"
 add_or_update_env "TAG" "$1"
-
+add_or_update_env "GOOGLE_APPLICATION_CREDENTIALS" "/app/gcloud-service-key.json"
+add_or_update_env "CI_REGISTRY_IMAGE" "=registry.gitlab.andyi95.com/andyi95/reading-vue"
 echo "Updated .env file with the necessary variables."
