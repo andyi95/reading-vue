@@ -90,3 +90,18 @@ def count_words(text: str) -> dict:
     v = Counter(result)
     return dict(v.most_common())
 
+
+def split_text(text: str, max_length: int = 5000):
+    chunks = []
+    while text:
+        if len(text) <= max_length:
+            chunks.append(text)
+            break
+        split_at = max(text.rfind('.', 0, max_length),
+                       text.rfind(',', 0, max_length),
+                       text.rfind(' ', 0, max_length))
+        if split_at == -1:
+            split_at = max_length
+        chunks.append(text[:split_at + 1])
+        text = text[split_at + 1:]
+    return chunks

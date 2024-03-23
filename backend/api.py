@@ -1,22 +1,20 @@
-from typing import Annotated, Optional
 import os
+import subprocess
+import uuid
+from typing import Annotated, Optional
+
 import uvicorn
-from fastapi import FastAPI, Header, HTTPException, Depends, Request, Response, APIRouter
-import httpx
+from fastapi import APIRouter, Body, Depends, FastAPI, Header, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import uuid
-
+from google.cloud import texttospeech
 from grpc._channel import _MultiThreadedRendezvous
 from starlette.background import BackgroundTask
 from starlette.responses import FileResponse
 
 from app.schemas import TextModel
 from settings import Settings, get_settings
-from utils.analize import analize_text, count_words
-from google.cloud import texttospeech
-
-
+from utils.analize import analize_text, count_words, split_text
 
 api = APIRouter(prefix='/api', dependencies=[Depends(get_settings)])
 
@@ -79,7 +77,8 @@ def authenticate_user(authorization: str = Header(...), settings: Settings = Dep
 async def text_to_speech(settings: Annotated[Settings, Depends(get_settings)], text: TextModel, voice: Optional[str]
 = 'anton') -> FileResponse:
     client = texttospeech.TextToSpeechClient()
-    synthesis_input = texttospeech.SynthesisInput(text=text.text)
+    chunks = split_text(text.text, 4500)
+    filenames = []
     voice = texttospeech.VoiceSelectionParams(
         language_code='ru-Ru',
         ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,
@@ -89,24 +88,33 @@ async def text_to_speech(settings: Annotated[Settings, Depends(get_settings)], t
         audio_encoding=texttospeech.AudioEncoding.MP3
     )
 
-    filename = f'{uuid.uuid4()}.mp3'
     os.makedirs('temp', exist_ok=True)
-    filepath = f'./temp/{filename}'
-    try:
-        response = client.synthesize_speech(
-            input=synthesis_input, voice=voice, audio_config=audio_config
-        )
-    except _MultiThreadedRendezvous as e:
-        raise HTTPException(status_code=400, detail=str(e.code()))
-    with open(filepath, 'wb') as f:
-        f.write(response.audio_content)
-    response = FileResponse(path=filepath, filename=filename)
-    response.background = BackgroundTask(delete_audio_file, filepath=filepath)
+    for i, chunk in enumerate(chunks):
+        synthesis_input = texttospeech.SynthesisInput(text=chunk)
+        try:
+            response = client.synthesize_speech(
+                input=synthesis_input, voice=voice, audio_config=audio_config
+            )
+        except _MultiThreadedRendezvous as e:
+            raise HTTPException(status_code=400, detail=str(e.code()))
+        filename = f'{uuid.uuid4()}.mp3'
+        with open(f'./temp/{filename}', 'wb') as f:
+            f.write(response.audio_content)
+            filenames.append(f'./temp/{filename}')
+    merged_filename = f'temp/merged_{uuid.uuid4()}.mp3'
+    command = ['ffmpeg', '-y', '-i', "concat:" + "|".join(filenames), '-acodec', 'copy', merged_filename]
+    subprocess.run(command, check=True)
+    for filename in filenames:
+        os.remove(filename)
+    response = FileResponse(path=merged_filename)
+    response.background = BackgroundTask(delete_audio_file, filepath=merged_filename)
     return response
 
 
-@api.post('token/verify/', dependencies=[Depends(authenticate_user)])
-async def validate_token():
+@api.post('/token/verify/')
+async def validate_token(password: Annotated[str, Body(..., embed=True)], settings: Settings = Depends(get_settings)):
+    if password != settings.AUTH_PASSWRD:
+        raise HTTPException(status_code=401, detail='Invalid password')
     return Response(status_code=200)
 
 
