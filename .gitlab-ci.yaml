@@ -106,6 +106,14 @@ deploy:development:
         deployment_tier: development
         url: https://reader.dev.andyi95.com/
 
+stop:development:
+    stage: deploy
+    environment:
+        name: development
+        deployment_tier: development
+        url: https://reader.dev.andyi95.com/
+        action: stop
+
 
 deploy:production:backend:
     <<: *deploy_script
