@@ -107,7 +107,9 @@ deploy:development:
         url: https://reader.dev.andyi95.com/
 
 stop:development:
-    stage: deploy
+    stage: deploy:development
+    script:
+        - docker compose down
     environment:
         name: development
         deployment_tier: development
