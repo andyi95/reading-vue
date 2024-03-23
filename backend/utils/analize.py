@@ -91,17 +91,26 @@ def count_words(text: str) -> dict:
     return dict(v.most_common())
 
 
-def split_text(text: str, max_length: int = 5000):
+def split_text(text: str, max_byte_length: int = 5000):
     chunks = []
     while text:
-        if len(text) <= max_length:
-            chunks.append(text)
-            break
-        split_at = max(text.rfind('.', 0, max_length),
-                       text.rfind(',', 0, max_length),
-                       text.rfind(' ', 0, max_length))
-        if split_at == -1:
-            split_at = max_length
-        chunks.append(text[:split_at + 1])
-        text = text[split_at + 1:]
+        split_at = max_byte_length
+        current_chunk_bytes = text[:split_at].encode('utf-8')
+
+        while len(current_chunk_bytes) > max_byte_length and split_at > 0:
+            split_at -= 1
+            current_chunk_bytes = text[:split_at].encode('utf-8')
+
+        if split_at == 0:
+            split_at = max_byte_length
+
+        best_split = max(text.rfind('.', 0, split_at),
+                         text.rfind(',', 0, split_at),
+                         text.rfind(' ', 0, split_at))
+
+        if best_split == -1:
+            best_split = split_at
+
+        chunks.append(text[:best_split + 1])
+        text = text[best_split + 1:]
     return chunks
