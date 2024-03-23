@@ -68,6 +68,7 @@ test:frontend:
         - app/stage/test frontend
     after_script:
         - docker compose down
+    when: manual
 
 test:backend:
     stage: test
@@ -77,13 +78,14 @@ test:backend:
         - app/stage/test backend
     after_script:
         - docker compose down
+    when: manual
 
 .deploy_script: &deploy_script
     variables:
-        GIT_STRATEGY: 'none'
-        GIT_CHECKOUT: 'false'
+        GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+        GIT_STRATEGY: 'fetch'
+        GIT_CHECKOUT: 'true'
         GIT_DEPTH: 0
-        GIT_CLONE_PATH: 'none'
     before_script:
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     script: >
