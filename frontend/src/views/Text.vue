@@ -3,14 +3,16 @@
   <n-modal v-model:show="showModal"
            :title="$t('auth.passwordRequired')"
            preset="dialog" @positive-click="submitPassword">
+    <n-spin :show="isLoading">
     <n-form :rules="formRules" :model="formContent" ref="formRef">
       <n-form-item path="password"
           :label="$t('auth.passwordLabel')" :error="passwordError ? $t('auth.invalidPassword') : ''">
         <n-input v-model:value="formContent.password" type="password" clearable/>
       </n-form-item>
     </n-form>
+      </n-spin>
     <template #action>
-      <n-button @click="submitPassword" type="primary">{{$t('auth.submitForm')}}</n-button>
+      <n-button :disabled="isLoading" @click="submitPassword" type="primary">{{$t('auth.submitForm')}}</n-button>
     </template>
   </n-modal>
     <n-form size="medium">
@@ -107,6 +109,7 @@ const formContent = ref({
 });
 const formRef = ref(null);
 const passwordError = ref(false);
+const isLoading = ref(false);
 
 const hashPassword = async (password: string) => {
   const encoder = new TextEncoder();
@@ -128,6 +131,10 @@ const formRules: FormRules = {
   ]
 };
 const submitPassword = async () => {
+  if (isLoading.value){
+    return;
+  }
+  isLoading.value = true;
     const hashedPassword = await hashPassword(formContent.value.password);
     api.post(
       'text-to-speech/',
@@ -149,8 +156,8 @@ const submitPassword = async () => {
       }
     }).finally(() => {
       formRef.value?.validate();
+      isLoading.value = false;
     });
-
 };
 const convertToSpeech = async () => {
     showModal.value = true;
