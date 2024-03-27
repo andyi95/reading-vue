@@ -77,7 +77,7 @@ export default {
     },
     async fetchText(){
       try{
-        const response = await api.post('/parse/', {text: {text: this.postBody}})
+        const response = await api.post('/parse/', {text: this.postBody})
         this.convertedText = response.data.sort(
             (a, b) => a.id - b.id).map(
             item => item.normal_form ? item.normal_form : item.word).join(' ')
