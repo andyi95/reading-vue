@@ -184,7 +184,6 @@ watch(
       })
     })
 useHead({
-  title: route.meta.title,
   link: [
     {
       rel: 'canonical',
@@ -195,6 +194,10 @@ useHead({
     lang: currentLanguage.value
   },
   meta: [
+    {
+      name: 'title',
+      content: route.meta.title
+    },
     {
       "http-equiv": 'content-language',
       content: currentLanguage.value

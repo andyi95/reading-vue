@@ -18,26 +18,40 @@
 <script>
 import Navigation from "@/components/Navigation.vue";
 import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
-import {defineComponent, computed, ref, onMounted} from "vue";
+import {defineComponent, computed, ref} from "vue";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {useSeoMeta} from "@unhead/vue";
+import {useSeoMeta, useHead} from "@unhead/vue";
 
 export default defineComponent({
-  components: {Navigation, NConfigProvider, NMessageProvider, darkTheme},
+  components: {Navigation, NConfigProvider, NMessageProvider},
   setup() {
     const store = useStore();
     const {t} = useI18n();
     const windowWidth = ref(window.innerWidth);
     const windowHeight = ref(window.innerHeight);
     useSeoMeta({
-      title: t('common.metaTitle'),
-      description: t('common.metaDescription'),
       ogTitle: 'Текстовые инструменты',
       ogDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса.',
       ogImage: 'https://text-tools.ru/img/og.png',
       twitterImage: 'https://text-tools.ru/img/og.png',
       image: 'https://text-tools.ru/img/og.png'
+    })
+    useHead({
+      meta: [
+        {
+          name: 'title',
+          content: t('common.metaTitle')
+        },
+        {
+          name: 'description',
+          content: t('common.metaDescription')
+        },
+        {
+          name: 'keywords',
+          content: t('common.metaTags')
+        }
+      ]
     })
 
     return {
