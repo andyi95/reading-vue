@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 import uuid
 from typing import Annotated, Optional
 
@@ -14,7 +15,7 @@ from starlette.responses import FileResponse
 
 from app.schemas import TextModel
 from settings import Settings, get_settings
-from utils.analize import analize_text, count_words, split_text
+from utils.analize import TextAnalizer, analize_text, count_words
 
 api = APIRouter(prefix='/api', dependencies=[Depends(get_settings)])
 
@@ -76,14 +77,11 @@ def authenticate_user(authorization: str = Header(...), settings: Settings = Dep
 @api.post('/text-to-speech/', dependencies=[Depends(authenticate_user)])
 async def text_to_speech(settings: Annotated[Settings, Depends(get_settings)], text: TextModel, voice: Optional[str]
 = 'anton') -> FileResponse:
+    analizer = TextAnalizer(text.text)
+    voice = analizer.get_voice_params()
     client = texttospeech.TextToSpeechClient()
-    chunks = split_text(text.text, 4500)
+    chunks = analizer.split_text(4500)
     filenames = []
-    voice = texttospeech.VoiceSelectionParams(
-        language_code='ru-Ru',
-        ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,
-        name='ru-RU-Standard-B'
-    )
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3
     )
@@ -116,7 +114,6 @@ async def validate_token(password: Annotated[str, Body(..., embed=True)], settin
     if password != settings.AUTH_PASSWRD:
         raise HTTPException(status_code=401, detail='Invalid password')
     return Response(status_code=200)
-
 
 
 app.include_router(api)

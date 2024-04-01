@@ -1,21 +1,20 @@
 import io
-
+import json
 import re
+from collections import Counter
 
 import pymorphy2 as py
+from aioredis import from_url
+from google.cloud import texttospeech
+from langdetect import detect
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
-from collections import Counter
-from aioredis import from_url
-import json
 
 from settings import Settings
 
-
 stemmer = PorterStemmer()
 morph = py.MorphAnalyzer()
-
 
 
 async def analize_text(text: str, settings: Settings) -> list:
@@ -91,26 +90,67 @@ def count_words(text: str) -> dict:
     return dict(v.most_common())
 
 
-def split_text(text: str, max_byte_length: int = 5000):
-    chunks = []
-    while text:
-        split_at = max_byte_length
-        current_chunk_bytes = text[:split_at].encode('utf-8')
+class TextAnalizer:
+    def __init__(self, text: str):
+        self.text = text
 
-        while len(current_chunk_bytes) > max_byte_length and split_at > 0:
-            split_at -= 1
+    def split_text(self, max_byte_length: int = 5000):
+        chunks = []
+        text = self.text
+        while text:
+            split_at = max_byte_length
             current_chunk_bytes = text[:split_at].encode('utf-8')
 
-        if split_at == 0:
-            split_at = max_byte_length
+            while len(current_chunk_bytes) > max_byte_length and split_at > 0:
+                split_at -= 1
+                current_chunk_bytes = text[:split_at].encode('utf-8')
 
-        best_split = max(text.rfind('.', 0, split_at),
-                         text.rfind(',', 0, split_at),
-                         text.rfind(' ', 0, split_at))
+            if split_at == 0:
+                split_at = max_byte_length
 
-        if best_split == -1:
-            best_split = split_at
+            best_split = max(text.rfind('.', 0, split_at),
+                             text.rfind(',', 0, split_at),
+                             text.rfind(' ', 0, split_at))
 
-        chunks.append(text[:best_split + 1])
-        text = text[best_split + 1:]
-    return chunks
+            if best_split == -1:
+                best_split = split_at
+
+            chunks.append(text[:best_split + 1])
+            text = text[best_split + 1:]
+        return chunks
+
+    def get_voice_params(self) -> texttospeech.VoiceSelectionParams:
+        LANG_CODES = {
+            'ru': {
+                'language_code': 'ru-RU',
+                'name': 'ru-RU-Standard-B'
+            },
+            'uk': {
+                'language_code': 'uk-UA',
+                'name': 'uk-UA-Standard-A'
+            },
+            'sk': {
+                'language_code': 'sk-SK',
+                'name': 'sk-SK-Standard-A'
+            },
+            'en': {
+                'language_code': 'en-US',
+                'name': 'en-US-Neural2-I'
+            },
+            'fr': {
+                'language_code': 'fr-FR',
+                'name': 'fr-FR-Neural2-C'
+            }
+        }
+        lang = detect(self.text)
+        if lang in LANG_CODES:
+            return texttospeech.VoiceSelectionParams(
+                language_code=LANG_CODES[lang]['language_code'],
+                name=LANG_CODES[lang]['name'],
+                ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+            )
+        return texttospeech.VoiceSelectionParams(
+            language_code='ru-Ru',
+            ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,
+            name='ru-RU-Standard-B'
+        )
