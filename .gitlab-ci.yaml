@@ -68,7 +68,8 @@ test:frontend:
         - app/stage/test frontend
     after_script:
         - docker compose down
-    when: manual
+    needs:
+        - build:frontend
 
 test:backend:
     stage: test
@@ -78,7 +79,8 @@ test:backend:
         - app/stage/test backend
     after_script:
         - docker compose down
-    when: manual
+    needs:
+        - build:backend
 
 .deploy_script: &deploy_script
     variables:
@@ -90,7 +92,7 @@ test:backend:
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     script: >
         app/stage/vars $CI_COMMIT_REF_SLUG &&
-        app/stage/deploy $DEPLOY_COMPONENT 
+        app/stage/deploy $DEPLOY_COMPONENT
     when: manual
     tags:
         - ssh
@@ -99,8 +101,9 @@ test:backend:
 deploy:development:
     <<: *deploy_script
     stage: deploy:development
-#    needs:
-#        - test:frontend
+    needs:
+        - test:frontend
+        - test:backend
     environment:
         name: development
         deployment_tier: development
@@ -115,29 +118,25 @@ stop:development:
         deployment_tier: development
         url: https://reader.dev.andyi95.com/
         action: stop
+    when: manual
+    tags:
+        - ssh
+        - dev
 
-
-deploy:production:backend:
+deploy:production:
     <<: *deploy_script
     stage: deploy:production
     variables:
         DEPLOY_COMPONENT: backend
     needs:
+        - test:frontend
         - test:backend
     environment:
         name: production
         deployment_tier: production
         url: https://text-tools.ru/
+    tags:
+        - ssh
+        - prod
 
-deploy:production:frontend:
-    <<: *deploy_script
-    stage: deploy:production
-    variables:
-        DEPLOY_COMPONENT: frontend
-    needs:
-        - test:frontend
-    environment:
-        name: production
-        deployment_tier: production
-        url: https://text-tools.ru/
 
