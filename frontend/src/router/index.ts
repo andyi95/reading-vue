@@ -16,9 +16,6 @@ const routes: RouteRecordRaw[] = [
   {path: '/anticipation', name: 'Anticipation', component: Anticipation, meta: {
     title: t('nav.anticipation'), tags: t('anticipation.metaTags'), description: t('anticipation.metaDescription')
   }},
-  {path: '/text', name: 'Parser', component: Text, meta: {
-    title: t('nav.textparser'), tags: t('textparser.metaTags'), description: t('textparser.metaDescription')
-  }},
   {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {
     title: t('nav.spreeder'), tags: t('spreeder.metaTags'), description: t('spreeder.metaDescription')
   }},
@@ -42,7 +39,7 @@ const routes: RouteRecordRaw[] = [
     name: 'About',
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
-  {path: '/:catchAll(.*)', redirect: '/text'}
+  {path: '/:catchAll(.*)', name: 'NotFound', component: () => import('@/views/NotFound.vue')}
 
 ]
 

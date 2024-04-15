@@ -23,7 +23,10 @@ const messages = {
             title: 'Text tools',
             voice: 'Voice Recorder',
             diff: 'Compare texts',
-            editor: 'Text editor'
+            editor: 'Text editor',
+            notFoundTitle: 'Not found',
+            notFoundMessage: 'It seems that this page does not exist',
+            backHome: 'Go to main page',
         },
         common:{
             textContent: 'Text for reading',
@@ -211,7 +214,10 @@ const messages = {
             title: 'Текстовые инструменты',
             voice: 'Запись голоса',
             diff: 'Сравнение текстов',
-            editor: 'Редактор'
+            editor: 'Редактор',
+            notFoundTitle: 'Не найдено',
+            notFoundMessage: 'Похоже, такой страницы не существует',
+            backHome: 'На главную',
         },
         common:{
             textContent: 'Текст для чтения',

@@ -123,19 +123,23 @@ class TextAnalizer:
         LANG_CODES = {
             'ru': {
                 'language_code': 'ru-RU',
-                'name': 'ru-RU-Standard-B'
+                'name': 'ru-RU-Standard-B',
+                'gender': texttospeech.SsmlVoiceGender.NEUTRAL
             },
             'uk': {
                 'language_code': 'uk-UA',
-                'name': 'uk-UA-Standard-A'
+                'name': 'uk-UA-Standard-A',
+                'gender': texttospeech.SsmlVoiceGender.FEMALE
             },
             'sk': {
                 'language_code': 'sk-SK',
-                'name': 'sk-SK-Standard-A'
+                'name': 'sk-SK-Standard-A',
+                'gender': texttospeech.SsmlVoiceGender.FEMALE
             },
             'en': {
                 'language_code': 'en-US',
-                'name': 'en-US-Neural2-I'
+                'name': 'en-US-Neural2-I',
+                'gender': texttospeech.SsmlVoiceGender.MALE
             },
             'fr': {
                 'language_code': 'fr-FR',
@@ -147,7 +151,7 @@ class TextAnalizer:
             return texttospeech.VoiceSelectionParams(
                 language_code=LANG_CODES[lang]['language_code'],
                 name=LANG_CODES[lang]['name'],
-                ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+                ssml_gender=LANG_CODES[lang].get('gender')
             )
         return texttospeech.VoiceSelectionParams(
             language_code='ru-Ru',
