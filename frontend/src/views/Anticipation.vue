@@ -82,9 +82,18 @@ export default {
 
 <style scoped>
 .n-card > .n-card__content span{
-  word-spacing: 1.3em;
-  font-size: 14pt;
-  /*font-weight: 200;*/
+  word-spacing: 0.4em;
+  letter-spacing: 0.05em;
+  font-size: 16pt;
+  text-align: justify;
+}
+@media (max-width: 768px) {
+    .n-card > .n-card__content span {
+        word-spacing: 0.2em;
+        letter-spacing: 0.02em;
+        font-size: 12pt;
+  text-align: justify;
+    }
 }
 .grayed {
   color: #E0E0E0!important;

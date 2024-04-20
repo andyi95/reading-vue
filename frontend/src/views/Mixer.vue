@@ -119,14 +119,15 @@ export default {
 .n-card{
     margin-top: 1.5em;
 }
-.n-card.n-card--bordered .n-card__content{
-    text-align: center;
-    display: flex;
-}
-.n-card.n-card--bordered .n-card__content span{
-    font-size: 1.2em;
-    text-align: justify;
-    display: flex;
 
+.n-card > .n-card__content span{
+  font-size: 16pt;
+  text-align: justify;
+}
+@media (max-width: 768px) {
+    .n-card.n-card--bordered .n-card__content span {
+        font-size: 12pt;
+  text-align: justify;
+    }
 }
 </style>
