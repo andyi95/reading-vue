@@ -17,14 +17,14 @@
 
 <n-form-item style="padding-right: 12em">
   <n-collapse arrow-placement="right">
-    <n-collapse-item title="Настройки" name="settings">
-      <n-form-item label="Размер текста">
+    <n-collapse-item :title="$t('common.settingsLabel')" name="settings">
+      <n-form-item :label="$t('common.fontSize')">
       <n-slider v-model:value="slider.fontSize" :step="1" :min="10" :max="400"/>
       </n-form-item>
-      <n-form-item label="Ширина области отображеия">
+      <n-form-item :label="$t('common.boxWidth')">
         <n-slider v-model:value="slider.boxWidth" :step="1" :min="10" :max="150"/>
       </n-form-item>
-      <n-form-item label="Слов в показе">
+      <n-form-item :label="$t('common.chunkSize')">
         <n-select v-model:value="chunkSize" :options="chunkSizeOptions"/>
       </n-form-item>
     </n-collapse-item>
