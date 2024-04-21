@@ -11,35 +11,43 @@
                     :placeholder="$t('anticipation.placeHolderSelect')"
                     @update:value="removeVowels"
           />
-        </n-form-item></div>
+        </n-form-item>
+
+                    <n-form-item :label="$t('common.fontSize')">
+              <FontSizeSelect v-model:value="fontSize"/>
+            </n-form-item>
+      </div>
     </n-form>
   </n-space>
 
   <BaseTextBox ref="textContent" v-if="parsedText.length > 0">
     <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
-    <div class="py-4">
-      <BaseButton :label="$t('common.copyText')"  @button-clicked="copyText()"/></div>
   </BaseTextBox>
 </template>
 
 <script>
 import BaseInput from "@/components/BaseInput.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import {NForm, NFormItem, NSelect, NSpace} from "naive-ui";
+import {NCollapseItem, NForm, NFormItem, NSelect, NSlider, NSpace} from "naive-ui";
 import BaseTextBox from "@/components/BaseTextBox.vue";
 import charSets from "@/helpers/charSets";
 import TextParser from "@/helpers/parser";
+import FontSizeSelect from "@/components/FontSizeSelect.vue";
 export default {
   name: "Anticipation",
-  components: {BaseTextBox, BaseButton, BaseInput, NSpace, NForm, NSelect, NFormItem},
+  components: {
+    FontSizeSelect,
+    NSlider, NCollapseItem, BaseTextBox, BaseButton, BaseInput, NSpace, NForm, NSelect, NFormItem},
   data(){
     return {
       sourceText: '',
       parsedText: [],
       additionalChars: [],
-      russianConsonants: charSets.russianAlphabet.selectConsonants
-    }
+      russianConsonants: charSets.russianAlphabet.selectConsonants,
+      fontSize: 16,
+      }
   },
+
   methods: {
     copyText() {
       let textToCopy = this.$refs.textContent;
@@ -76,6 +84,11 @@ export default {
       }
 
     }
+  },
+  computed: {
+        fontSizeCSS() {
+      return this.fontSize + 'pt'
+    }
   }
 }
 </script>
@@ -84,14 +97,14 @@ export default {
 .n-card > .n-card__content span{
   word-spacing: 0.4em;
   letter-spacing: 0.05em;
-  font-size: 16pt;
+  font-size: v-bind('fontSizeCSS');
   text-align: justify;
 }
 @media (max-width: 768px) {
     .n-card > .n-card__content span {
         word-spacing: 0.2em;
         letter-spacing: 0.02em;
-        font-size: 12pt;
+        font-size: v-bind('fontSizeCSS');
   text-align: justify;
     }
 }

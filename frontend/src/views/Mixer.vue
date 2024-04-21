@@ -1,22 +1,28 @@
 <template>
-    <n-space vertical size="medium" justify="space-between">
-        <n-form size="medium">
-            <BaseInput :label="$t('common.sourceText')" :placeholder="$t('common.textPlaceHolder')" v-model:post-body="postBody" @input-updated="textUpdated($event)"/>
-          <div class="py-5 w-1/3">
-          <n-form-item :label="$t('chaos.mode')">
-            <n-select v-model:value="cipherMode"
-                      :options="cipherModeOptions"
-                      @update:value="modeChanged"
-            />
+  <n-space vertical size="medium" justify="space-between">
+    <n-form size="medium">
+      <BaseInput :label="$t('common.sourceText')" :placeholder="$t('common.textPlaceHolder')"
+                 v-model:post-body="postBody" @input-updated="textUpdated($event)"/>
+      <div class="py-5 w-1/3">
+        <n-form-item :label="$t('chaos.mode')">
+          <n-select v-model:value="cipherMode"
+                    :options="cipherModeOptions"
+                    @update:value="modeChanged"
+          />
+        </n-form-item>
+        <n-form-item :label="$t('common.fontSize')">
+          <FontSizeSelect v-model:value="fontSize"/>
+        </n-form-item>
+      </div>
+    </n-form>
+    <BaseTextBox
+        ref="textContent" v-if="convertedText && convertedText.length > 1"
+        :style="{fontSize: fontSize + 'pt'}"
+    >
+      <span>{{ convertedText }}</span>
+    </BaseTextBox>
 
-          </n-form-item></div>
-        </n-form>
-        <n-card  ref="textContent" v-if="convertedText && convertedText.length > 1">
-            <span>{{ convertedText }}</span>
-            <div class="py-4">
-      <n-button type="primary" @click="copyText">{{ $t('common.copyText')}}</n-button></div>
-        </n-card>
-    </n-space>
+  </n-space>
 </template>
 
 <script>
@@ -27,10 +33,12 @@ import TextParser from "@/helpers/parser";
 import {api} from "@/helpers";
 import {ref} from "vue";
 import {debounce} from "lodash-es";
+import BaseTextBox from "@/components/BaseTextBox.vue";
+import FontSizeSelect from "@/components/FontSizeSelect.vue";
 
 export default {
   name: "Mixer",
-  components: {NFormItem, NSelect, BaseButton, BaseInput},
+  components: {FontSizeSelect, BaseTextBox, NFormItem, NSelect, BaseButton, BaseInput},
   setup() {
     const message = useMessage();
     const textContent = ref(null);
@@ -50,6 +58,9 @@ export default {
         {label: this.$t('chaos.replaceLetters'), value: 'replaceLetters'},
         {label: this.$t('chaos.normalForm'), value: 'normalForm'},
       ]
+    },
+    fontSizeCSS() {
+      return this.fontSize + 'pt'
     }
   },
   data() {
@@ -57,6 +68,7 @@ export default {
       postBody: '',
       convertedText: '',
       cipherMode: 'chaosLetters',
+      fontSize: 16
     }
   },
   methods: {
@@ -75,14 +87,13 @@ export default {
       document.execCommand("copy");
       window.getSelection().removeAllRanges()
     },
-    async fetchText(){
-      try{
+    async fetchText() {
+      try {
         const response = await api.post('/parse/', {text: this.postBody})
         this.convertedText = response.data.sort(
             (a, b) => a.id - b.id).map(
             item => item.normal_form ? item.normal_form : item.word).join(' ')
-        }
-      catch (e) {
+      } catch (e) {
         this.warning()
         console.log(e)
       }
@@ -116,18 +127,19 @@ export default {
 </script>
 
 <style scoped>
-.n-card{
-    margin-top: 1.5em;
+.n-card {
+  margin-top: 1.5em;
 }
 
-.n-card > .n-card__content span{
-  font-size: 16pt;
+.n-card > .n-card__content span {
+  font-size: v-bind('fontSizeCSS');
   text-align: justify;
 }
+
 @media (max-width: 768px) {
-    .n-card.n-card--bordered .n-card__content span {
-        font-size: 12pt;
-  text-align: justify;
-    }
+  .n-card.n-card--bordered .n-card__content span {
+    font-size: v-bind('fontSizeCSS');
+    text-align: justify;
+  }
 }
 </style>
