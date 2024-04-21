@@ -40,6 +40,7 @@ const messages = {
             noLabel: 'No',
             settingsLabel: 'Settings',
             fontSize: 'Font size',
+            fontSizePH: 'Select font size in pt',
             boxWidth: 'Text box width',
             chunkSize: 'Chunk size',
             metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder.',

@@ -12,6 +12,7 @@ declare module 'vue' {
     BaseInput: typeof import('./src/components/BaseInput.vue')['default']
     BaseTextBox: typeof import('./src/components/BaseTextBox.vue')['default']
     ButtonLink: typeof import('./src/components/ButtonLink.vue')['default']
+    FontSizeSelect: typeof import('./src/components/FontSizeSelect.vue')['default']
     Navigation: typeof import('./src/components/Navigation.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']

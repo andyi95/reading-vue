@@ -4,7 +4,7 @@
       <slot/>
     </div>
     <div v-if="showCopyButton" class="py-4">
-      <n-button type="primary" @click="copyText">{{ copyButtonText }}</n-button>
+      <n-button type="primary" @click="copyText">{{ $t('common.copyText') }}</n-button>
     </div>
   </n-card>
 </template>
