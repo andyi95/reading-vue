@@ -122,6 +122,30 @@ export default class TextParser {
         throw e;
     }
 }
+export function splitText(sourceText: string, chunkSize: number = 5000): string[] {
+    let text = sourceText;
+    const chunks: string[] = [];
+    while (text.length > 0) {
+    if (text.length <= chunkSize) {
+      chunks.push(text);
+      break;
+    }
+
+    let chunk = text.slice(0, chunkSize);
+    let lastDot = chunk.lastIndexOf('.');
+    let lastComma = chunk.lastIndexOf(',');
+    let lastSpace = chunk.lastIndexOf(' ');
+
+    let splitIndex = lastDot > 0 ? lastDot : lastComma > 0 ? lastComma : lastSpace > 0 ? lastSpace : 4900;
+
+    chunk = text.slice(0, splitIndex + 1);
+    chunks.push(chunk);
+
+    text = text.slice(splitIndex + 1);
+  }
+
+  return chunks;
+}
 export function copyText(element: HTMLElement): void {
     const range = document.createRange();
     range.selectNode(element);

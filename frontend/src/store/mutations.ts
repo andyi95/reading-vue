@@ -1,5 +1,8 @@
 import {SchulteContext, SchulteResultsItem, SchulteSettings, State} from '@/helpers/types';
 
+
+type SettingsOptions = 'anticipationSettings' | 'mixerSettings';
+
 export const mutations = {
     SWITCH_THEME(state: State) {
         state.theme = state.theme ? null : 'darkTheme';
@@ -27,5 +30,8 @@ export const mutations = {
             lastSaved: new Date(),
             content: content,
         };
+    },
+    UPDATE_FONT_SIZE(state: State, {settingsKey, fontSize}: {settingsKey: SettingsOptions, fontSize: number}) {
+        state[settingsKey].fontSize = fontSize
     }
 };

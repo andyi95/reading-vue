@@ -16,12 +16,29 @@
 </template>
 
 <script>
-import {NLayoutContent, NLayout, NLayoutHeader} from "naive-ui";
+import {NLayoutContent, NLayout, NLayoutHeader, useMessage} from "naive-ui";
 import Navigation from "@/App.vue";
+import {api} from "@/helpers";
 
 export default {
   name: "DefaultLayout",
-  components: {Navigation, NLayoutContent, NLayout, NLayoutHeader }
+  components: {Navigation, NLayoutContent, NLayout, NLayoutHeader },
+  setup() {
+    window.$message = useMessage();
+    api.interceptors.response.use(
+        response => response,
+        error => {
+          const status = error.response ? error.response.status : null;
+          if (status === 401) {
+            window.$message.error('Unauthorized');
+          }
+          else {
+            window.$message.warning('Something went wrong');
+          }
+          return Promise.reject(error);
+        }
+    )
+  }
 }
 </script>
 
