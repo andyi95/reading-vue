@@ -11,7 +11,8 @@
           />
         </n-form-item>
         <n-form-item :label="$t('common.fontSize')">
-          <FontSizeSelect v-model:value="fontSize"/>
+          <FontSizeSelect
+              :value="fontSize" @update:value="handleFontSizeChange"/>
         </n-form-item>
       </div>
     </n-form>
@@ -35,6 +36,7 @@ import {ref} from "vue";
 import {debounce} from "lodash-es";
 import BaseTextBox from "@/components/BaseTextBox.vue";
 import FontSizeSelect from "@/components/FontSizeSelect.vue";
+import {mapActions, mapState} from "vuex";
 
 export default {
   name: "Mixer",
@@ -50,6 +52,9 @@ export default {
     }
   },
   computed: {
+        ...mapState({
+        fontSize: state => state.mixerSettings.fontSize,
+    }),
     cipherModeOptions() {
       return [
         {label: this.$t('chaos.shuffleLetters'), value: 'chaosLetters'},
@@ -67,11 +72,18 @@ export default {
     return {
       postBody: '',
       convertedText: '',
-      cipherMode: 'chaosLetters',
-      fontSize: 16
+      cipherMode: 'chaosLetters'
     }
   },
   methods: {
+     ...mapActions(['updateFontSize']),
+
+    handleFontSizeChange(newFontSize) {
+        this.updateFontSize({
+            settingsKey: 'mixerSettings',
+            fontSize: newFontSize
+        });
+    },
     textUpdated(value) {
       this.postBody = value;
       this.modeChanged()

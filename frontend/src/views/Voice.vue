@@ -22,9 +22,6 @@ const warning = (text: string) => {
   message.warning(text)
 }
 const themeVars = useThemeVars();
-const microphoneColor = computed(() => {
-  return isRecording.value ? themeVars.value.primaryColor : themeVars.value.actionColor
-});
 const setPlaybackRate = debounce((rate: number) => {
   waveSurfer?.setPlaybackRate(rate, true);
   waveSurfer?.play()

@@ -14,7 +14,8 @@
         </n-form-item>
 
                     <n-form-item :label="$t('common.fontSize')">
-              <FontSizeSelect v-model:value="fontSize"/>
+              <FontSizeSelect
+                  :value="fontSize" @update:value="handleFontSizeChange"/>
             </n-form-item>
       </div>
     </n-form>
@@ -33,6 +34,7 @@ import BaseTextBox from "@/components/BaseTextBox.vue";
 import charSets from "@/helpers/charSets";
 import TextParser from "@/helpers/parser";
 import FontSizeSelect from "@/components/FontSizeSelect.vue";
+import {mapState, mapActions} from "vuex";
 export default {
   name: "Anticipation",
   components: {
@@ -43,12 +45,19 @@ export default {
       sourceText: '',
       parsedText: [],
       additionalChars: [],
-      russianConsonants: charSets.russianAlphabet.selectConsonants,
-      fontSize: 16,
+      russianConsonants: charSets.russianAlphabet.selectConsonants
       }
   },
 
   methods: {
+     ...mapActions(['updateFontSize']),
+
+    handleFontSizeChange(newFontSize) {
+        this.updateFontSize({
+            settingsKey: 'anticipationSettings',
+            fontSize: newFontSize
+        });
+    },
     copyText() {
       let textToCopy = this.$refs.textContent;
       let blob = textToCopy.$el;
@@ -86,6 +95,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+        fontSize: state => state.anticipationSettings.fontSize,
+    }),
         fontSizeCSS() {
       return this.fontSize + 'pt'
     }
@@ -94,14 +106,14 @@ export default {
 </script>
 
 <style scoped>
-.n-card > .n-card__content span{
+.n-card >>> .n-card__content {
   word-spacing: 0.4em;
   letter-spacing: 0.05em;
   font-size: v-bind('fontSizeCSS');
   text-align: justify;
 }
 @media (max-width: 768px) {
-    .n-card > .n-card__content span {
+    .n-card > .n-card__content {
         word-spacing: 0.2em;
         letter-spacing: 0.02em;
         font-size: v-bind('fontSizeCSS');

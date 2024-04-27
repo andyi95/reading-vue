@@ -153,6 +153,35 @@ useSeoMeta({
   description: computed(() => t('common.metaDescription')),
   keywords: computed(() => t('common.metaTags')),
 })
+let head = useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: 'https://text-tools.ru' + route.path
+    }
+  ],
+  htmlAttrs: {
+    lang: currentLanguage.value
+  },
+  meta: [
+    {
+      name: 'title',
+      content: route.meta.title
+    },
+    {
+      "http-equiv": 'content-language',
+      content: currentLanguage.value
+    },
+    {
+      name: 'description',
+      content: route.meta.description as string
+    },
+    {
+      name: 'keywords',
+      content: route.meta.tags as string
+    }
+  ]
+})
 watch(
     () => route.path,
     (newPath) => {
@@ -183,35 +212,7 @@ watch(
         ]
       })
     })
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: 'https://text-tools.ru' + route.path
-    }
-  ],
-  htmlAttrs: {
-    lang: currentLanguage.value
-  },
-  meta: [
-    {
-      name: 'title',
-      content: route.meta.title
-    },
-    {
-      "http-equiv": 'content-language',
-      content: currentLanguage.value
-    },
-    {
-      name: 'description',
-      content: route.meta.description as string
-    },
-    {
-      name: 'keywords',
-      content: route.meta.tags as string
-    }
-  ]
-})
+
 router.beforeEach(async (to, from, next) => {
   const description = to.meta.description ? to.meta.description : t('common.metaDescription');
   const tags = to.meta.tags ? to.meta.tags : t('common.metaTags');

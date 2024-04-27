@@ -1,6 +1,6 @@
 <template>
  <n-card :title="title" class="base-text-box">
-    <div class="text-content" ref="textContent">
+    <div class="text-content text-justify" ref="textContent">
       <slot/>
     </div>
     <div v-if="showCopyButton" class="py-4">
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, ref, computed, useSlots} from "vue";
+import {ref, useSlots} from "vue";
 
 interface Props {
   title?: string;
@@ -54,20 +54,6 @@ const copyText = () => {
 </script>
 
 <style scoped>
-.n-card > .n-card__content {
-  word-spacing: 0.4em;
-  letter-spacing: 0.05em;
-  font-size: 16pt;
-  text-align: justify;
-}
-
-@media (max-width: 768px) {
-  .n-card > .n-card__content {
-    word-spacing: 0.2em;
-    letter-spacing: 0.02em;
-    font-size: 12pt;
-  }
-}
 
 .grayed {
   color: #E0E0E0!important;

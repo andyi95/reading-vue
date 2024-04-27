@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+<div id="app" :class="{ 'dark': theme === darkTheme }">
 
 <n-config-provider :theme="theme">
   <n-message-provider>
@@ -8,6 +8,9 @@
         <n-layout-content >
     <router-view/>
         </n-layout-content>
+      <n-layout-footer>
+        <Footer/>
+      </n-layout-footer>
     </n-layout>
   </n-message-provider>
   </n-config-provider>

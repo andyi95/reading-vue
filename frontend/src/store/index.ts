@@ -32,7 +32,13 @@ const storeOptions: StoreOptions<State> = {
         },
         editorContent: {
             lastSaved: new Date(),
-            content: '',
+            content: ''
+        },
+        anticipationSettings: {
+            fontSize: 16
+        },
+        mixerSettings: {
+            fontSize: 16
         },
         schulteContext: {
             currentRate: 1,
@@ -60,6 +66,9 @@ const storeOptions: StoreOptions<State> = {
         },
         saveEditorContent( context, payload){
             context.commit('UPDATE_EDITOR_CONTENT', payload)
+        },
+        updateFontSize(context, {settingsKey, fontSize}: {settingsKey: keyof State, fontSize: number}) {
+            context.commit('UPDATE_FONT_SIZE', {settingsKey, fontSize})
         }
     },
     getters: {

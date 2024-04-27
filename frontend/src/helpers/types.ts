@@ -23,7 +23,14 @@ export interface SchulteContext {
     currentItem: any;
     currentIndex: number;
 }
-
+export interface UserData {
+    user: {
+        username: string;
+    },
+    token: {
+        bearer: string;
+    }
+}
 export interface State {
     theme: string | null;
     sourceText: string;
@@ -34,6 +41,12 @@ export interface State {
     schulteContext: SchulteContext;
     editorContent: {
         lastSaved: Date,
-        content: string
+        content: string,
+    },
+    anticipationSettings: {
+        fontSize: number | 16
+    },
+    mixerSettings: {
+        fontSize: number | 16
     }
 }
