@@ -8,9 +8,14 @@
       {{ item.content }}
     </n-card>
       </div>
+    <n-h3 class="mb-1 text-2xl font-extrabold leading-tight text-gray-900 dark:text-gray-50"> {{ aboutContent.changeLogTitle }}</n-h3>
+    <div class="wh-full">
+      <n-timeline>
+        <n-timeline-item v-for="(item, idx) in changeLog" :key="idx" :time="item.date.toLocaleDateString()" :content="item.content">
+        </n-timeline-item>
+      </n-timeline>
+    </div>
   </div>
-
-
 </template>
 
 <script setup lang="ts">
@@ -50,7 +55,8 @@ const aboutMessages = {
         title: 'Text Editor',
         content: 'Our text editor allows users to format text, change its structure, and color, which is useful for preparing texts for publication and creating educational materials.'
       }
-    ]
+    ],
+    changeLogTitle: 'Changelog'
   },
   ru: {
     pageTitle: 'Улучшите навыки чтения',
@@ -84,10 +90,22 @@ const aboutMessages = {
         title: 'Редактор текста',
         content: 'Наш редактор текста позволяет форматировать текст, изменять его структуру и цвет, что полезно для подготовки текстов к публикации и создания учебных материалов.'
       }
-    ]
+    ],
+    changeLogTitle: 'Изменения на проекте'
   }
 };
 
+const changeLog = [
+  {
+    date: new Date('04/01/2023'),
+    content: 'Добавили спридер'
+  },
+  {date: new Date('04/20/2023'), content: 'Добавили дешифровщик'},
+  {date: new Date('04/01/2022'), content: 'Старт проекта, основная реализация парсера текстов с подсчётом слов'},
+  {date: new Date('03/01/2023'), content: 'Добавили модуль с антиципацией текста'},
+  {date: new Date('05/01/2023'), content: 'Перевели сайт на английский язык, добавили переключатель языка'},
+  {date: new Date('10/18/2023'), content: 'Релиз таблицы Шульте'}
+].sort((a, b) => b.date.getTime() - a.date.getTime());
 const {t, locale} = useI18n()
 const aboutContent = computed(() => aboutMessages[locale.value])
 </script>
