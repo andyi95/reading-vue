@@ -98,6 +98,11 @@ test:backend:
     tags:
         - ssh
         - dev
+    only:
+        refs:
+            - dev
+            - development
+            - master
 
 deploy:development:
     <<: *deploy_script
