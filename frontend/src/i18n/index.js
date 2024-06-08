@@ -57,7 +57,7 @@ const messages = {
             cntWords: 'Words amount',
             paintText: 'Color text',
             copyText: 'Copy text',
-            countWords: 'Count words',
+            countWords: 'Frequency analysis',
             onlyNouns: 'Show only nouns',
             onlyVerbs: 'Show only verbs',
             grayScale: 'Use gray scale',
@@ -165,6 +165,12 @@ const messages = {
         }
     },
     ru: {
+        bugReport: {
+            title: 'Сообщить о проблеме',
+            subject: 'Тема',
+            message: 'Описание проблемы',
+            submit: 'Отправить'
+        },
         anticipation: {
             selectChars: 'Дополнительные символы',
             placeHolderSelect: 'Выберите символы',
@@ -252,7 +258,7 @@ const messages = {
             cntWords: 'Количество слов',
             paintText: 'Раскрасить текст',
             copyText: 'Скопировать текст',
-            countWords: 'Подсчёт слов',
+            countWords: 'Частотный анализ',
             onlyNouns: 'Показать только существительные',
             onlyVerbs: 'Показать только глаголы',
             grayScale: 'Оттенки серого',

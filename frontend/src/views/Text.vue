@@ -28,12 +28,12 @@
                 <n-tag :bordered="false">{{ charsClean }}</n-tag>
             </n-card>
             <n-card> {{ $t('textparser.cntWords')}}
-                <n-tag :bordered="false">{{ fetchedText.length }}</n-tag>
+                <n-tag :bordered="false">{{ cntWords }}</n-tag>
             </n-card>
         </n-space>
         <n-space justify="space-between" size="medium">
             <BaseButton :label="$t('common.copyText')" @button-clicked="copyText()"/>
-            <BaseButton :label="$t('textparser.cntWords')" @button-clicked="countWords()"/>
+            <BaseButton :label="$t('textparser.countWords')" @button-clicked="countWords()"/>
           <BaseButton :label="$t('textparser.textToSpeech')" @button-clicked="convertToSpeech()"/>
         </n-space>
         <n-space vertical justify="space-between" class="py-2">
@@ -199,12 +199,9 @@ const charsClean = computed(() => {
   return match ? match.length : 0;
 });
 
-
 const warning = (text: string) => {
   message.warning(text);
 };
-
-
 
 const assignColor = (word: any) => {
   return colors[word.tag]
@@ -213,6 +210,14 @@ const textUpdated = (value: string) => {
   sourceText.value = value;
   updateText();
 };
+const cntWords = computed(() => {
+  let cleanedText = sourceText.value.replace(/[^\w\s]|_/g, "")
+      .replace(/\s+/g, " ").trim();
+  if (!cleanedText){
+    return 0;
+  }
+  return cleanedText.split(/\s+/).length
+})
 const updateText = debounce(async () => {
   const chunkSize = 100;
   fetchedText.value = [];
@@ -228,17 +233,6 @@ const updateText = debounce(async () => {
       console.log(error)
       continue
     }
-    // try {
-    //   response = await api.post('parse/', {
-    //     text: {
-    //       text: chunk.join(' ')
-    //     }
-    //   })
-    // } catch (error) {
-    //   warning("Что-то пошло не так")
-    //   console.log(error)
-    //   continue
-    // }
     let j = fetchedText.value.length
     response.data.forEach(function (part, idx, arr) {
       arr[idx]['id'] = j

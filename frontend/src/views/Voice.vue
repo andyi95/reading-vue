@@ -148,7 +148,7 @@ const showSettings = ref(false)
   <div class="flex justify-end">
     <n-button text
               @click="showSettings = !showSettings">
-      <n-icon depth="3" size="50"><CogOutline/></n-icon>
+      <n-icon depth="3" class="sized-icon-50"><CogOutline/></n-icon>
     </n-button>
 
     <n-modal v-model:show="showSettings">
@@ -167,5 +167,12 @@ const showSettings = ref(false)
 </template>
 
 <style scoped>
-
+.sized-icon-50 {
+  font-size: 32px;
+}
+@media (min-width: 768px) {
+.sized-icon-50 {
+  font-size: 50px;
+}
+}
 </style>
