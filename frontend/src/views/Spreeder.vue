@@ -11,7 +11,8 @@
     </n-form-item>
     </n-space>
     <n-space size="medium" justify="space-between">
-    <BaseButton :label="slider.buttonLabel" @buttonClicked="startShow()"/> <BaseButton :label="$t('spreeder.resetLabel')" @buttonClicked="resetShow()"/>
+    <BaseButton :label="slider.buttonLabel" @buttonClicked="startShow()" class="w-20 overflow-hidden"/>
+      <BaseButton :label="$t('spreeder.resetLabel')" @buttonClicked="resetShow()" class="w-20 overflow-hidden"/>
     </n-space>
 
 
@@ -31,11 +32,18 @@
   </n-collapse>
 </n-form-item>
   </n-form>
-    <n-card :bordered="false" :style="`display: flex; flex-wrap: wrap; text-align: center; width: ${getBoxWidth()}; padding-bottom: 5em; padding-top: 5em`" v-show="slider.currentWord">
+    <n-card
+        :bordered="false"
+        content-style="padding-top: 0.3rem; padding-bottom: 0.3rem; align-content: center;"
+        :style="`display: flex; flex-wrap: wrap; text-align: center; width: ${getBoxWidth()}; min-height: 200px; padding-bottom: 2em; padding-top: 2em; `"
+        v-show="slider.showCard">
         <span :style="`font-size: ${cardSize}em`"> {{ slider.currentWord }}</span>
     </n-card>
-<!--  </div>-->
-  <n-progress type="line" :percentage="slider.progress" indicator-placement="inside" style="max-width: 80%; margin-bottom: 10em; margin-top: 10em;" v-show="slider.progress > 0"/>
+  <n-progress
+      type="line" :percentage="slider.progress"
+      indicator-placement="inside"
+      :style="`max-width: ${getBoxWidth()}; margin-bottom: 10em; margin-top: 10em;`"
+      v-show="slider.showCard"/>
 </template>
 
 <script>
@@ -72,31 +80,46 @@ export default {
     },
     async displayShow(){
       let chunkSize = Number(this.chunkSize)
-      for(let i = this.slider.currentIndex; true; i += chunkSize){
-        await this.sleep(this.speed);
-        if(!this.slider.isShow && i > 1){
-          break
-        }
-        let currentChunk = this.splittedText.slice(i, i + chunkSize);
-        this.slider.currentWord = currentChunk.join(' ');
+      let start = null;
+      let i = this.slider.currentIndex;
 
-        if(!this.slider.currentWord.trim().length) {
-          this.slider.currentIndex = 0;
-          i = -chunkSize;
-          continue;
-        }
-        let progress = i === 0 ? 0 : Math.max(Math.round(i / this.splittedText.length * 100), 1)
-        this.progressUpdate(progress);
+      const step = (timestamp) => {
+        if (!start) start = timestamp;
+        let progress = timestamp - start;
+        if (progress > this.speed) {
+          start = timestamp;
 
-        if(i >= this.splittedText.length - chunkSize) {
-          this.slider.currentIndex = 0;
-          i = -chunkSize;
-        }
-        else {
-          this.slider.currentIndex += chunkSize;
-        }
+          let currentChunk = this.splittedText.slice(i, i + chunkSize);
+          this.slider.currentWord = currentChunk.join(' ');
 
+          if (!this.slider.currentWord.trim().length) {
+            this.slider.currentIndex = 0;
+            i = -chunkSize;
+          }
+          let progressPercent = i === 0 ? 0 : Math.max(Math.round(i / this.splittedText.length * 100), 1)
+          this.progressUpdate(progressPercent)
+          if (i >= this.splittedText.length - chunkSize) {
+            if (!this.loopPlay){
+              // this.slider.currentIndex = 0;
+              // this.slider.progress = 0;
+              // this.slider.currentWord = this.splittedText.slice(0, chunkSize).join(' ')
+              this.slider.buttonLabel = this.$t('spreeder.startLabel')
+              this.slider.isShow = false;
+              this.slider.progress = 100;
+              return;
+            }
+            this.slider.currentIndex = 0;
+            i = -chunkSize;
+          } else {
+            this.slider.currentIndex += chunkSize;
+            i += chunkSize;
+          }
+        }
+        if (this.slider.isShow){
+          requestAnimationFrame(step);
+        }
       }
+      requestAnimationFrame(step);
     },
     splitText() {
       let splittedText = this.sourceText.trim()
@@ -125,11 +148,16 @@ export default {
     },
     startShow() {
       this.slider.buttonLabel = this.slider.isShow === true ? this.$t('spreeder.startLabel') : this.$t('spreeder.stopLabel')
+      this.slider.showCard = true;
       if (this.slider.isShow === true){
         this.slider.isShow = false;
       }
       else {
         this.slider.isShow = true;
+        if (this.slider.progress === 100) {
+          this.slider.currentIndex = 0;
+          this.slider.progress = 0;
+        }
         this.displayShow();
       }
     },
@@ -150,13 +178,14 @@ export default {
       splittedText: [],
       slider: {
         isShow: false,
-        buttonLabel: "Начать",
+        buttonLabel: this.$t('spreeder.startLabel'),
         progress: 0,
         currentWord: '',
         currentIndex: 0,
         wordsPerShow: 1,
         fontSize: 150,
-        boxWidth: 100
+        boxWidth: 100,
+        showCard: false
       },
       autoplay: {delay: 250, disableOnInteraction: false,},
       speed: computed(() => {
@@ -173,6 +202,7 @@ export default {
       wordsPerMinute: ref(120),
       speedValidator: (x) => x > 0,
       chunkSize: ref(1),
+      loopPlay: ref(false),
       chunkSizeOptions: Array.from({length: 6}, (value, index) => ({label: (index + 1).toString(), value: (index + 1).toString()})),
     };
   },
@@ -180,6 +210,7 @@ export default {
 </script>
 
 <style scoped>
+
 .n-input-number {
   width: 8em;
   display: flex;

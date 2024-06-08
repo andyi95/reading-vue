@@ -73,8 +73,8 @@ const speedOptions = [1, 1.5, 2, 2.5]
 
 <template>
   <div ref="playbackWaveRef" id="playbackWaveRef"></div>
-  <div class="flex items-center py-1 my-1 justify-between">
-        <n-icon size="100" :color="themeVars.primaryColor">
+  <div class="flex flex-col items-center py-1 my-1 justify-between space-y-4 md:space-y-0 md:flex-row md:space-x-4">
+        <n-icon class="play-control" :color="themeVars.primaryColor">
           <PlayCircleOutline v-if="!isPlaying" @click="playAudio"/>
           <StopCircleSharp v-else @click="playAudio"/>
         </n-icon>
@@ -87,16 +87,29 @@ const speedOptions = [1, 1.5, 2, 2.5]
         @click="playbackRate = speedOption">{{ speedOption }}x
     </n-button>
   <n-button @click="toggleLooping">
-    <n-icon size="50" :color="isLooping ? themeVars.primaryColor : themeVars.textColor">
+    <n-icon class="sized-icon-50" :color="isLooping ? themeVars.primaryColor : themeVars.textColor">
       <RepeatOutline/></n-icon>
   </n-button>
 </div>
-    <n-icon size="50">
+    <n-icon class="sized-icon-50">
       <CloudDownloadOutline @click="downloadAudio"/>
     </n-icon>
   </div>
 </template>
 
 <style scoped>
-
+.play-control {
+  font-size: 50px;
+}
+.sized-icon-50 {
+  font-size: 30px;
+}
+@media (min-width: 768px) {
+  .play-control{
+    font-size: 100px;
+  }
+  .sized-icon-50 {
+    font-size: 50px;
+  }
+}
 </style>
