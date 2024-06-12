@@ -176,17 +176,18 @@ const reText = /[A-Za-zА-Яа-я\s]/g;
 interface Color {
   [key: string]: string;
 }
+const adjfColor = '#f4a261';
 const colors: Color = {
   'NOUN': '#0000ff',
-  'NPRO': '#4B4BF9',
-  'ADJF': '#f4a261',
-  'ADJS': '#f4a261',
+  'NPRO': '#4B4BF9',  // местоимение-существительное
+  'ADJF': adjfColor,  // прилагательные
+  'ADJS': adjfColor,  // прилагательное (краткое)
   'VERB': '#009933',
   'INFN': '#009933',
-  'PRTF': '#00F752',
-  'PRTS': '#00F752',
-  'GRND': '#00C441',
-  'ADVB': '#A7B312',
+  'PRTF': adjfColor,
+  'PRTS': '#C04039',
+  'GRND': adjfColor,  // деепричастие
+  'ADVB': adjfColor,
   'PRED': '#4D4DFF',
 };
 const charsTotal = computed(() => {
@@ -211,7 +212,7 @@ const textUpdated = (value: string) => {
   updateText();
 };
 const cntWords = computed(() => {
-  let cleanedText = sourceText.value.replace(/[^\w\s]|_/g, "")
+  let cleanedText = sourceText.value.replace(/[^a-zA-Z0-9\sа-яА-ЯёЁ]|_/g, "")
       .replace(/\s+/g, " ").trim();
   if (!cleanedText){
     return 0;
