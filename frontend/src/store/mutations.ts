@@ -33,5 +33,11 @@ export const mutations = {
     },
     UPDATE_FONT_SIZE(state: State, {settingsKey, fontSize}: {settingsKey: SettingsOptions, fontSize: number}) {
         state[settingsKey].fontSize = fontSize
+    },
+    TOGGLE_BUG_REPORT(state: State){
+        state.showReportCard = !state.showReportCard;
+    },
+    TOGGLE_READING_MODE(state: State){
+        state.readingMode = !state.readingMode;
     }
 };

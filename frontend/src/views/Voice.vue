@@ -108,17 +108,32 @@ const createWaveSurfer = () => {
   }));
 }
 onMounted(async () => {
-  navigator.mediaDevices.enumerateDevices().then((devices) => {
-    devices.forEach((device) => {
-      if (device.kind === 'audioinput') {
-        deviceOptions.value.push({
-          label: device.label,
-          value: device.deviceId
+  if (!navigator.mediaDevices?.enumerateDevices) {
+    console.log("Couldn't retrieve avaliable devices")
+  }
+  else {
+     navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      // Stop the stream as we just want the permission, not the actual audio data
+      stream.getTracks().forEach(track => track.stop());
+
+      navigator.mediaDevices.enumerateDevices().then((devices) => {
+        devices.forEach((device) => {
+          if (device.kind === 'audioinput') {
+            deviceOptions.value.push({
+              label: device.label,
+              value: device.deviceId
+            })
+          }
         })
-      }
+        selectedDevice.value = devices[0].deviceId
+      })
     })
-    selectedDevice.value = devices[0].deviceId
-  })
+    .catch(err => {
+      console.log(err);
+      // Handle the error appropriately
+    });
+  }
 });
 const showSettings = ref(false)
 </script>

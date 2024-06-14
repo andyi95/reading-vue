@@ -22,14 +22,14 @@
 import Navigation from "@/components/Navigation.vue";
 import { darkTheme, NConfigProvider, NMessageProvider } from 'naive-ui';
 import {defineComponent, computed, ref} from "vue";
-import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {useSeoMeta, useHead} from "@unhead/vue";
+import {useMainStore} from "@/store/main";
 
 export default defineComponent({
   components: {Navigation, NConfigProvider, NMessageProvider},
   setup() {
-    const store = useStore();
+    const store = useMainStore();
     const {t} = useI18n();
     const windowWidth = ref(window.innerWidth);
     const windowHeight = ref(window.innerHeight);
@@ -59,10 +59,10 @@ export default defineComponent({
 
     return {
       darkTheme,
-      t,
+      t, store,
       windowWidth, windowHeight,
       theme: computed(function () {
-        return store.state.theme === 'darkTheme' ? darkTheme : null
+        return store.theme === 'darkTheme' ? darkTheme : null
       })
     }
   }

@@ -2,7 +2,9 @@
 import {useMessage, useThemeVars} from 'naive-ui';
 import {defineAsyncComponent, ref} from "vue";
 import {debounce} from "lodash-es";
-import {mapActions}  from "vuex";
+import {mapStores} from "pinia";
+import {useComponentStore} from "@/store/componentStore";
+import {useMainStore} from "@/store/main";
 export default {
   name: 'Schulte',
   components: {
@@ -12,7 +14,7 @@ export default {
   data() {
     return {
       isPlaying: false,
-      size: this.$store.state.schulteSettings.size,
+      size: this.store.schulteSettings.size,
       gridData: [],
       shuffledGrid: [],
       startTime: null,
@@ -20,11 +22,11 @@ export default {
       currentRate: 0,
       currentItem: null,
       currentIndex: 0,
-      gameMode: this.$store.state.schulteSettings.gameMode,
+      gameMode: this.store.schulteSettings.gameMode,
       buttonLabel: null,
-      easyMode: this.$store.state.schulteSettings.easyMode,
+      easyMode: this.store.schulteSettings.easyMode,
       errors: 0,
-      tableCharsType: this.$store.state.schulteSettings.tableCharsType,
+      tableCharsType: this.store.schulteSettings.tableCharsType,
       windowHeight: 0,
       windowWidth: 0,
       errorsInaRow: 0,
@@ -36,6 +38,14 @@ export default {
     const timerCount = ref(0);
     const timer = ref(null);
     const themeVars = useThemeVars();
+    const componentStore = useComponentStore();
+    const store = useMainStore();
+    const updateSchulteResults = (data) => {
+      store.updateSchulteResults(data)
+    }
+    const updateSchulteSettings = (data) => {
+      store.updateSchulteSettings(data)
+    }
     return {
       timerCount, timer,
       warning(text) {
@@ -45,7 +55,8 @@ export default {
         message.success(
             text, { duration: 5000})
       },
-      themeVars
+      themeVars, componentStore, updateSchulteResults, updateSchulteSettings,
+      store
     }
   },
   computed: {
@@ -112,7 +123,7 @@ export default {
         fontSize: `${Math.min(Math.round(maxWidth / this.size * 0.4), 32)}px`,
         gap: gap
       }
-    }
+    },
   },
   watch: {
     isPlaying(value){
@@ -132,13 +143,9 @@ export default {
           clearTimeout(timeout)
         }, 5000)
       }
-    }
+    },
   },
   methods: {
-    ...mapActions([
-        'updateSchulteResults',
-        'updateSchulteSettings'
-    ]),
     start(){
       if (!this.isPlaying){
         this.isPlaying = true
@@ -166,6 +173,7 @@ export default {
         this.timer = setInterval(() => {
           this.timerCount++;
         }, 1000);
+        this.componentStore.registerComponentData('Schulte', {grid: this.gridData, startTime: this.startTime, size: this.size, tableType: this.tableCharsType})
       }
       else {
         this.stop();
@@ -348,6 +356,13 @@ export default {
     this.$nextTick(() => {
       window.addEventListener('resize', this.onResize);
     });
+    this.componentStore.registerComponentData('Schulte', this.$data)
+  },
+  updated() {
+    this.componentStore.logInteraction('Schulte', 'updated')
+  },
+  unmounted() {
+    this.componentStore.unregisterComponentData('Schulte')
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize);

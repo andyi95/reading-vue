@@ -47,11 +47,19 @@ const storeOptions: StoreOptions<State> = {
             currentItem: null,
             currentIndex: 0,
         },
+        showReportCard: false,
+        readingMode: false,
     },
     mutations,
     strict: debug,
     plugins,
     actions: {
+        toggleBugReport(content, payload){
+            content.commit('TOGGLE_BUG_REPORT')
+        },
+        toggleReadingMode(content, payload){
+            content.commit('TOGGLE_READING_MODE')
+        },
         updateText(context, payload){
             context.commit('UPDATE_TEXT', payload)
         },
@@ -86,6 +94,7 @@ const storeOptions: StoreOptions<State> = {
         }
 
     },
+
 };
 
 export default createStore(storeOptions);

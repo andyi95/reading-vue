@@ -14,6 +14,8 @@
   <div class="hidden md:flex" id="navbar-default">
 <n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" style="height: 60px"/>
     <div class="ml-auto flex items-center space-x-4">
+      <n-icon @click="toggleReadMode" v-if="route.meta.hasReadMode" size="30">
+        <Book/></n-icon>
       <n-icon @click="changeTheme" size="30">
         <Moon v-if="!isDarkTheme" ></Moon>
         <Sunny v-else></Sunny>
@@ -31,6 +33,8 @@
 
       <!-- Theme and Locale Toggles for Mobile -->
       <div class="flex justify-center mt-2 space-x-2">
+        <n-icon @click="toggleReadMode" v-if="route.meta.hasReadMode" size="30">
+          <Book/></n-icon>
         <n-icon @click="changeTheme" size="30">
           <Moon v-if="!isDarkTheme"></Moon>
           <Sunny v-else></Sunny>
@@ -47,12 +51,11 @@
 <script setup lang="ts">
 import {computed, watch, h, ref} from "vue";
 import {RouterLink } from 'vue-router';
-import {useThemeVars} from 'naive-ui';
-import {useStore} from "vuex";
 import {useRoute, useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
-import {Moon, Sunny} from "@vicons/ionicons5";
+import {Moon, Sunny, Book} from "@vicons/ionicons5";
 import {useHead, useSeoMeta} from "@unhead/vue";
+import {useMainStore} from "@/store/main";
 
 const  navLinks = [
   {
@@ -125,7 +128,7 @@ key: 'text'
   }
 ]
 const { t, locale } = useI18n();
-const store = useStore();
+const store = useMainStore();
 const router = useRouter();
 const route = useRoute();
 const show = ref(false);
@@ -134,20 +137,23 @@ const activeKey = computed(() => {
 });
 
 const c_locale = computed(function (){
-  return store.state.locale
+  return store.locale
 })
 const isDarkTheme = computed(function (){
-  return store.state.theme === 'darkTheme'
+  return store.theme === 'darkTheme'
 })
 const changeTheme = () => {
-  store.commit('SWITCH_THEME')
+  store.toggleTheme();
   locale.value = c_locale.value
 }
 const changeLocale = () => {
-  store.commit('SWITCH_LOCALE')
+  store.toggleLocale();
   locale.value = c_locale.value
 }
-const currentLanguage = computed(() => store.state.locale)
+const toggleReadMode = () => {
+  store.toggleReadingMode();
+}
+const currentLanguage = computed(() => store.locale)
 useSeoMeta({
   title: computed(() => t('common.metaTitle')),
   description: computed(() => t('common.metaDescription')),
