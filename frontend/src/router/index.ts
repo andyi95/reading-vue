@@ -24,7 +24,7 @@ const routes: RouteRecordRaw[] = [
     title: t('nav.spreeder'), tags: t('spreeder.metaTags'), description: t('spreeder.metaDescription')
   }},
   {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {
-    title: t('nav.mixer'), tags: t('chaos.metaTags'), description: t('chaos.metaDescription')
+    title: t('nav.mixer'), tags: t('chaos.metaTags'), description: t('chaos.metaDescription'), hasReadMode: true
   }},
   {path: '/schulte', name: 'Schulte', component: Schulte, meta: {
     title: t('nav.schulte'), tags: t('schulte.metaTags'), description: t('schulte.metaDescription')

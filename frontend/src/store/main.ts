@@ -53,6 +53,7 @@ export const useMainStore = defineStore('mainStore', () => {
     function toggleTheme() {
         theme.value = theme.value ? null : 'darkTheme';
     }
+
     function toggleLocale() {
         locale.value = locale.value === 'ru' ? 'en' : 'ru';
     }
@@ -90,8 +91,6 @@ export const useMainStore = defineStore('mainStore', () => {
         return theme.value === 'darkTheme';
     }
 
-    // Add other actions and mutations similarly
-
     return {
         theme,
         sourceText,
@@ -117,7 +116,6 @@ export const useMainStore = defineStore('mainStore', () => {
         saveEditorContent,
         toggleLocale,
         isDarkTheme,
-        updateFontSize,
-        persist: true
+        updateFontSize
     };
-});
+}, {persist: true});

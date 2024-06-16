@@ -1,6 +1,6 @@
 import {createI18n} from "vue-i18n";
 
-import store from "@/store";
+
 
 const messages = {
     en: {
@@ -340,9 +340,8 @@ const messages = {
     }
 }
 
-const storedLocale = store.state.locale || "ru"
 export default createI18n({
-    locale: storedLocale,
+    locale: "ru",
     fallbackLocale: 'ru',
     legacy: false,
     runtimeOnly: false,
