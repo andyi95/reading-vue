@@ -10,17 +10,21 @@ const Schulte = () => import('@/views/Schulte.vue')
 const Diff = () => import('@/views/Diff.vue')
 
 const routes: RouteRecordRaw[] = [
-  {path: '/', name: 'TextParser', component: Text, meta: {title: t('nav.textparser'),
-    tags: t('textparser.metaTags'), description: t('textparser.metaDescription')
+  {path: '/', name: 'TextParser', component: Text, meta: {
+    title: t('nav.textparser'),
+    tags: t('textparser.metaTags'), description: t('textparser.metaDescription'),
+      hasReadMode: true
   }},
   {path: '/anticipation', name: 'Anticipation', component: Anticipation, meta: {
-    title: t('nav.anticipation'), tags: t('anticipation.metaTags'), description: t('anticipation.metaDescription')
+    title: t('nav.anticipation'), tags: t('anticipation.metaTags'),
+      description: t('anticipation.metaDescription'),
+      hasReadMode: true
   }},
   {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {
     title: t('nav.spreeder'), tags: t('spreeder.metaTags'), description: t('spreeder.metaDescription')
   }},
   {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {
-    title: t('nav.mixer'), tags: t('chaos.metaTags'), description: t('chaos.metaDescription')
+    title: t('nav.mixer'), tags: t('chaos.metaTags'), description: t('chaos.metaDescription'), hasReadMode: true
   }},
   {path: '/schulte', name: 'Schulte', component: Schulte, meta: {
     title: t('nav.schulte'), tags: t('schulte.metaTags'), description: t('schulte.metaDescription')

@@ -15,6 +15,14 @@
       <n-button :disabled="isLoading" @click="submitPassword" type="primary">{{$t('auth.submitForm')}}</n-button>
     </template>
   </n-modal>
+  <n-drawer v-model:show="readingMode" placement="top" width="100%" height="100%" @updateShow="toggleReadingMode">
+    <n-drawer-content :title="t('common.readingMode')" class="reading-mode" closable @update:show="toggleReadingMode">
+        <div v-if="fetchedText && fetchedText.length && ! options.grayScale"
+             :class="[{'bg-neutral-200': !options.onlyVerbs && !options.onlyNouns && !isDarkTheme}, 'p-10', 'max-w-2xl', 'mx-auto', 'text-justify']">
+          <span v-for="item in fetchedText" :key="item.id" :style="{color: item.color}">{{ item.word + ' ' }}</span>
+        </div>
+    </n-drawer-content></n-drawer>
+
     <n-form size="medium">
         <BaseInput :label="$t('textparser.sourceText')" :placeholder='$t("textparser.textPlaceHolder")'
                    v-model:post-body="sourceText" @input-updated="textUpdated($event)">
@@ -31,12 +39,11 @@
                 <n-tag :bordered="false">{{ cntWords }}</n-tag>
             </n-card>
         </n-space>
-        <n-space justify="space-between" size="medium">
-            <BaseButton :label="$t('common.copyText')" @button-clicked="copyText()"/>
-            <BaseButton :label="$t('textparser.countWords')" @button-clicked="countWords()"/>
-          <BaseButton :label="$t('textparser.textToSpeech')" @button-clicked="convertToSpeech()"/>
-        </n-space>
-        <n-space vertical justify="space-between" class="py-2">
+      <div class="flex flex-col md:flex-row justify-between space-y-2 md:space-y-0 md:space-x-4">
+            <BaseButton class="w-1/2 md:w-auto" :label="$t('textparser.countWords')" @button-clicked="countWords()"/>
+          <BaseButton class="w-1/2 md:w-auto" :label="$t('textparser.textToSpeech')" @button-clicked="convertToSpeech()"/>
+        </div>
+        <n-space vertical class="py-2 md:justify-between">
             <BaseCheckbox :label="$t('textparser.onlyNouns')" v-model:value="options.onlyNouns"
                           @nSwitched="radioUpdated('nouns', $event)"/>
             <BaseCheckbox :label="$t('textparser.onlyVerbs')" v-model:value="options.onlyVerbs"
@@ -47,12 +54,12 @@
     </n-form>
 
   <Playback v-if="audioSource" :audio-blob="audioSource" :key="playBackKey"/>
-
         <BaseTextBox :label="$t('common.textContent')" ref="textContent">
             <div v-if="grayedText.length && options.grayScale">
                 <span v-for="item in grayedText" :class="item.gray" :key="item.id">{{ item.word + ' ' }}</span>
             </div>
-            <div v-if="fetchedText && fetchedText.length && ! options.grayScale">
+            <div v-if="fetchedText && fetchedText.length && ! options.grayScale"
+                 :class="{'bg-neutral-200': !options.onlyVerbs && !options.onlyNouns && !isDarkTheme}">
                 <span v-for="item in fetchedText" :key="item.id" :style="{color: item.color}">{{ item.word + ' ' }}</span>
             </div>
         </BaseTextBox>
@@ -79,9 +86,12 @@ import {useI18n} from "vue-i18n";
 import BaseButton from "@/components/BaseButton.vue";
 import BaseCheckbox from "@/components/BaseCheckbox.vue";
 import BaseTextBox from "@/components/BaseTextBox.vue";
+import {useMainStore} from "@/store/main";
 
 const message = useMessage();
 const {t} = useI18n();
+const store = useMainStore();
+
 const playBackKey = ref(0);
 const textContent = ref(null);
 const Playback = defineAsyncComponent(() => import('@/components/Playback.vue'));
@@ -171,7 +181,15 @@ const options = ref({
 });
 const grayedText: Ref<Array<GrayedTextItem>> = ref([]);
 const audioSource = ref('');
-const sourceText = ref('');
+const sourceText = computed({
+  get() {
+    return store.sourceText;
+  },
+  set(value) {
+    store.updateText(value);
+  }
+});
+
 const reText = /[A-Za-zА-Яа-я\s]/g;
 interface Color {
   [key: string]: string;
@@ -203,7 +221,15 @@ const charsClean = computed(() => {
 const warning = (text: string) => {
   message.warning(text);
 };
-
+const readingMode = computed(() => {
+  return store.readingMode;
+});
+const toggleReadingMode = () => {
+  store.toggleReadingMode();
+};
+const isDarkTheme = computed(() => {
+  return store.theme === 'darkTheme';
+});
 const assignColor = (word: any) => {
   return colors[word.tag]
 };
@@ -359,5 +385,21 @@ p {
     color: #767676
 }
 
+.reading-mode {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12pt;
+  line-height: 1.4;
+}
 
+@media (min-width: 425px) {
+  .reading-mode {
+    font-size: 14pt;
+    line-height: 1.6;
+  }
+}
+
+/* Ensures text is not too wide for reading */
+.reading-mode .max-w-2xl {
+  max-width: 40rem; /* Optimal line length for reading */
+}
 </style>

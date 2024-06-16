@@ -35,6 +35,8 @@ export interface State {
     theme: string | null;
     sourceText: string;
     fetchedData: any[];
+    showReportCard: boolean;
+    readingMode: boolean;
     locale: string;
     schulteResults: SchulteResultsItem[];
     schulteSettings: SchulteSettings;

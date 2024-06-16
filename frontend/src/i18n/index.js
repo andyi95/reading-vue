@@ -1,6 +1,6 @@
 import {createI18n} from "vue-i18n";
 
-import store from "@/store";
+
 
 const messages = {
     en: {
@@ -48,6 +48,7 @@ const messages = {
             metaTitle: 'Text tools',
             metaTags: 'text, tools, reading, learning, memorizing, word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder',
             warnMessage: 'Something went wrong. Please try again later.',
+            readingMode: 'Reading mode'
         },
         textparser: {
             sourceText: 'Source text',
@@ -249,6 +250,7 @@ const messages = {
             metaTitle: 'Текстовые инструменты',
             metaTags: 'текст, инструменты, чтение, обучение, запоминание, подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса',
             warnMessage: 'Что-то пошло не так. Попробуйте позже.',
+            readingMode: 'Режим чтения'
         },
         textparser: {
             sourceText: 'Исходный текст',
@@ -338,9 +340,8 @@ const messages = {
     }
 }
 
-const storedLocale = store.state.locale || "ru"
 export default createI18n({
-    locale: storedLocale,
+    locale: "ru",
     fallbackLocale: 'ru',
     legacy: false,
     runtimeOnly: false,

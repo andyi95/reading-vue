@@ -1,5 +1,12 @@
 <template>
   <n-space vertical size="medium" justify="space-between">
+    <n-drawer v-model:show="store.readingMode" placement="top" width="100%" height="100%" @updateShow="store.toggleReadingMode">
+      <n-drawer-content :title="$t('common.readingMode')" class="reading-mode" closable>
+        <div v-if="parsedText && parsedText.length"
+             :class="[{'bg-neutral-200': !store.isDarkTheme}, 'p-10', 'max-w-2xl', 'mx-auto', 'text-justify']">
+          <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
+        </div>
+      </n-drawer-content></n-drawer>
     <n-form size="medium">
       <BaseInput :label="$t('common.sourceText')" :placeholder="$t('common.textPlaceHolder')"
                  v-model:post-body="sourceText" @input-updated="textUpdated($event)"/>
@@ -26,7 +33,7 @@
   </BaseTextBox>
 </template>
 
-<script>
+<script setup lang="ts">
 import BaseInput from "@/components/BaseInput.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import {NCollapseItem, NForm, NFormItem, NSelect, NSlider, NSpace} from "naive-ui";
@@ -34,75 +41,45 @@ import BaseTextBox from "@/components/BaseTextBox.vue";
 import charSets from "@/helpers/charSets";
 import TextParser from "@/helpers/parser";
 import FontSizeSelect from "@/components/FontSizeSelect.vue";
-import {mapState, mapActions} from "vuex";
-export default {
-  name: "Anticipation",
-  components: {
-    FontSizeSelect,
-    NSlider, NCollapseItem, BaseTextBox, BaseButton, BaseInput, NSpace, NForm, NSelect, NFormItem},
-  data(){
-    return {
-      sourceText: '',
-      parsedText: [],
-      additionalChars: [],
-      russianConsonants: charSets.russianAlphabet.selectConsonants
-      }
-  },
-
-  methods: {
-     ...mapActions(['updateFontSize']),
-
-    handleFontSizeChange(newFontSize) {
-        this.updateFontSize({
-            settingsKey: 'anticipationSettings',
-            fontSize: newFontSize
-        });
-    },
-    copyText() {
-      let textToCopy = this.$refs.textContent;
-      let blob = textToCopy.$el;
-      const range = document.createRange();
-      range.selectNode(blob);
-      window.getSelection().removeAllRanges()
-      const selection = window.getSelection();
-      selection.addRange(range);
-      document.execCommand("copy");
-      window.getSelection().removeAllRanges()
-    },
-    textUpdated(value){
-      this.sourceText = value
-      this.removeVowels()
-    },
-    removeVowels(){
-      let parser = new TextParser(this.sourceText)
-      let parsedText = parser.replaceVowels()
-      parsedText.forEach((item, i) => {
-        if (this.additionalChars.includes(item.char.toUpperCase()) || item.is_vowel){
-          parsedText[i].char = '●'
-          parsedText[i].is_vowel = true
-        }
-      })
-      this.parsedText = parsedText
-    },
-    getCharClass(item){
-      if (item.is_vowel){
-        if (this.$store.state.theme === 'darkTheme'){
-          return 'grayed-dark'
-        }
-        return 'grayed'
-      }
-
+import ReadDrawer from "@/components/ReadDrawer.vue";
+import {computed, ref} from "vue";
+import {useMainStore} from "@/store/main";
+import {useI18n} from "vue-i18n";
+const {t} = useI18n();
+const sourceText = ref('');
+const additionalChars = ref([]);
+const parsedText = ref([]);
+const store = useMainStore();
+const russianConsonants = charSets.russianAlphabet.selectConsonants;
+const getCharClass = (item) => {
+  if(item.is_vowel){
+    if(store.isDarkTheme()){
+      return 'grayed-dark';
     }
-  },
-  computed: {
-    ...mapState({
-        fontSize: state => state.anticipationSettings.fontSize,
-    }),
-        fontSizeCSS() {
-      return this.fontSize + 'pt'
-    }
+    return 'grayed';
   }
 }
+const handleFontSizeChange = (newFontSize) => {
+  store.updateFontSize('anticipationSettings', newFontSize)
+}
+const removeVowels = () => {
+  let parser = new TextParser(sourceText.value);
+  let parsedCharacters = parser.replaceVowels();
+  parsedCharacters.forEach((item, i) => {
+    if (additionalChars.value.includes(item.char.toUpperCase()) || item.is_vowel){
+      parsedCharacters[i].char = '●'
+      parsedCharacters[i].is_vowel = true
+    }
+  })
+  parsedText.value = parsedCharacters
+}
+const textUpdated = (value) => {
+  sourceText.value = value;
+  removeVowels();
+
+}
+const fontSize = computed(() => store.anticipationSettings.fontSize);
+const fontSizeCSS = computed(() => `${fontSize.value}pt`);
 </script>
 
 <style scoped>
@@ -125,5 +102,22 @@ export default {
 }
 .grayed-dark{
   color: #767676!important;
+}
+.reading-mode {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12pt;
+  line-height: 1.4;
+}
+
+@media (min-width: 425px) {
+  .reading-mode {
+    font-size: 14pt;
+    line-height: 1.6;
+  }
+}
+
+/* Ensures text is not too wide for reading */
+.reading-mode .max-w-2xl {
+  max-width: 40rem; /* Optimal line length for reading */
 }
 </style>

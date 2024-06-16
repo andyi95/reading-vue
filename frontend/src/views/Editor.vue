@@ -2,14 +2,14 @@
 
 import Editor from "@tinymce/tinymce-vue";
 import {ref, computed, watch, onMounted} from "vue";
-import {useStore} from "vuex";
 import {RawEditorOptions} from "tinymce";
 import {useI18n} from "vue-i18n";
 import {debounce} from "lodash-es";
+import {useMainStore} from "@/store/main";
 
 const {t} = useI18n();
-const store = useStore();
-const isDarkTheme = computed(() => store.state.theme === 'darkTheme');
+const store = useMainStore();
+const isDarkTheme = computed(() => store.theme === 'darkTheme');
 const content = ref('')
 const editorRef = ref(null)
 const contentLoaded = ref(false)
@@ -39,7 +39,7 @@ const initOptions: RawEditorOptions = computed(() => {
   }
 })
 const debouncedSave = debounce((newValue: string) => {
-  store.dispatch('saveEditorContent', newValue);
+  store.saveEditorContent(newValue);
 }, 1000)
 
 watch(content, (newValue) => {
@@ -50,11 +50,13 @@ watch(content, (newValue) => {
 onMounted(() => {
   const tenMinutes = 1000 * 60 * 10;
   const now = Date.now();
-  if(!store.state.editorContent.content || now - store.state.editorContent.lastSaved > tenMinutes){
-    return;
-  }
-  content.value = store.state.editorContent.content || '';
+  // if(!store.editorContent.content || now - store.editorContent.lastSaved > tenMinutes){
+  //   return;
+  // }
+  content.value = store.editorContent.content || '';
   contentLoaded.value = true;
+
+
 })
 </script>
 

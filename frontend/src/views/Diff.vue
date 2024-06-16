@@ -7,8 +7,9 @@ import {MicCircleSharp} from '@vicons/ionicons5'
 import { useSpeechRecognition} from "@vueuse/core";
 import { useThemeVars} from "naive-ui";
 import {SwapHorizontalOutline} from "@vicons/ionicons5";
-const store = useStore();
-const theme = computed(() => store.state.theme);
+import {useMainStore} from "@/store/main";
+const store = useMainStore();
+const theme = computed(() => store.theme);
 const isDark = computed(() => theme.value === 'darkTheme')
 const text1 = ref('');
 const text2 = ref('');
@@ -51,7 +52,7 @@ const scrollTextInput = () => {
 const speech = useSpeechRecognition({
   continuous: true,
   interimResults: true,
-  lang: store.getters.localeCode
+  lang: store.localeCode
 });
 
 

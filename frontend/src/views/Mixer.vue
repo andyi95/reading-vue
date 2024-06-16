@@ -1,4 +1,12 @@
 <template>
+  <div>
+    <n-drawer v-model:show="readingMode" placement="top" width="100%" height="100%" @updateShow="toggleReadingMode">
+      <n-drawer-content :title="$t('common.readingMode')" class="reading-mode" closable @update:show="toggleReadingMode">
+        <div v-if="convertedText" class="p-10 max-w-2xl mx-auto text-justify">
+          {{ convertedText }}
+        </div>
+      </n-drawer-content>
+    </n-drawer>
   <n-space vertical size="medium" justify="space-between">
     <n-form size="medium">
       <BaseInput :label="$t('common.sourceText')" :placeholder="$t('common.textPlaceHolder')"
@@ -24,6 +32,7 @@
     </BaseTextBox>
 
   </n-space>
+  </div>
 </template>
 
 <script>
@@ -32,11 +41,11 @@ import BaseButton from "@/components/BaseButton.vue";
 import {NFormItem, NSelect, useMessage} from "naive-ui";
 import TextParser from "@/helpers/parser";
 import {api} from "@/helpers";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {debounce} from "lodash-es";
 import BaseTextBox from "@/components/BaseTextBox.vue";
 import FontSizeSelect from "@/components/FontSizeSelect.vue";
-import {mapActions, mapState} from "vuex";
+import {useMainStore} from "@/store/main";
 
 export default {
   name: "Mixer",
@@ -44,17 +53,27 @@ export default {
   setup() {
     const message = useMessage();
     const textContent = ref(null);
+    const store = useMainStore();
+    const readingMode = computed(() => {
+      return store.readingMode;
+    });
+    const toggleReadingMode = () => {
+      store.toggleReadingMode();
+    };
     return {
       warning(text = '') {
         message.warning(this.$t('common.warning'))
       },
-      textContent
+      textContent,
+      store,
+      readingMode, toggleReadingMode
     }
   },
   computed: {
-        ...mapState({
-        fontSize: state => state.mixerSettings.fontSize,
-    }),
+    fontSize(){
+      return this.store.mixerSettings.fontSize
+    },
+
     cipherModeOptions() {
       return [
         {label: this.$t('chaos.shuffleLetters'), value: 'chaosLetters'},
@@ -76,14 +95,11 @@ export default {
     }
   },
   methods: {
-     ...mapActions(['updateFontSize']),
-
     handleFontSizeChange(newFontSize) {
-        this.updateFontSize({
-            settingsKey: 'mixerSettings',
-            fontSize: newFontSize
-        });
-    },
+      this.store.updateFontSize(
+        'mixerSettings',
+        newFontSize
+      )},
     textUpdated(value) {
       this.postBody = value;
       this.modeChanged()
@@ -153,5 +169,22 @@ export default {
     font-size: v-bind('fontSizeCSS');
     text-align: justify;
   }
+}
+.reading-mode {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12pt;
+  line-height: 1.4;
+}
+
+@media (min-width: 425px) {
+  .reading-mode {
+    font-size: 14pt;
+    line-height: 1.6;
+  }
+}
+
+/* Ensures text is not too wide for reading */
+.reading-mode .max-w-2xl {
+  max-width: 40rem; /* Optimal line length for reading */
 }
 </style>
