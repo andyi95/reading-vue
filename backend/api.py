@@ -4,8 +4,9 @@ import time
 import uuid
 from typing import Annotated, Optional
 
+import httpx
 import uvicorn
-from fastapi import APIRouter, Body, Depends, FastAPI, Header, HTTPException, Response
+from fastapi import APIRouter, Body, Depends, FastAPI, Header, HTTPException, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from google.cloud import texttospeech
@@ -114,6 +115,17 @@ async def validate_token(password: Annotated[str, Body(..., embed=True)], settin
     if password != settings.AUTH_PASSWRD:
         raise HTTPException(status_code=401, detail='Invalid password')
     return Response(status_code=200)
+
+@api.api_route('/{path:path}', methods=['POST'])
+async def proxy(settings: Annotated[Settings, Depends(get_settings)], request: Request, path: str):
+    url = f'{settings.API_GATEWAY_URL}/{path}'
+    headers = dict(request.headers)
+    headers['Authorization'] = f'Bearer {settings.API_GATEWAY_TOKEN}'
+    headers.pop('content-length')
+    data = await request.json()
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url=url, headers=headers, json=data)
+    return JSONResponse(status_code=response.status_code, content=response.json())
 
 
 app.include_router(api)

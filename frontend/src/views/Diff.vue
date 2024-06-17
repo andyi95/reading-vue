@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import DiffMatchPatch from 'diff-match-patch';
 import { ref, watch, computed, nextTick } from 'vue';
-import {useStore} from 'vuex';
 import TextParser from "@/helpers/parser";
 import {MicCircleSharp} from '@vicons/ionicons5'
 import { useSpeechRecognition} from "@vueuse/core";

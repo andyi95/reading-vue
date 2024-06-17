@@ -7,6 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    About: typeof import('./src/views/About.vue')['default']
+    Anticipation: typeof import('./src/views/Anticipation.vue')['default']
     BaseButton: typeof import('./src/components/BaseButton.vue')['default']
     BaseCheckbox: typeof import('./src/components/BaseCheckbox.vue')['default']
     BaseInput: typeof import('./src/components/BaseInput.vue')['default']
@@ -14,8 +16,11 @@ declare module 'vue' {
     BugReportButton: typeof import('./src/components/BugReportButton.vue')['default']
     BugReportCard: typeof import('./src/components/BugReportCard.vue')['default']
     ButtonLink: typeof import('./src/components/ButtonLink.vue')['default']
+    Diff: typeof import('./src/views/Diff.vue')['default']
+    Editor: typeof import('./src/views/Editor.vue')['default']
     FontSizeSelect: typeof import('./src/components/FontSizeSelect.vue')['default']
     Footer: typeof import('./src/components/Footer.vue')['default']
+    Mixer: typeof import('./src/views/Mixer.vue')['default']
     Navigation: typeof import('./src/components/Navigation.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
@@ -42,7 +47,9 @@ declare module 'vue' {
     NMenu: typeof import('naive-ui')['NMenu']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
     NModal: typeof import('naive-ui')['NModal']
+    NotFound: typeof import('./src/views/NotFound.vue')['default']
     NProgress: typeof import('naive-ui')['NProgress']
+    NResult: typeof import('naive-ui')['NResult']
     NSelect: typeof import('naive-ui')['NSelect']
     NSlider: typeof import('naive-ui')['NSlider']
     NSpace: typeof import('naive-ui')['NSpace']
@@ -57,8 +64,12 @@ declare module 'vue' {
     RecordingControl: typeof import('./src/components/RecordingControl.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Schulte: typeof import('./src/views/Schulte.vue')['default']
     SchulteResults: typeof import('./src/components/SchulteResults.vue')['default']
+    Spreeder: typeof import('./src/views/Spreeder.vue')['default']
+    Text: typeof import('./src/views/Text.vue')['default']
     Timer: typeof import('./src/components/Timer.vue')['default']
+    Voice: typeof import('./src/views/Voice.vue')['default']
     WordCard: typeof import('./src/components/WordCard.vue')['default']
     WordCounter: typeof import('./src/components/WordCounter.vue')['default']
   }

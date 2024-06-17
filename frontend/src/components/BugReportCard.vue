@@ -4,8 +4,12 @@ import {FormInst} from "naive-ui";
 import {useRoute, useRouter} from "vue-router";
 import {useParentElement} from "@vueuse/core";
 import {useMainStore} from "@/store/main";
+import {useComponentStore} from "@/store/componentStore";
+import html2canvas from "html2canvas";
+import {api} from "@/helpers";
 
 const store = useMainStore();
+const comp_store = useComponentStore();
 const route = useRoute();
 const router = useRouter();
 const showPopup = computed({
@@ -23,13 +27,63 @@ const formContent = ref({
 const formRef = ref<FormInst | null>(null)
 const instance = getCurrentInstance();
 const parentEl = useParentElement();
-const submitReport = () => {
-  console.log('Bug report: ', formContent.value);
-  console.log(instance.props);
-  console.log(instance.ctx);
-  console.log(instance.proxy);
+const getBrowserInfo = () => {
+  const ua = navigator.userAgent;
+  let browserName = 'Unknown';
+  let osName = 'Unknown';
+  let osVersion = 'Unknown';
+
+  if (/Chrome/.test(ua)) browserName = 'Chrome';
+  else if (/Firefox/.test(ua)) browserName = 'Firefox';
+  else if (/Safari/.test(ua)) browserName = 'Safari';
+  else if (/MSIE|Trident/.test(ua)) browserName = 'Internet Explorer';
+
+  if (/Windows/.test(ua)) osName = 'Windows';
+  else if (/Mac OS/.test(ua)) osName = 'Mac OS';
+  else if (/Linux/.test(ua)) osName = 'Linux';
+
+  const osRegex = /Windows NT|Mac OS X|Linux/;
+  const match = ua.match(osRegex);
+  if (match) osVersion = match[0];
+
+  return { browserName, osName, osVersion };
+};
+const getIpAddress = async () => {
+  const response = await fetch('https://api.ipify.org?format=json');
+  const data = await response.json();
+  return data.ip;
+};
+
+const submitReport = async () => {
+  // Collect data from the current route component
+  const matchedComponents = router.currentRoute.value.matched.flatMap(record => Object.values(record.components));
+  const instance = getCurrentInstance();
+  if (instance) {
+    const data = { ...instance.proxy.$data, ...instance.proxy.$props };
+    comp_store.registerComponentData(instance.type.name || 'unknown', data);
+  }
+
+  const canvas = await html2canvas(document.body)
+  const screenshot = canvas.toDataURL('image/png')
+  const {browserName, osName, osVersion } = getBrowserInfo();
+  const ipAddress = await getIpAddress();
+  const reportData = {
+    ...formContent.value,
+    interactions: comp_store.interactions,
+    componentsData: comp_store.componentsData,
+    ipAddress: ipAddress,
+    browserInfo: getBrowserInfo(),
+    screenshot
+  };
+  const data = {
+    title: formContent.value.subject,
+    description: formContent.value.message,
+    context: JSON.stringify(reportData),
+    ip_address: ipAddress
+  }
+  const response = await api.post('/api/reports/send/', data)
   console.log('test')
-  store.dispatch('toggleBugReport')
+  store.toggleBugReport();
 }
 
 onMounted(() => {

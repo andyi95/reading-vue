@@ -21,8 +21,9 @@ class Settings(BaseSettings):
     'backend',
     'nginx'
 ]
-    API_GATEWAY_URL: str = os.getenv('API_GATEWAY_URL', 'http://localhost:8088')
+    API_GATEWAY_URL: str = os.getenv('API_GATEWAY_URL', 'https://reader-proxy.andyi95.com')
     API_GATEWAY_HOST: str = os.getenv('API_GATEWAY_HOST', 'localhost')
+    API_GATEWAY_TOKEN: str = os.getenv('API_GATEWAY_TOKEN', 'test')
 
 
 @lru_cache()
