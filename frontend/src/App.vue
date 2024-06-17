@@ -57,7 +57,7 @@ useHead({
   ]
 })
 const theme = computed(() => {
-  return store.theme === 'darkTheme'
+  return store.theme === 'darkTheme' ? darkTheme : null
 })
 </script>
 
