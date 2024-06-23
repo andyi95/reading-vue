@@ -53,6 +53,7 @@ const submitReport = async () => {
   formData.append('description', formContent.value.message)
   formData.append('context', JSON.stringify(reportData))
   formData.append('screenshot', screenshot)
+  formData.append('ip_address', ipAddress)
   try {
     const response = await api.post('api/reports/send/', formData, {headers: {'Content-Type': 'multipart/form-data'}})
   }
