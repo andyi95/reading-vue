@@ -21,8 +21,6 @@ const showPopup = computed({
 const formContent = ref({
   subject: '',
   message: '',
-  route: route,
-  router: router
 })
 const formRef = ref<FormInst | null>(null)
 const getIpAddress = async () => {
@@ -48,6 +46,7 @@ const submitReport = async () => {
     componentsData: comp_store.componentsData,
     ipAddress: ipAddress,
     browserInfo: navigator.userAgent,
+    route: route.fullPath,
   };
   const formData = new FormData();
   formData.append('title', formContent.value.subject)
