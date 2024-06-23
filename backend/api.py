@@ -3,7 +3,7 @@ import subprocess
 import time
 import uuid
 from typing import Annotated, Optional
-
+from logging import getLogger
 import httpx
 import uvicorn
 from fastapi import APIRouter, Body, Depends, FastAPI, Header, HTTPException, Response, Request
@@ -41,7 +41,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+logger = getLogger(__name__)
 
 @api.post('/parse/')
 async def create_text(text: TextModel, settings: Settings = Depends(get_settings)):
@@ -120,12 +120,21 @@ async def validate_token(password: Annotated[str, Body(..., embed=True)], settin
 async def proxy(settings: Annotated[Settings, Depends(get_settings)], request: Request, path: str):
     url = f'{settings.API_GATEWAY_URL}/{path}'
     headers = dict(request.headers)
-    headers['Authorization'] = f'Bearer {settings.API_GATEWAY_TOKEN}'
-    headers.pop('content-length')
-    data = await request.json()
+    headers = {
+        'Authorization': f'Bearer {settings.API_GATEWAY_TOKEN}'
+    }
+    data = await request.form()
     async with httpx.AsyncClient() as client:
-        response = await client.post(url=url, headers=headers, json=data)
-    return JSONResponse(status_code=response.status_code, content=response.json())
+        try:
+            response = await client.post(url=url, headers=headers, data=data)
+        except Exception as e:
+            logger.exception('erorr making request')
+            return Response(status_code=500)
+    try:
+        return JSONResponse(status_code=response.status_code, content={'status': 'Ok'})
+    except Exception as e:
+        logger.exception('error returning response')
+        return Response(status_code=response.status_code)
 
 
 app.include_router(api)

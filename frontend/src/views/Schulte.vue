@@ -90,7 +90,7 @@ export default {
     ]
     },
     getSchulteResults(){
-      return this.$store.getters.sortedSchulteResults
+      return this.store.sortedSchulteResults
     },
     gridSizes(){
       function sleep (time) {
@@ -148,9 +148,13 @@ export default {
   methods: {
     start(){
       if (!this.isPlaying){
+        if (this.currentIndex > 0){
+          this.reset()
+        }
         this.isPlaying = true
         this.startTime = new Date()
         this.currentIndex = 0;
+        this.currentRate = 0;
         this.startTime = new Date();
         this.errors = 0;
         this.currentItem = this.gridData[this.currentIndex];
@@ -167,9 +171,11 @@ export default {
         this.updateSchulteSettings({
           size: this.size,
           tableType: this.tableCharsType,
+          gameMode: this.gameMode,
           easyMode: this.easyMode,
           tableCharsType: this.tableCharsType
         })
+
         this.timer = setInterval(() => {
           this.timerCount++;
         }, 1000);
