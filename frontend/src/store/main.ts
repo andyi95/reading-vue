@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { State, SchulteResultsItem } from '@/helpers/types';
 
 export const useMainStore = defineStore('mainStore', () => {
-    const theme = ref<null | string>(null);
+    const theme = ref<null | string>('darkTheme');
     const sourceText = ref('');
     const fetchedData = ref<any[]>([]);
     const locale = ref('ru');

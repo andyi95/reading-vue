@@ -54,7 +54,7 @@
     </n-form>
 
   <Playback v-if="audioSource" :audio-blob="audioSource" :key="playBackKey"/>
-        <BaseTextBox :label="$t('common.textContent')" ref="textContent">
+        <BaseTextBox :label="$t('common.textContent')" ref="textContent" v-if="fetchedText.length || grayedText.length">
             <div v-if="grayedText.length && options.grayScale">
                 <span v-for="item in grayedText" :class="item.gray" :key="item.id">{{ item.word + ' ' }}</span>
             </div>
