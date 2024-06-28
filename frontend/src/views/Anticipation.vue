@@ -41,7 +41,6 @@ import BaseTextBox from "@/components/BaseTextBox.vue";
 import charSets from "@/helpers/charSets";
 import TextParser from "@/helpers/parser";
 import FontSizeSelect from "@/components/FontSizeSelect.vue";
-import ReadDrawer from "@/components/ReadDrawer.vue";
 import {computed, ref} from "vue";
 import {useMainStore} from "@/store/main";
 import {useI18n} from "vue-i18n";
@@ -105,13 +104,15 @@ const fontSizeCSS = computed(() => `${fontSize.value}pt`);
 }
 .reading-mode {
   font-family: Helvetica, Arial, sans-serif;
-  font-size: 12pt;
+  font-size: 14pt;
   line-height: 1.4;
+  word-spacing: 0.4em;
+  letter-spacing: 0.005em;
 }
 
 @media (min-width: 425px) {
   .reading-mode {
-    font-size: 14pt;
+    font-size: 16pt;
     line-height: 1.6;
   }
 }

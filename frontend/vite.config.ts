@@ -7,6 +7,7 @@ import {ViteWebfontDownload} from "vite-plugin-webfont-dl";
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import msClarity from "./src/plugins/ms-clarity";
 
 export default defineConfig(({command, mode}) => {
     const parent = path.resolve(process.cwd(), '.');
@@ -39,9 +40,9 @@ export default defineConfig(({command, mode}) => {
                     ]
                 }),
                 Components({
-                    resolvers: [NaiveUiResolver()]
+                    resolvers: [NaiveUiResolver()],
+                    dirs: ['src/components', 'src/views']
                 }),
-                splitVendorChunkPlugin()
             ],
             resolve: {
                 alias: {

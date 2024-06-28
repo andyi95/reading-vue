@@ -387,13 +387,13 @@ p {
 
 .reading-mode {
   font-family: Helvetica, Arial, sans-serif;
-  font-size: 12pt;
+  font-size: 14pt;
   line-height: 1.4;
 }
 
 @media (min-width: 425px) {
   .reading-mode {
-    font-size: 14pt;
+    font-size: 16pt;
     line-height: 1.6;
   }
 }
