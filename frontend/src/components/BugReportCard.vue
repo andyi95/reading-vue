@@ -22,6 +22,8 @@ const formContent = ref({
   subject: '',
   message: '',
 })
+const isLoading = ref(false);
+
 const formRef = ref<FormInst | null>(null)
 const getIpAddress = async () => {
   const response = await fetch('https://api.ipify.org?format=json');
@@ -31,6 +33,7 @@ const getIpAddress = async () => {
 
 const submitReport = async () => {
   // Collect data from the current route component
+  isLoading.value = true;
   const instance = getCurrentInstance();
   if (instance) {
     const data = { ...instance?.proxy?.$data, ...instance?.proxy?.$props };
@@ -61,17 +64,13 @@ const submitReport = async () => {
     console.warn(e)
   }
   store.toggleBugReport();
+  isLoading.value = false;
 }
-
-onMounted(() => {
-
-})
-
 
 </script>
 
 <template>
-  <transition name="slide-up" class="transition delay-150 duration-">
+  <transition :duration="2000" name="fade">
     <div>
 <n-modal v-model:show="showPopup">
   <n-card
@@ -86,7 +85,8 @@ onMounted(() => {
         <n-input type="textarea" v-model:value="formContent.message" placeholder=""/>
       </n-form-item>
       <n-form-item>
-        <n-button @click="submitReport">{{ $t('bugReport.submit')}}</n-button>
+        <n-button v-if="!isLoading" @click="submitReport">{{ $t('bugReport.submit')}}</n-button>
+        <n-spin size="small" v-if="isLoading"/>
       </n-form-item>
     </n-form>
   </n-card>
@@ -94,7 +94,7 @@ onMounted(() => {
   </transition>
 </template>
 
-<style scoped>
+<style>
 .slide-up-enter-active,
 .slide-up-leave-active {
 
