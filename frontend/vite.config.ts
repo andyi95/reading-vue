@@ -40,8 +40,7 @@ export default defineConfig(({command, mode}) => {
                     ]
                 }),
                 Components({
-                    resolvers: [NaiveUiResolver()],
-                    dirs: ['src/components', 'src/views']
+                    resolvers: [NaiveUiResolver()]
                 }),
             ],
             resolve: {
