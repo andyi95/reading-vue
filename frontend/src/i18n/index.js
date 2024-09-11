@@ -27,7 +27,8 @@ const messages = {
             notFoundTitle: 'Not found',
             notFoundMessage: 'It seems that this page does not exist',
             backHome: 'Go to main page',
-            about: 'About'
+            about: 'About',
+            typing: 'Typing'
         },
         common:{
             textContent: 'Text for reading',
@@ -231,7 +232,8 @@ const messages = {
             notFoundTitle: 'Не найдено',
             notFoundMessage: 'Похоже, такой страницы не существует',
             backHome: 'На главную',
-            about: 'О сайте'
+            about: 'О сайте',
+            typing: 'Печать'
         },
         common:{
             textContent: 'Текст для чтения',

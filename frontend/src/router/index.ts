@@ -43,6 +43,16 @@ const routes: RouteRecordRaw[] = [
     name: 'About',
     component: () => import('@/views/About.vue')
   },
+  {
+    path: '/tests',
+    name: 'Tests',
+    component: () => import('@/views/Tests/TestsPage.vue')
+  },
+  {
+    path: '/keyboard',
+    name: 'Keyboard',
+    component: () => import('@/views/Keyboard.vue')
+  },
   {path: '/:catchAll(.*)', name: 'NotFound', component: () => import('@/views/NotFound.vue')}
 
 ]

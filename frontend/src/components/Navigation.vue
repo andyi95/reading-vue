@@ -95,6 +95,18 @@ key: 'text'
       ),
       key: 'anticipation'
 },
+  {
+    label: () =>
+        h(
+            RouterLink,
+            {
+              to: {
+                name: 'Keyboard'
+              }, },
+            { default: () => t('nav.typing')}
+        ),
+  key: 'typing'
+  },
 {
   label: () =>
       h(
