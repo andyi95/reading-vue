@@ -4,16 +4,24 @@
 <n-config-provider :theme="theme">
   <n-message-provider>
     <n-layout>
-          <Navigation/>
+    <n-layout has-sider sider-placement="left">
+          <n-layout-sider collapse-mode="width"
+                    :collapsed-width="64"
+                          show-trigger="arrow-circle"
+                          bordered
+                    :width="200">
+            <Navigation/>
+          </n-layout-sider>
         <n-layout-content >
     <router-view/>
         </n-layout-content>
       <BugReportCard />
       <BugReportButton />
-      <n-layout-footer>
+    </n-layout>
+            <n-layout-footer>
         <Footer/>
       </n-layout-footer>
-    </n-layout>
+      </n-layout>
   </n-message-provider>
   </n-config-provider>
   </div>
@@ -75,6 +83,7 @@ body, #app, .n-layout-scroll-container, .n-config-provider, .n-layout--static--p
   /*height: 100%;*/
 
 }
+
 .n-layout-scroll-container{
   padding-left: .75rem;
   padding-right: .75rem;

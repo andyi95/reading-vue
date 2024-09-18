@@ -30,6 +30,16 @@ const messages = {
             about: 'About',
             typing: 'Typing'
         },
+        keyboard: {
+            progress: 'Progress',
+            correct: 'Correct',
+            incorrect: 'Mistakes',
+            wpm: 'Words per minute',
+            wps: 'Words per second',
+            start: 'Start',
+            stop: 'Stop',
+            reset: 'Reset'
+        },
         common:{
             textContent: 'Text for reading',
             copyText: 'Copy to clipboard',
@@ -338,6 +348,16 @@ const messages = {
             metaTitle: 'Текстовый редактор',
             metaTags: 'текст. редактирование, редактор, онлайн редактор, текстовый редактор, бесплатный онлайн редактор, редактор текста, он-лайн редактор, текстовый процессор',
             metaDescription: 'Текстовый редактор - это инструмент для редактирования текста. Он помогает редактировать текст онлайн.'
+        },
+        keyboard: {
+            progress: 'Прогресс',
+            correct: 'Верно',
+            incorrect: 'Ошибки',
+            wpm: 'Слов в минуту',
+            wps: 'Слов в секунду',
+            start: 'Начать',
+            stop: 'Стоп',
+            reset: 'Сброс'
         }
     }
 }

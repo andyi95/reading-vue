@@ -3,8 +3,27 @@ import {defineStore} from "pinia";
 import { api } from '@/helpers';
 import {AxiosError} from "axios";
 
+
+interface Level {
+    id: number;
+    created_at: string;
+    updated_at: string;
+    title: string;
+    content: string;
+    lesson: number;
+}
+
+interface Lesson {
+    id: number;
+    levels: Level[];
+    created_at: string;
+    updated_at: string;
+    title: string;
+    description: string;
+}
+
 export const useLessonStore = defineStore('lessonStore', () => {
-    const lessons = ref([]);
+    const lessons = ref<Lesson[]>([]);
     const loading = ref(false);
     const error = ref(null);
     const mockLessons = [

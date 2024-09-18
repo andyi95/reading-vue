@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue';
+import {computed, onMounted, Ref, ref, watch} from 'vue';
 import {useEventListener} from "@vueuse/core";
 import {useLessonStore} from "@/store/lessons";
+import {useI18n} from "vue-i18n";
+import TypingSpeedChart from "@/components/TypingSpeedChart.vue";
 
 const lastKey = ref('');
 const lessonStore = useLessonStore();
@@ -14,14 +16,14 @@ const levelOptions = ref([]);
 
 const characters = ref([]);
 const isPlaying = ref(false);
-const keyPresses = ref([]);
+const keyPresses: Ref<[]> = ref([]);
 const startTime = ref(null);
 const timeInterval = ref(null);
 const currentIdx = ref(0);
 const correctCount = computed(() => keyPresses.value.filter(p => p.isCorrect).length)
 const incorrectCount = computed(() => keyPresses.value.length - correctCount.value)
-const elapsedTime = computed(() => started.value ? (Date.now() - startTime.value) / 1000 : 0) // seconds
-
+const timerCount = ref(0);
+const timer = ref(null);
 onMounted(async () => {
   if (lessons.length !== 0) return;
   await fetchLessons();
@@ -38,24 +40,32 @@ const lessonOptions = computed(() =>
 const selectedLevelContent = computed(() => {
   if (selectedLesson.value && selectedLevel.value) {
     const lesson = lessons.find((lesson) => lesson.id === selectedLesson.value);
-    const level = lesson.levels.find((level) => level.id === selectedLevel.value);
+    const level = lesson?.levels.find((level) => level.id === selectedLevel.value);
     return level ? level.content : '';
   }
   return '';
 });
-
+const showPlot = ref(false);
 const startExercise = () => {
+  if (isPlaying.value){
+    isPlaying.value = false;
+    clearInterval(timer.value);
+    showPlot.value = true;
+    return;
+  }
   isPlaying.value = true;
   startTime.value = Date.now();
   keyPresses.value = [];
   currentIdx.value = 0;
-  timeInterval.value = setInterval(() => {
-
+  timer.value = setInterval(() => {
+    timerCount.value++;
   }, 1000);
 }
 const stopExercise = () => {
-  isPlaying.value = false;
-  clearInterval(timeInterval.value);
+}
+const reset = () => {
+  stopExercise();
+  currentIdx.value = 0;
 }
 
 watch(selectedLesson, (newLessonId) => {
@@ -76,9 +86,10 @@ watch(selectedLevel, (newLevelId) => {
   characters.value = selectedLevelContent.value.split('');
 
 })
-
-
+const {t} = useI18n();
+const buttonLabel = computed(() => isPlaying.value ? t('keyboard.stop') : t('keyboard.start'));
 const handleKeydown = (event: KeyboardEvent) => {
+  if(!isPlaying.value) return;
   if (event.code === 'Space') {
     event.preventDefault();
   }
@@ -95,13 +106,17 @@ const handleKeydown = (event: KeyboardEvent) => {
     stopExercise();
   }
 }
+const cpm = computed(() => {
+  return timerCount.value > 0 ? (correctCount.value / (timerCount.value / 60)).toFixed(2) : 0;
+})
 useEventListener('keydown', handleKeydown);
 </script>
 
 <template>
-  <n-space vertical>
-
-  </n-space>
+  <div>
+    <n-modal v-model:show="showPlot">
+      <TypingSpeedChart :key-press-data="keyPresses"/>
+    </n-modal>
   <div class="container mx-auto p-4 h-screen grid grid-cols-1 md:grid-cols-4 gap-4">
     <div class="col-span-1">
       <n-card class="shadow-lg">
@@ -119,33 +134,30 @@ useEventListener('keydown', handleKeydown);
           </n-space>
       </n-card>
       <n-card class="shadow-lg">
-        <template #header><div class="text-lg font-semibold mb-4">Progress</div></template>
+        <template #header><div class="text-lg font-semibold mb-4">{{ $t('keyboard.progress')}}</div></template>
         <div class="text-sm">
-          <p>Correct: {{ correctCount }}</p>
-          <p>Incorrect: {{ incorrectCount }}</p>
+          <p>{{ $t('keyboard.correct') }} {{ correctCount }}</p>
+          <p>{{ $t('keyboard.incorrect') }} {{ incorrectCount }}</p>
+          <p>Timer {{ timeInterval }}</p>
+          <p>Elapsed time {{ timerCount }}</p>
+          <p>CPM {{ cpm }}</p>
         </div>
-        <n-button @click="startExercise">Start</n-button>
+        <n-button @click="startExercise">{{ buttonLabel }}</n-button>
       </n-card>
     </div>
     <div class="col-span-3">
       <n-card class="shadow-lg">
-        <div class="text-lg font-mono">
+        <div class="text-lg font-mono" :class="{'blur-sm': !isPlaying}">
         <span v-for="(char, index) in selectedLevelContent" :key="index"
               :class="{ 'text-red-500 underline': index === currentIdx}"
         >{{ char }}</span>
         </div>
         <n-space class="mt-4">
-          <n-button @click="reset" type="primary">Reset</n-button>
         </n-space>
       </n-card>
     </div>
   </div>
-
-<n-space>
-  <n-card size="large">
-    <div v-if="lastKey">{{ lastKey }}</div>
-  </n-card>
-</n-space>
+  </div>
 </template>
 
 <style scoped>
