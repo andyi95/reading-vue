@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { State, SchulteResultsItem } from '@/helpers/types';
+import { SchulteResultsItem } from '@/helpers/types';
 
 export const useMainStore = defineStore('mainStore', () => {
     const theme = ref<null | string>('darkTheme');

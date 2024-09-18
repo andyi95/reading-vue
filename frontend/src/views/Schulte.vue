@@ -2,7 +2,6 @@
 import {useMessage, useThemeVars} from 'naive-ui';
 import {defineAsyncComponent, ref} from "vue";
 import {debounce} from "lodash-es";
-import {mapStores} from "pinia";
 import {useComponentStore} from "@/store/componentStore";
 import {useMainStore} from "@/store/main";
 export default {
@@ -93,9 +92,6 @@ export default {
       return this.store.sortedSchulteResults
     },
     gridSizes(){
-      function sleep (time) {
-        return new Promise((resolve) => setTimeout(resolve, time));
-      }
       let wRate = 0.7;
       if (this.size > 5) {
         wRate = 0.8;
@@ -544,8 +540,11 @@ span .current-item{
   background-color: #ff6a6a;
 }
 .emoji{
-  font-family: 'Noto Color Emoji', sans-serif;
+  font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Android Emoji', 'EmojiSymbols', sans-serif;
   color: #ffffff;
+}
+.emoji:hover {
+  will-change: contents;
 }
 .emoji.current-item:not(.red) {
   background-color: #313131;
