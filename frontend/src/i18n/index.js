@@ -36,9 +36,14 @@ const messages = {
             incorrect: 'Mistakes',
             wpm: 'Words per minute',
             wps: 'Words per second',
+            cpm: 'Characters per minute',
             start: 'Start',
             stop: 'Stop',
-            reset: 'Reset'
+            reset: 'Reset',
+            lessonSelect: 'Select a lesson',
+            levelSelect: 'Select a level',
+            timeLabel: 'Time',
+            accuLabel: 'Accuracy',
         },
         common:{
             textContent: 'Text for reading',
@@ -355,9 +360,14 @@ const messages = {
             incorrect: 'Ошибки',
             wpm: 'Слов в минуту',
             wps: 'Слов в секунду',
+            cpm: 'Символов в минуту',
             start: 'Начать',
             stop: 'Стоп',
-            reset: 'Сброс'
+            reset: 'Сброс',
+            lessonSelect: 'Выберите урок',
+            levelSelect: 'Выберите уровень',
+            timeLabel: 'Время',
+            accuLabel: 'Точность'
         }
     }
 }
