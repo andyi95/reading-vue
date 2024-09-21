@@ -25,8 +25,12 @@ const incorrectCount = computed(() => keyPresses.value.length - correctCount.val
 const timerCount = ref(0);
 const timer = ref(null);
 onMounted(async () => {
-  if (lessons.length !== 0) return;
+  // if (lessons.length !== 0) return;
+
   await fetchLessons();
+  while(loading){
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
   console.log('fetched lessons');
   console.log(lessons)
 })
@@ -41,16 +45,17 @@ const selectedLevelContent = computed(() => {
   if (selectedLesson.value && selectedLevel.value) {
     const lesson = lessons.find((lesson) => lesson.id === selectedLesson.value);
     const level = lesson?.levels.find((level) => level.id === selectedLevel.value);
-    return level ? level.content : '';
+    if (!level){
+      return '';
+    }
+    return level.content.replace(/[^a-zа-я0-9.,;'" ]/gi, '');
   }
   return '';
 });
 const showPlot = ref(false);
 const startExercise = () => {
   if (isPlaying.value){
-    isPlaying.value = false;
-    clearInterval(timer.value);
-    showPlot.value = true;
+    stopExercise();
     return;
   }
   isPlaying.value = true;
@@ -62,7 +67,12 @@ const startExercise = () => {
   }, 1000);
 }
 const stopExercise = () => {
+    isPlaying.value = false;
+    clearInterval(timer.value);
+    // showPlot.value = true;
+    return;
 }
+const timeObject = computed(() => new Date(timerCount.value * 1000));
 const reset = () => {
   stopExercise();
   currentIdx.value = 0;
@@ -124,12 +134,12 @@ useEventListener('keydown', handleKeydown);
             <n-select
       v-model:value="selectedLesson"
       :options="lessonOptions"
-      placeholder="Select a lesson"
+      :placeholder="$t('keyboard.lessonSelect')"
     />
     <n-select
       v-model:value="selectedLevel"
       :options="levelOptions"
-      placeholder="Select a level"
+      :placeholder="$t('keyboard.levelSelect')"
       :disabled="selectedLesson === null"/>
           </n-space>
       </n-card>
@@ -138,9 +148,8 @@ useEventListener('keydown', handleKeydown);
         <div class="text-sm">
           <p>{{ $t('keyboard.correct') }} {{ correctCount }}</p>
           <p>{{ $t('keyboard.incorrect') }} {{ incorrectCount }}</p>
-          <p>Timer {{ timeInterval }}</p>
-          <p>Elapsed time {{ timerCount }}</p>
-          <p>CPM {{ cpm }}</p>
+          <p>{{ $t('keyboard.timeLabel') }} <n-time :time="timeObject" format="mm:ss"/></p>
+          <p>{{ $t('keyboard.cpm')}} {{ cpm }}</p>
         </div>
         <n-button @click="startExercise">{{ buttonLabel }}</n-button>
       </n-card>

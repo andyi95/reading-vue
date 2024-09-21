@@ -6,9 +6,11 @@ import {RawEditorOptions} from "tinymce";
 import {useI18n} from "vue-i18n";
 import {debounce} from "lodash-es";
 import {useMainStore} from "@/store/main";
+import {useMessage} from "naive-ui";
 
 const {t} = useI18n();
 const store = useMainStore();
+const message = useMessage();
 const isDarkTheme = computed(() => store.theme === 'darkTheme');
 const content = ref('')
 const editorRef = ref(null)
@@ -23,6 +25,10 @@ const themeOptions = computed(() => {
 
   }
 })
+const readingMode = computed(() => store.readingMode);
+const toggleReadingMode = () => {
+  store.toggleReadingMode();
+};
 const initOptions: RawEditorOptions = computed(() => {
   return {
     apiKey: 'qio5lqnb7x60kzj2dz6yfeukslhpfm1ufiqo8ll3dkk9ykul',
@@ -50,17 +56,22 @@ watch(content, (newValue) => {
 onMounted(() => {
   const tenMinutes = 1000 * 60 * 10;
   const now = Date.now();
-  // if(!store.editorContent.content || now - store.editorContent.lastSaved > tenMinutes){
-  //   return;
-  // }
+  if(!store.editorContent.content){
+    return;
+  }
   content.value = store.editorContent.content || '';
   contentLoaded.value = true;
-
-
 })
 </script>
 
 <template>
+    <n-drawer v-model:show="readingMode" placement="top" width="100%" height="100%" @updateShow="toggleReadingMode">
+    <n-drawer-content :title="t('common.readingMode')" class="reading-mode" closable @update:show="toggleReadingMode">
+      <div class="p-10 max-w-2xl mx-auto text-justify">
+        <div v-if="content">{{ content }}</div>
+      </div>
+    </n-drawer-content>
+    </n-drawer>
 <div class="pt-1 pl-16">
   <n-h1 class="m-0">{{ t('editor.title')}}</n-h1>
 </div>
@@ -71,6 +82,7 @@ onMounted(() => {
       v-model="content"
       api-key="qio5lqnb7x60kzj2dz6yfeukslhpfm1ufiqo8ll3dkk9ykul"
   />
+    <n-button type="tertiary" @click="manualSave">Сохранить</n-button>
   </div>
 </template>
 

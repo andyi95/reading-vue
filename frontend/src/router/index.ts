@@ -36,7 +36,8 @@ const routes: RouteRecordRaw[] = [
       title: t('nav.diff'), tags: t('diff.metaTags'), description: t('diff.metaDescription')
     }},
   {path: '/editor', name: 'Editor', component: () => import('@/views/Editor.vue'), meta: {
-    title: t('editor.metaTitle'), tags: t('editor.metaTags'), description: t('editor.metaDescription')}
+    title: t('editor.metaTitle'), tags: t('editor.metaTags'), description: t('editor.metaDescription'),
+      hasReadMode: true}
     },
   {
     path: '/about',
