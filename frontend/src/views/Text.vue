@@ -17,11 +17,19 @@
   </n-modal>
   <n-drawer v-model:show="readingMode" placement="top" width="100%" height="100%" @updateShow="toggleReadingMode">
     <n-drawer-content :title="t('common.readingMode')" class="reading-mode" closable @update:show="toggleReadingMode">
-        <div v-if="fetchedText && fetchedText.length && ! options.grayScale"
-             :class="[{'bg-neutral-200': !options.onlyVerbs && !options.onlyNouns && !isDarkTheme}, 'p-10', 'max-w-2xl', 'mx-auto', 'text-justify']">
-          <span v-for="item in fetchedText" :key="item.id" :style="{color: item.color}">{{ item.word + ' ' }}</span>
+      <div class="p-10 max-w-2xl mx-auto text-justify">
+      <div v-if="fetchedText && fetchedText.length && ! options.grayScale"
+           :class="{'bg-neutral-200': !options.onlyVerbs && !options.onlyNouns && !isDarkTheme}">
+        <span v-for="item in fetchedText" :key="item.id" :style="{color: item.color}">{{ item.word + ' ' }}</span>
+      </div>
+      <div v-if="grayedText.length && options.grayScale">
+                <span v-for="item in grayedText"
+                      :class="{'grayed-dark': isDarkTheme && item.gray === 'grayed', 'grayed': !isDarkTheme && item.gray === 'grayed'}"
+                      :key="item.id">{{ item.word + ' ' }}</span>
+      </div>
         </div>
-    </n-drawer-content></n-drawer>
+    </n-drawer-content>
+  </n-drawer>
 
     <n-form size="medium">
         <BaseInput :label="$t('textparser.sourceText')" :placeholder='$t("textparser.textPlaceHolder")'
@@ -56,7 +64,8 @@
   <Playback v-if="audioSource" :audio-blob="audioSource" :key="playBackKey"/>
         <BaseTextBox :label="$t('common.textContent')" ref="textContent" v-if="fetchedText.length || grayedText.length">
             <div v-if="grayedText.length && options.grayScale">
-                <span v-for="item in grayedText" :class="item.gray" :key="item.id">{{ item.word + ' ' }}</span>
+                <span v-for="item in grayedText"
+                      :class="{'grayed-dark': isDarkTheme && item.gray === 'grayed', 'grayed': !isDarkTheme && item.gray === 'grayed'}" :key="item.id">{{ item.word + ' ' }}</span>
             </div>
             <div v-if="fetchedText && fetchedText.length && ! options.grayScale"
                  :class="{'bg-neutral-200': !options.onlyVerbs && !options.onlyNouns && !isDarkTheme}">
@@ -285,7 +294,7 @@ const grayUpdated = (value: boolean) => {
     }
     return 'grayed'
   }
-  if (value === true) {
+  if (value) {
     gr_results = fetchedText.value.reduce(
         (firstData, item) => {
           // @ts-ignore
