@@ -46,6 +46,7 @@ workflow:
             - development
             - master
             - merge_requests
+            - rc
 
 build:frontend:
     <<: *docker-build
