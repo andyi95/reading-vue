@@ -51,7 +51,8 @@ workflow:
 build:frontend:
     <<: *docker-build
     script:
-        - docker compose build -tag ${CI_REGISTRY_IMAGE}/frontend:$CI_COMMIT_SHORT_SHA --tag ${CI_REGISTRY_IMAGE}/frontend:$CI_COMMIT_REF_NAME --no-cache frontend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build --no-cache frontend
+        - TAG=${CI_COMMIT_REF_NAME} docker compose build frontend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push frontend
         - TAG=${CI_COMMIT_REF_NAME} docker compose push frontend
 
@@ -60,7 +61,8 @@ build:backend:
     script:
         - echo $GAPP_CREDENTIALS_BASE64 | base64 -d > backend/gcloud-service-key.json
         - export GOOGLE_APPLICATION_CREDENTIALS=/app/gcloud-service-key.json
-        - docker compose build --tag ${CI_REGISTRY_IMAGE}/backend:$CI_COMMIT_SHORT_SHA --tag ${CI_REGISTRY_IMAGE}/backend:$CI_COMMIT_REF_NAME backend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build backend
+        - TAG=${CI_COMMIT_REF_NAME} docker compose build backend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push backend
         - TAG=${CI_COMMIT_REF_NAME} docker compose push backend
 
