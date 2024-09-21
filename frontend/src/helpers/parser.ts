@@ -36,10 +36,11 @@ export default class TextParser {
         };
     }
     private removePunctuation(text: string): string {
-        return text.replace(/[^\w\sа-яa-z]|_/giu, '');
+        return text.replace(/[^\w\sа-яёa-z]|_/giu, '');
     }
     static removePunctuation(text: string): string {
-        return text.replace(/[^\w\sа-яa-z]|_/giu, ' ');
+        const obj = new TextParser(text);
+        return obj.removePunctuation(text);
     }
     static compareTexts(text1: string, text2: string): Diff[] {
         const dmp = new DiffMatchPatch();
