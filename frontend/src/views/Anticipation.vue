@@ -2,7 +2,7 @@
   <n-space vertical size="medium" justify="space-between">
     <n-drawer v-model:show="store.readingMode" placement="top" width="100%" height="100%" @updateShow="store.toggleReadingMode">
       <n-drawer-content :title="$t('common.readingMode')" class="reading-mode" closable>
-        <div v-if="parsedText && parsedText.length"
+        <div v-if="parsedText.length > 0"
              :class="[{'bg-neutral-200': !store.isDarkTheme}, 'p-10', 'max-w-2xl', 'mx-auto', 'text-justify']">
           <span v-for="item in parsedText" :class="getCharClass(item)">{{item.char}}</span>
         </div>
