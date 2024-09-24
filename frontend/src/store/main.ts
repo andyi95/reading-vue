@@ -13,6 +13,7 @@ export const useMainStore = defineStore('mainStore', () => {
         gameMode: 'gorbov',
         easyMode: true,
         tableCharsType: 'emoji',
+        gameLevel: 'easy'
     });
     const editorContent = ref({
         lastSaved: new Date(),

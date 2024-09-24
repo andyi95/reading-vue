@@ -27,7 +27,23 @@ const messages = {
             notFoundTitle: 'Not found',
             notFoundMessage: 'It seems that this page does not exist',
             backHome: 'Go to main page',
-            about: 'About'
+            about: 'About',
+            typing: 'Typing'
+        },
+        keyboard: {
+            progress: 'Progress',
+            correct: 'Correct',
+            incorrect: 'Mistakes',
+            wpm: 'Words per minute',
+            wps: 'Words per second',
+            cpm: 'Characters per minute',
+            start: 'Start',
+            stop: 'Stop',
+            reset: 'Reset',
+            lessonSelect: 'Select a lesson',
+            levelSelect: 'Select a level',
+            timeLabel: 'Time',
+            accuLabel: 'Accuracy',
         },
         common:{
             textContent: 'Text for reading',
@@ -231,7 +247,8 @@ const messages = {
             notFoundTitle: 'Не найдено',
             notFoundMessage: 'Похоже, такой страницы не существует',
             backHome: 'На главную',
-            about: 'О сайте'
+            about: 'О сайте',
+            typing: 'Печать'
         },
         common:{
             textContent: 'Текст для чтения',
@@ -336,6 +353,21 @@ const messages = {
             metaTitle: 'Текстовый редактор',
             metaTags: 'текст. редактирование, редактор, онлайн редактор, текстовый редактор, бесплатный онлайн редактор, редактор текста, он-лайн редактор, текстовый процессор',
             metaDescription: 'Текстовый редактор - это инструмент для редактирования текста. Он помогает редактировать текст онлайн.'
+        },
+        keyboard: {
+            progress: 'Прогресс',
+            correct: 'Верно',
+            incorrect: 'Ошибки',
+            wpm: 'Слов в минуту',
+            wps: 'Слов в секунду',
+            cpm: 'Символов в минуту',
+            start: 'Начать',
+            stop: 'Стоп',
+            reset: 'Сброс',
+            lessonSelect: 'Выберите урок',
+            levelSelect: 'Выберите уровень',
+            timeLabel: 'Время',
+            accuLabel: 'Точность'
         }
     }
 }

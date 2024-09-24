@@ -16,7 +16,8 @@ app.use(naive)
     .use(i18n)
     .use(router)
     .use(pinia)
-    .use(head);
+    .use(head)
+    // .use(msClarity, {clarityId: 'kdfwwrinuj'})
 
 if (process.env.NODE_ENV !== 'development') {
     app.use(VueGtagPlugin, {

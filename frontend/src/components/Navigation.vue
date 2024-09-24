@@ -1,4 +1,5 @@
 <template>
+
   <div class="flex relative md:hidden max-w-screen-xl">
       <n-button
           @click="show = true" class="content-end justify-end fixed z-10 end-5"
@@ -11,19 +12,8 @@
       </n-button>
   </div>
 
-  <div class="hidden md:flex" id="navbar-default">
-<n-menu v-model:value="activeKey" mode="horizontal" :options="navLinks" style="height: 60px"/>
-    <div class="ml-auto flex items-center space-x-4">
-      <n-icon @click="toggleReadMode" v-if="route.meta.hasReadMode" size="30">
-        <Book/></n-icon>
-      <n-icon @click="changeTheme" size="30">
-        <Moon v-if="!isDarkTheme" ></Moon>
-        <Sunny v-else></Sunny>
-      </n-icon>
-      <n-button @click="changeLocale">
-        {{locale === 'en' ? 'ru': 'en'}}
-        </n-button>
-    </div>
+  <div class="hidden md:flex flex-col" id="navbar-default">
+<n-menu v-model:value="activeKey" mode="vertical" :options="navLinks"/>
   </div>
   <n-drawer v-model:show="show" width="50vw"
             class="md:hidden"
@@ -95,6 +85,18 @@ key: 'text'
       ),
       key: 'anticipation'
 },
+  {
+    label: () =>
+        h(
+            RouterLink,
+            {
+              to: {
+                name: 'Keyboard'
+              }, },
+            { default: () => t('nav.typing')}
+        ),
+  key: 'typing'
+  },
 {
   label: () =>
       h(
