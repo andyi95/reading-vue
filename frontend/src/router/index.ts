@@ -45,11 +45,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/About.vue')
   },
   {
-    path: '/tests',
-    name: 'Tests',
-    component: () => import('@/views/Tests/TestsPage.vue')
-  },
-  {
     path: '/keyboard',
     name: 'Keyboard',
     component: () => import('@/views/Keyboard.vue')
