@@ -10,8 +10,6 @@ RUN npm install
 
 COPY . .
 
-RUN mkdir -p /app/dist && echo "User-agent: *\nDisallow:" > /app/dist/robots.txt
-
 RUN npm run vite:build
 
 FROM nginx:1.17-alpine
