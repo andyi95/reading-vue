@@ -125,11 +125,19 @@ async def proxy(settings: Annotated[Settings, Depends(get_settings)], request: R
     }
     data = await request.form()
     async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(url=url, headers=headers, data=data)
-        except Exception as e:
-            logger.exception('erorr making request')
-            return Response(status_code=500)
+        if request.method == 'GET':
+            try:
+                response = await client.get(url=url, headers=headers)
+                return JSONResponse(status_code=response.status_code, content=response.json())
+            except Exception as e:
+                logger.exception('erorr making request')
+                return Response(status_code=500)
+        if request.method == 'POST':
+            try:
+                response = await client.post(url=url, headers=headers, data=data)
+            except Exception as e:
+                logger.exception('erorr making request')
+                return Response(status_code=500)
     try:
         return JSONResponse(status_code=response.status_code, content={'status': 'Ok'})
     except Exception as e:

@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -9,7 +9,10 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 WORKDIR /app
 
-RUN apt update && apt install -y --no-install-recommends ffmpeg curl
+RUN apt update && apt install -y --no-install-recommends ffmpeg curl \
+    && rm -rf /var/lib/apt/lists/*
+
+
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=$POETRY_HOME python -
 
 COPY poetry.lock pyproject.toml ./
