@@ -1,7 +1,6 @@
-FROM node:18-alpine as build-stage
+FROM node:18-alpine AS build-stage
 
 WORKDIR /app
-
 
 COPY package*.json ./
 
@@ -10,6 +9,8 @@ RUN apk update && apk add -u openssl apk-tools zlib busybox
 RUN npm install
 
 COPY . .
+
+RUN mkdir -p /app/dist && echo "User-agent: *\nDisallow:" > /app/dist/robots.txt
 
 RUN npm run vite:build
 
