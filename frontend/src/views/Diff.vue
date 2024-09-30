@@ -32,13 +32,7 @@ const toggleSpeechRecognition = () => {
 }
 const copyText = () => {
   if (!textContent.value) return;
-  const range = document.createRange();
-  range.selectNode(textContent.value.$el);
-  window.getSelection()?.removeAllRanges();
-  const selection = window.getSelection();
-  selection?.addRange(range);
-  document.execCommand('copy');
-  selection?.removeAllRanges();
+  navigator.clipboard.writeText(textContent.value.innerText);
 }
 const scrollTextInput = () => {
   nextTick(() => {
@@ -147,9 +141,11 @@ const colors = computed(() => ({
       <n-button @click="swapTexts" secondary type="primary">
         <span class="pr-1"><n-icon><SwapHorizontalOutline/></n-icon></span>{{$t('diff.swapLabel')}}</n-button>
     </n-space>
-    <n-card class="text-2xl" v-if="diffResult.length > 0" content-class="text-2xl" ref="textContent">
+    <n-card class="text-2xl" v-if="diffResult.length > 0" content-class="text-2xl">
+      <div ref="textContent">
       <span class="text-2xl" v-for="(item, index) in diffResult" :key="index"
             :class="[item.cssClass, {'dark': isDark}]">{{ item.text }}</span>
+      </div>
       <template #footer>
       <n-button type="primary" @click="copyText">{{ $t('common.copyText')}}</n-button></template>
     </n-card>
