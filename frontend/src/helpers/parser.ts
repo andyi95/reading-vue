@@ -48,6 +48,54 @@ export default class TextParser {
             TextParser.removePunctuation(text1).toLowerCase(),
             TextParser.removePunctuation(text2).toLowerCase());
     }
+    static compareTextsUsingPivots(text1: string, text2: string): ((string | 0)[] | Diff | (string | -1)[] | (string | 1)[])[] {
+        const dmp = new DiffMatchPatch();
+
+        // Split texts into sentences or paragraphs based on punctuation
+        const splitRegex = /([.!?])\s+/; // This splits on sentence boundaries
+        const segments1 = text1.split(splitRegex).filter(segment => segment.trim().length > 0);
+        const segments2 = text2.split(splitRegex).filter(segment => segment.trim().length > 0);
+
+        let diffs = [];
+        let idx1 = 0, idx2 = 0;
+
+        // Compare segments around identified pivot points
+        while (idx1 < segments1.length && idx2 < segments2.length) {
+            const segment1 = segments1[idx1];
+            const segment2 = segments2[idx2];
+
+            if (segment1 === segment2) {
+                // If segments match, add as equal
+                diffs.push([DiffMatchPatch.DIFF_EQUAL, segment1]);
+                idx1++;
+                idx2++;
+            } else {
+                // Use DiffMatchPatch to find differences within segments
+                const innerDiffs = dmp.diff_main(segment1, segment2);
+                diffs.push(...innerDiffs);
+
+                // Advance indices based on content overlap or mismatches
+                if (segment1.length > segment2.length) {
+                    idx2++;
+                } else {
+                    idx1++;
+                }
+            }
+        }
+
+        // Handle remaining segments in either text
+        while (idx1 < segments1.length) {
+            diffs.push([DiffMatchPatch.DIFF_DELETE, segments1[idx1]]);
+            idx1++;
+        }
+        while (idx2 < segments2.length) {
+            diffs.push([DiffMatchPatch.DIFF_INSERT, segments2[idx2]]);
+            idx2++;
+        }
+
+        return diffs;
+    }
+
 
     replaceVowels(): ParsedCharacter[] {
         const cleanedText = this.removePunctuation(this.text)
