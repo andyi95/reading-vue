@@ -118,4 +118,4 @@ export const useMainStore = defineStore('mainStore', () => {
         isDarkTheme,
         updateFontSize
     };
-}, {persist: false});
+}, {persist: true});
