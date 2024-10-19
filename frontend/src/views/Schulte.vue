@@ -15,6 +15,7 @@ export default {
     return {
       isPlaying: false,
       size: this.store.schulteSettings.size,
+      sizeInput: this.store.schulteSettings.size,
       gridData: [],
       shuffledGrid: [],
       startTime: null,
@@ -144,6 +145,12 @@ export default {
         }, 5000)
       }
     },
+    sizeInput(value){
+      if (value && typeof value === 'number' && value >= 3 && value <= 20){
+        this.size = value
+        this.reset();
+      }
+    }
   },
   methods: {
     start(){
@@ -400,7 +407,7 @@ export default {
 >
   <n-space vertical>
     <n-form-item :label="$t('schulte.size')">
-  <n-input-number v-model:value="size" :min="3" :max="20" :step="1" :default-value="5" @update:value="reset">
+  <n-input-number v-model:value="sizeInput" :min="3" :max="20" :step="1" :default-value="5">
   </n-input-number>
     </n-form-item>
     <n-form-item :label="$t('schulte.easyGame')">
@@ -436,7 +443,7 @@ export default {
                       class="current-item">&nbsp;{{ currentItem.value }}&nbsp;</span>
         </n-card>
     </div>
-  <n-grid :cols="this.size" :x-gap="gridSizes.gap" :y-gap="gridSizes.gap" class="square-container">
+  <n-grid :cols="size" :x-gap="gridSizes.gap" :y-gap="gridSizes.gap" class="square-container">
     <n-grid-item v-for="(item, index) in this.shuffledGrid"
                  :key="index" class="square"
                  :class="{ hidden: item.hidden, red: item.isRed, 'emoji': tableCharsType === 'emoji'}"
