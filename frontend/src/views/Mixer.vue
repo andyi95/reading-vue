@@ -104,17 +104,6 @@ export default {
       this.postBody = value;
       this.modeChanged()
     },
-    copyText() {
-      let textToCopy = this.$refs.textContent;
-      let blob = textToCopy.$el;
-      const range = document.createRange();
-      range.selectNode(blob);
-      window.getSelection().removeAllRanges()
-      const selection = window.getSelection();
-      selection.addRange(range);
-      document.execCommand("copy");
-      window.getSelection().removeAllRanges()
-    },
     async fetchText() {
       try {
         const response = await api.post('/parse/', {text: this.postBody})
