@@ -15,10 +15,6 @@ variables:
             - "home"
         description: "Environment for deploy"
 
-workflow:
-    rules:
-        - if: '$DEPLOY_ENVIRONMENT == "development"'
-          variables:
 
 .docker_build: &docker-build
     variables:
@@ -138,7 +134,7 @@ stop:development:
 
 deploy:home:
     <<: *deploy_script
-    stage: deploy:home
+    stage: deploy:development
     needs:
         - test:frontend
         - test:backend
@@ -150,7 +146,7 @@ deploy:home:
         - home
 
 stop:home:
-    stage: deploy:home
+    stage: deploy:development
     script:
         - docker compose down
     environment:
