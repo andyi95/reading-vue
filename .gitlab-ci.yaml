@@ -135,6 +135,33 @@ stop:development:
         - ssh
         - dev
 
+
+deploy:home:
+    <<: *deploy_script
+    stage: deploy:home
+    needs:
+        - test:frontend
+        - test:backend
+    environment:
+        name: home
+        deployment_tier: development
+        url: https://spreedy.ru/
+    tags:
+        - home
+
+stop:home:
+    stage: deploy:home
+    script:
+        - docker compose down
+    environment:
+        name: home
+        deployment_tier: development
+        url: https://spreedy.ru/
+        action: stop
+    when: manual
+    tags:
+        - home
+
 deploy:production:
     <<: *deploy_script
     stage: deploy:production
