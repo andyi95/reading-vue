@@ -39,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import type {Component} from 'vue';
 import {computed, watch, h, ref} from "vue";
 import {RouterLink } from 'vue-router';
 import {useRoute, useRouter} from "vue-router";
@@ -46,7 +47,14 @@ import {useI18n} from "vue-i18n";
 import {Moon, Sunny, Book} from "@vicons/ionicons5";
 import {useHead, useSeoMeta} from "@unhead/vue";
 import {useMainStore} from "@/store/main";
+import { NIcon } from 'naive-ui';
 
+import {DocumentText, Speedometer, Eye, Key, Grid, Mic, GitCompare, Create} from '@vicons/ionicons5';
+import {KeyboardAltOutlined, ShuffleRound} from '@vicons/material';
+
+function renderIcon(icon: Component) {
+  return () => h(NIcon, null, { default: () => h(icon) })
+}
 const  navLinks = [
   {
     label: () =>
@@ -59,7 +67,8 @@ const  navLinks = [
         },
         {default: () => t('nav.textparser')}
 ),
-key: 'text'
+key: 'text',
+    icon: renderIcon(DocumentText)
 },
 {
   label: () =>
@@ -71,7 +80,8 @@ key: 'text'
             },
           },{ default: () => t('nav.spreeder')}
       ),
-      key: 'spreeder'
+      key: 'spreeder',
+  icon: renderIcon(Speedometer)
 },
 {
   label: () =>
@@ -83,7 +93,8 @@ key: 'text'
             },
           },{ default: () => t('nav.anticipation')}
       ),
-      key: 'anticipation'
+      key: 'anticipation',
+  icon: renderIcon(Eye)
 },
   {
     label: () =>
@@ -95,7 +106,8 @@ key: 'text'
               }, },
             { default: () => t('nav.typing')}
         ),
-  key: 'typing'
+  key: 'typing',
+    icon: renderIcon(KeyboardAltOutlined)
   },
 {
   label: () =>
@@ -107,26 +119,31 @@ key: 'text'
             },
           },{ default: () => t('nav.mixer')}
       ),
-      key: 'mixer'
+      key: 'mixer',
+  icon: renderIcon(ShuffleRound)
 },
 {
   label: () =>
       h(RouterLink, {to: {name: 'Schulte'}}, {default: () => t('nav.schulte')}),
-      key: 'schulte'
+      key: 'schulte',
+  icon: renderIcon(Grid)
 },
 {
   label: () =>
       h(RouterLink, {to: {name: 'Voice'}}, {default: () => t('nav.voice')}),
-      key: 'voice'
+      key: 'voice',
+  icon: renderIcon(Mic)
 },
 {
   label: () =>
       h(RouterLink, {to: {name: 'Diff'}}, {default: () => t('nav.diff')}),
-      key: 'diff'
+      key: 'diff',
+  icon: renderIcon(GitCompare)
 },
   {
     label: () =>
-        h(RouterLink, {to: {name: 'Editor'}}, {default: () => t('nav.editor')}), key: 'editor'
+        h(RouterLink, {to: {name: 'Editor'}}, {default: () => t('nav.editor')}), key: 'editor',
+    icon: renderIcon(Create)
   }
 ]
 const { t, locale } = useI18n();

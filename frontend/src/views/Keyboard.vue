@@ -28,19 +28,18 @@ onMounted(async () => {
   // if (lessons.length !== 0) return;
 
   await fetchLessons();
-  while(loading){
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
   console.log('fetched lessons');
   console.log(lessons)
 })
-
+const currentElementIdx = ref(0);
+const currentELement = computed(() => characters.value[currentElementIdx.value] || '');
 const lessonOptions = computed(() =>
     lessons.map((lesson) => ({
       label: lesson.title,
       value: lesson.id
     }))
 )
+
 const selectedLevelContent = computed(() => {
   if (selectedLesson.value && selectedLevel.value) {
     const lesson = lessons.find((lesson) => lesson.id === selectedLesson.value);
@@ -48,7 +47,7 @@ const selectedLevelContent = computed(() => {
     if (!level){
       return '';
     }
-    return level.content.replace(/[^a-zа-я0-9.,;'" ]/gi, '');
+    return level.content.join(' ').replace(/[^a-zа-я0-9.,;'" ]/gi, '');
   }
   return '';
 });
