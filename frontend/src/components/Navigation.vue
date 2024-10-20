@@ -238,15 +238,6 @@ watch(
       })
     })
 
-router.beforeEach(async (to, from, next) => {
-  const description = to.meta.description ? to.meta.description : t('common.metaDescription');
-  const tags = to.meta.tags ? to.meta.tags : t('common.metaTags');
-  const title = to.meta.title ? to.meta.title : t('common.metaTitle');
-
-  // @ts-ignore
-  // document.title = to.meta.title ? to.meta.title : t('nav.title');
-  next();
-})
 </script>
 
 <style>
