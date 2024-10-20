@@ -47,7 +47,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/keyboard',
     name: 'Keyboard',
-    component: () => import('@/views/Keyboard.vue')
+    component: () => import('@/views/Keyboard.vue'), meta: {
+      title: t('keyboard.metaTitle'), tags: t('keyboard.metaTags'), description: t('keyboard.metaDescription'),
+      hasReadMode: false}
   },
   {path: '/:catchAll(.*)', name: 'NotFound', component: () => import('@/views/NotFound.vue')}
 

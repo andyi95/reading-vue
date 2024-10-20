@@ -31,6 +31,9 @@ const messages = {
             typing: 'Typing'
         },
         keyboard: {
+            metaTitle: 'Typing',
+            metaTags: 'text, reading, typing, keyboard, speed typing, touch typing',
+            metaDescription: 'Typing is a tool for learning. It helps to type faster and more accurately.',
             progress: 'Progress',
             correct: 'Correct',
             incorrect: 'Mistakes',
@@ -367,7 +370,10 @@ const messages = {
             lessonSelect: 'Выберите урок',
             levelSelect: 'Выберите уровень',
             timeLabel: 'Время',
-            accuLabel: 'Точность'
+            accuLabel: 'Точность',
+            metaTitle: 'Печать',
+            metaTags: 'текст, чтение, печать, клавиатура, скоростная печать, слепой метод печати',
+            metaDescription: 'Клавиатурный тренажёр - это инструмент для обучения печати. Он помогает печатать быстрее и точнее.'
         }
     }
 }

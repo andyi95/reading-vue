@@ -139,7 +139,7 @@ onMounted(() => {
   window.addEventListener('resize', handleResize)
 });
 onBeforeUnmount(() => {
-  winow.removeEventListener('resize', handleResize)
+  window.removeEventListener('resize', handleResize)
 });
 </script>
 

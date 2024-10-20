@@ -67,7 +67,7 @@ const  navLinks = [
         },
         {default: () => t('nav.textparser')}
 ),
-key: 'text',
+key: 'textparser',
     icon: renderIcon(DocumentText)
 },
 {
@@ -106,7 +106,7 @@ key: 'text',
               }, },
             { default: () => t('nav.typing')}
         ),
-  key: 'typing',
+  key: 'keyboard',
     icon: renderIcon(KeyboardAltOutlined)
   },
 {
