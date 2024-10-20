@@ -1,58 +1,72 @@
 <template>
-<div id="app" :class="{ 'dark': theme === darkTheme }">
-
-<n-config-provider :theme="theme">
-  <n-message-provider>
-    <div class="hidden md:block">
+  <div id="app" :class="{ 'dark': theme === darkTheme }">
+    <n-config-provider :theme="theme">
+      <n-message-provider>
+        <!-- Header and Sider for large screens -->
+        <n-layout v-if="isDesktop">
           <n-layout-header class="w-full flex justify-end items-center px-2 py-1">
-            <!-- Mobile Burger Button -->
- <!-- Header Pane for Icons -->
-      <!-- Theme and Locale Toggles -->
-      <div class="flex items-center space-x-4">
-        <n-icon @click="toggleReadMode" v-if="route.meta.hasReadMode" size="30">
-          <Book /></n-icon>
-        <n-icon @click="changeTheme" size="30">
-          <Moon v-if="!isDarkTheme"></Moon>
-          <Sunny v-else></Sunny>
-        </n-icon>
-        <n-button @click="changeLocale">
-          {{ locale === 'en' ? 'ru' : 'en' }}
-        </n-button>
-      </div>
-      </n-layout-header>
-    <n-layout has-sider sider-placement="left">
-                <n-layout-sider collapse-mode="width"
-                    :collapsed-width="48"
+            <!-- Header Pane for Icons -->
+            <div class="flex items-center space-x-4">
+              <n-icon @click="toggleReadMode" v-if="route.meta.hasReadMode" size="30">
+                <Book /></n-icon>
+              <n-icon @click="changeTheme" size="30">
+                <Moon v-if="!isDarkTheme" />
+                <Sunny v-else />
+              </n-icon>
+              <n-button @click="changeLocale">
+                {{ locale === 'en' ? 'ru' : 'en' }}
+              </n-button>
+            </div>
+          </n-layout-header>
+
+          <!-- Sidebar for larger screens -->
+          <n-layout has-sider>
+          <n-layout-sider collapse-mode="width"
+                          :collapsed-width="48"
                           show-trigger="arrow-circle"
-                          bordered
-                    :width="200">
-            <Navigation/>
+                          bordered default-collapsed
+                          :width="200">
+            <Navigation />
           </n-layout-sider>
-        <n-layout-content >
-    <router-view/>
-        </n-layout-content>
-      <BugReportCard />
-      <BugReportButton />
-    </n-layout></div>
-    <div class="md:hidden flex">
-          <n-layout>
-          <Navigation/>
-        <n-layout-content >
-    <router-view/>
-        </n-layout-content>
-      <BugReportCard />
-      <BugReportButton />
-          </n-layout>
-    </div>
 
-            <n-layout-footer>
-        <Footer/>
-      </n-layout-footer>
+          <n-layout-content>
+            <!-- Single router-view for all screen sizes -->
+            <router-view />
+          </n-layout-content>
+        </n-layout>
+        </n-layout>
 
-  </n-message-provider>
-  </n-config-provider>
+        <!-- Layout for small screens -->
+        <n-layout v-else>
+          <!-- Mobile Layout -->
+          <div class="mobile-header flex justify-between items-center px-2 py-1">
+            <!-- Theme and Locale Toggles in Mobile -->
+            <div class="flex items-center space-x-4">
+              <n-icon @click="toggleReadMode" v-if="route.meta.hasReadMode" size="30">
+                <Book /></n-icon>
+              <n-icon @click="changeTheme" size="30">
+                <Moon v-if="!isDarkTheme" />
+                <Sunny v-else />
+              </n-icon>
+              <n-button @click="changeLocale">
+                {{ locale === 'en' ? 'ru' : 'en' }}
+              </n-button>
+            </div>
+          </div>
+
+          <n-layout-content>
+            <Navigation />
+            <!-- Single router-view reused for mobile -->
+            <router-view />
+          </n-layout-content>
+        </n-layout>
+
+        <n-layout-footer>
+          <Footer />
+        </n-layout-footer>
+      </n-message-provider>
+    </n-config-provider>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -60,11 +74,10 @@
 import {Moon, Sunny, Book} from "@vicons/ionicons5";
 import {useMainStore} from "@/store/main";
 import {useI18n} from "vue-i18n";
-import {defineComponent, computed, ref} from "vue";
+import {defineComponent, computed, ref, onMounted, onBeforeUnmount} from "vue";
 import {useSeoMeta, useHead} from "@unhead/vue";
 import Navigation from "@/components/Navigation.vue";
 import {darkTheme} from "naive-ui";
-import BugReportCard from "@/components/BugReportCard.vue";
 import BugReportButton from "@/components/BugReportButton.vue";
 import {useRoute} from "vue-router";
 
@@ -117,6 +130,17 @@ useHead({
 const theme = computed(() => {
   return store.theme === 'darkTheme' ? darkTheme : null
 })
+const isDesktop = computed(() => windowWidth.value >= 768); // Tailwind 'md' breakpoint
+
+const handleResize = () => {
+  windowWidth.value = window.innerWidth;
+}
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+});
+onBeforeUnmount(() => {
+  winow.removeEventListener('resize', handleResize)
+});
 </script>
 
 <style lang="postcss">
@@ -140,4 +164,12 @@ body, #app, .n-layout-scroll-container, .n-config-provider, .n-layout--static--p
   padding-top: .50rem;
   padding-bottom: .25rem;
 }
+.ck-balloon-panel, .ck-powered-by, .ck-balloon-panel_visible, .ck-powered-by-balloon{
+  display: none!important;
+}
+.n-layout-scroll-container {
+  padding: 0.75rem;
+}
+
+
 </style>
