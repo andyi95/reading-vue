@@ -4,35 +4,43 @@ import {useEventListener} from "@vueuse/core";
 import {useLessonStore} from "@/store/lessons";
 import {useI18n} from "vue-i18n";
 import TypingSpeedChart from "@/components/TypingSpeedChart.vue";
+import {useMessage} from "naive-ui";
 
 const lastKey = ref('');
 const lessonStore = useLessonStore();
+const message = useMessage();
 const {lessons, loading, error, fetchLessons} = lessonStore;
-
+const {t} = useI18n();
 const selectedLesson = ref(null);
 const selectedLevel = ref(null);
 
 const levelOptions = ref([]);
 
-const characters = ref([]);
 const isPlaying = ref(false);
-const keyPresses: Ref<[]> = ref([]);
+const keyPresses = ref([]);
 const startTime = ref(null);
-const timeInterval = ref(null);
 const currentIdx = ref(0);
+const currentStringIdx = ref(0);
+const currentString = computed(() => {
+  const lesson = lessons.find((lesson => lesson.id === selectedLesson.value));
+  const level = lesson?.levels.find((level) => level.id === selectedLevel.value);
+  return level?.content[currentStringIdx.value] || '';
+})
 const correctCount = computed(() => keyPresses.value.filter(p => p.isCorrect).length)
 const incorrectCount = computed(() => keyPresses.value.length - correctCount.value)
 const timerCount = ref(0);
 const timer = ref(null);
-onMounted(async () => {
-  // if (lessons.length !== 0) return;
 
+onMounted(async () => {
   await fetchLessons();
-  console.log('fetched lessons');
-  console.log(lessons)
+  if (lessons.length > 0 ){
+    selectedLesson.value = lessons[0].id;
+    if (lessons[0].levels.length > 0){
+      selectedLevel.value = lessons[0].levels[0].id;
+    }
+  }
 })
-const currentElementIdx = ref(0);
-const currentELement = computed(() => characters.value[currentElementIdx.value] || '');
+
 const lessonOptions = computed(() =>
     lessons.map((lesson) => ({
       label: lesson.title,
@@ -40,17 +48,6 @@ const lessonOptions = computed(() =>
     }))
 )
 
-const selectedLevelContent = computed(() => {
-  if (selectedLesson.value && selectedLevel.value) {
-    const lesson = lessons.find((lesson) => lesson.id === selectedLesson.value);
-    const level = lesson?.levels.find((level) => level.id === selectedLevel.value);
-    if (!level){
-      return '';
-    }
-    return level.content.join(' ').replace(/[^a-zа-я0-9.,;'" ]/gi, '');
-  }
-  return '';
-});
 const showPlot = ref(false);
 const startExercise = () => {
   if (isPlaying.value){
@@ -68,14 +65,12 @@ const startExercise = () => {
 const stopExercise = () => {
     isPlaying.value = false;
     clearInterval(timer.value);
+    message.success(t('keyboard.finished', {minutes: (timerCount.value / 60).toFixed(2), seconds: timerCount.value, cpm: cpm.value, errors: incorrectCount.value}));
     // showPlot.value = true;
     return;
 }
 const timeObject = computed(() => new Date(timerCount.value * 1000));
-const reset = () => {
-  stopExercise();
-  currentIdx.value = 0;
-}
+
 
 watch(selectedLesson, (newLessonId) => {
   const lesson = lessons.find((lesson) => lesson.id === newLessonId);
@@ -91,34 +86,41 @@ watch(selectedLesson, (newLessonId) => {
   }
   selectedLevel.value = null;
 })
-watch(selectedLevel, (newLevelId) => {
-  characters.value = selectedLevelContent.value.split('');
-
-})
-const {t} = useI18n();
 const buttonLabel = computed(() => isPlaying.value ? t('keyboard.stop') : t('keyboard.start'));
 const handleKeydown = (event: KeyboardEvent) => {
   if(!isPlaying.value) return;
-  if (event.code === 'Space') {
+  if (['Space', 'Enter'].includes(event.code)) {
     event.preventDefault();
   }
   const timestamp = Date.now();
-  const currentChar = characters.value[currentIdx.value]
-  keyPresses.value.push({
-    timestamp, isCorrect: event.key === currentChar
-  })
-  if (event.key === characters.value[currentIdx.value]){
+  const currentChar = currentString.value[currentIdx.value];
+  if (event.key === currentChar || (event.key === 'Enter' && currentChar === '\n')) {
     currentIdx.value++;
+    keyPresses.value.push({
+      timestamp, isCorrect: true
+    })
+    if (currentIdx.value >= currentString.value.length){
+      currentIdx.value = 0;
+      currentStringIdx.value++;
+      const lesson = lessons.find((lesson) => lesson.id === selectedLesson.value);
+      const level = lesson?.levels.find((level) => level.id === selectedLevel.value);
+      if (currentStringIdx.value >= (level?.content.length || 0)) {
+        stopExercise();
+      }
+    }
+  }
+  else {
+    keyPresses.value.push({
+      timestamp, isCorrect: false
+    })
   }
   lastKey.value = event.key;
-  if (currentIdx.value >= characters.value.length){
-    stopExercise();
-  }
 }
 const cpm = computed(() => {
   return timerCount.value > 0 ? (correctCount.value / (timerCount.value / 60)).toFixed(2) : 0;
 })
 useEventListener('keydown', handleKeydown);
+
 </script>
 
 <template>
@@ -155,10 +157,17 @@ useEventListener('keydown', handleKeydown);
     </div>
     <div class="col-span-3">
       <n-card class="shadow-lg">
-        <div class="text-lg font-mono" :class="{'blur-sm': !isPlaying}">
-        <span v-for="(char, index) in selectedLevelContent" :key="index"
+        <div class="text-lg md:text-xl font-mono" :class="{'blur-sm': !isPlaying}">
+        <span v-for="(char, index) in currentString" :key="index"
               :class="{ 'text-red-500 underline': index === currentIdx}"
-        >{{ char }}</span>
+        >
+              <template v-if="char === '\n'">
+      <span class="newline-symbol">↵</span><br>
+    </template>
+    <template v-else>
+      {{ char }}
+    </template>
+        </span>
         </div>
         <n-space class="mt-4">
         </n-space>

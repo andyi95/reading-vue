@@ -47,6 +47,7 @@ const messages = {
             levelSelect: 'Select a level',
             timeLabel: 'Time',
             accuLabel: 'Accuracy',
+            finished: 'Great job! You finished the lesson in {minutes} minutes {seconds} seconds, making {errors} mistakes. Your speed is {rate} characters per minute.',
         },
         common:{
             textContent: 'Text for reading',
@@ -373,7 +374,8 @@ const messages = {
             accuLabel: 'Точность',
             metaTitle: 'Печать',
             metaTags: 'текст, чтение, печать, клавиатура, скоростная печать, слепой метод печати',
-            metaDescription: 'Клавиатурный тренажёр - это инструмент для обучения печати. Он помогает печатать быстрее и точнее.'
+            metaDescription: 'Клавиатурный тренажёр - это инструмент для обучения печати. Он помогает печатать быстрее и точнее.',
+            finished: 'Отличная работа! Вы закончили урок за {minutes} минут {seconds} секунд, совершив {errors} ошибок. Ваша скорость {rate} символов в минуту.',
         }
     }
 }

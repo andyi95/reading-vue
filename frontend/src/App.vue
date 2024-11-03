@@ -34,6 +34,8 @@
             <router-view />
           </n-layout-content>
         </n-layout>
+          <BugReportCard />
+          <BugReportButton />
         </n-layout>
 
         <!-- Layout for small screens -->
@@ -59,6 +61,7 @@
             <!-- Single router-view reused for mobile -->
             <router-view />
           </n-layout-content>
+
         </n-layout>
 
         <n-layout-footer>
@@ -80,6 +83,7 @@ import Navigation from "@/components/Navigation.vue";
 import {darkTheme} from "naive-ui";
 import BugReportButton from "@/components/BugReportButton.vue";
 import {useRoute} from "vue-router";
+import BugReportCard from "@/components/BugReportCard.vue";
 
 const { t, locale } = useI18n();
 const store = useMainStore();
