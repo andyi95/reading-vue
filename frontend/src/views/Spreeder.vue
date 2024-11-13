@@ -33,9 +33,9 @@
 </n-form-item>
   </n-form>
     <n-card
-        :bordered="false"
-        content-style="padding-top: 0.3rem; padding-bottom: 0.3rem; align-content: center;  max-width: 300px;"
-        :style="`display: flex; flex-wrap: wrap; text-align: center; min-height: 200px; padding-bottom: 2em; padding-top: 2em; `"
+        :bordered="false" class="slider-card"
+        :content-style="`padding-top: 0.3rem; padding-bottom: 0.3rem; align-content: center; max-width: 300px;`"
+        :style="`display: flex; flex-wrap: wrap; text-align: center; min-height: 200px; padding-bottom: 2em; padding-top: 2em;`"
         v-show="slider.showCard">
         <span :style="`font-size: ${cardSize}em`"> {{ slider.currentWord }}</span>
     </n-card>
@@ -258,6 +258,14 @@ export default {
   align-content: center;
   align-self: center;
 
+}
+.slider-card {
+  display: block;
+  text-align: center;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  align-items: center;
+  justify-content: center;
 }
 
 
