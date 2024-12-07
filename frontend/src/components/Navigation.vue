@@ -2,7 +2,7 @@
 
   <div class="flex relative md:hidden max-w-screen-xl">
       <n-button
-          @click="show = true" class="content-end justify-end fixed z-10 end-5"
+          @click="show = true" class="content-end justify-end fixed z-10 end-5 -mt-8"
           :bordered="false" aria-label="Open main menu">
         <span class="sr-only">Open main menu</span>
         <div class="burger-menu">
@@ -179,12 +179,6 @@ useSeoMeta({
   keywords: computed(() => t('common.metaTags')),
 })
 let head = useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: 'https://text-tools.ru' + route.path
-    }
-  ],
   htmlAttrs: {
     lang: currentLanguage.value
   },
@@ -212,12 +206,6 @@ watch(
     (newPath) => {
       useHead({
         title: route.meta.title,
-        link: [
-          {
-            rel: 'canonical',
-            href: 'https://text-tools.ru' + route.path
-          }
-        ],
         htmlAttrs: {
           lang: currentLanguage.value
         },

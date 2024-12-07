@@ -24,7 +24,11 @@
           <n-layout-sider collapse-mode="width"
                           :collapsed-width="48"
                           show-trigger="arrow-circle"
+                          :collapsed="collapsed"
+                          @collapse="collapsed = true"
+                          @expand="collapsed = false"
                           bordered default-collapsed
+                          ref="siderRef"
                           :width="200">
             <Navigation />
           </n-layout-sider>
@@ -84,6 +88,7 @@ import {darkTheme} from "naive-ui";
 import BugReportButton from "@/components/BugReportButton.vue";
 import {useRoute} from "vue-router";
 import BugReportCard from "@/components/BugReportCard.vue";
+import {onClickOutside} from "@vueuse/core";
 
 const { t, locale } = useI18n();
 const store = useMainStore();
@@ -107,7 +112,12 @@ const changeLocale = () => {
 const toggleReadMode = () => {
   store.toggleReadingMode();
 }
+const collapsed = ref(true);
+const siderRef = ref(null);
 const currentLanguage = computed(() => store.locale)
+onClickOutside(siderRef, () => {
+  collapsed.value = true;
+})
 useSeoMeta({
   ogTitle: 'Текстовые инструменты',
   ogDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса.',
