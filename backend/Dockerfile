@@ -18,7 +18,7 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=$POETRY_HOME pytho
 COPY poetry.lock pyproject.toml ./
 
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction
+    && poetry install --no-interaction --no-root
 
 RUN poetry run python -m nltk.downloader universal_tagset  omw-1.4 stopwords wordnet averaged_perceptron_tagger
 
