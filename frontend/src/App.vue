@@ -3,7 +3,7 @@
     <n-config-provider :theme="theme">
       <n-message-provider>
         <!-- Header and Sider for large screens -->
-        <n-layout v-if="isDesktop">
+        <n-layout v-show="isDesktop">
           <n-layout-header class="w-full flex justify-end items-center px-2 py-1">
             <!-- Header Pane for Icons -->
             <div class="flex items-center space-x-4">
@@ -43,7 +43,7 @@
         </n-layout>
 
         <!-- Layout for small screens -->
-        <n-layout v-else>
+        <n-layout v-show="!isDesktop">
           <!-- Mobile Layout -->
           <div class="mobile-header flex justify-between items-center px-2 py-1">
             <!-- Theme and Locale Toggles in Mobile -->
@@ -122,8 +122,7 @@ useSeoMeta({
   ogTitle: 'Текстовые инструменты',
   ogDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса.',
   ogImage: 'https://text-tools.ru/img/og.png',
-  twitterImage: 'https://text-tools.ru/img/og.png',
-  image: 'https://text-tools.ru/img/og.png'
+  twitterImage: 'https://text-tools.ru/img/og.png'
 })
 useHead({
   meta: [
@@ -150,10 +149,10 @@ const handleResize = () => {
   windowWidth.value = window.innerWidth;
 }
 onMounted(() => {
-  window.addEventListener('resize', handleResize)
+  // window.addEventListener('resize', handleResize)
 });
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize)
+  // window.removeEventListener('resize', handleResize)
 });
 </script>
 
