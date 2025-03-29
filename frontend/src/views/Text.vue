@@ -32,10 +32,14 @@
   </n-drawer>
 
     <n-form size="medium">
-        <BaseInput :label="$t('textparser.sourceText')" :placeholder='$t("textparser.textPlaceHolder")'
-                   v-model:post-body="sourceText" @input-updated="textUpdated($event)">
-
-        </BaseInput>
+      <n-form-item :label="$t('textparser.sourceText')">
+        <n-input type="textarea"
+                  :placeholder='$t("textparser.textPlaceHolder")'
+                  v-model:value="sourceText"
+                  @input="textUpdated($event)"
+                  :rows="6"
+         />
+      </n-form-item>
         <n-space size="medium" class="pb-3">
             <n-card>{{ $t('textparser.totalSymbols')}}
                 <n-tag :bordered="false">{{ charsTotal }}</n-tag>
@@ -126,7 +130,7 @@ const formContent = ref({
   username: 'default',
   password: ''
 });
-const formRef = ref(null);
+const formRef = ref();
 const passwordError = ref(false);
 const isLoading = ref(false);
 
@@ -180,7 +184,10 @@ const submitPassword = async () => {
 };
 const convertToSpeech = async () => {
     showModal.value = true;
-  formRef.value.password = '';
+
+  if (formRef.value && formRef.value.password) {
+    formRef.value.password = '';
+  }
   passwordError.value = false;
 };
 const options = ref({
@@ -189,7 +196,7 @@ const options = ref({
   grayScale: false,
 });
 const grayedText: Ref<Array<GrayedTextItem>> = ref([]);
-const audioSource = ref('');
+const audioSource = ref<Blob>(null);
 const sourceText = computed({
   get() {
     return store.sourceText;
