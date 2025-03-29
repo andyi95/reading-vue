@@ -1,4 +1,4 @@
-import { createApp, getCurrentInstance } from "vue";
+import { createApp } from "vue";
 import { createHead} from "@unhead/vue";
 import App from './App.vue';
 import i18n from "./i18n";
@@ -22,7 +22,10 @@ app.use(naive)
 if (process.env.NODE_ENV !== 'development') {
     app.use(VueGtagPlugin, {
         config: {
-            id: 'G-181EZLB3NP',  // prod7
+            id: 'G-181EZLB3NP',
+            params:{
+                app_version: '3.1.0'
+            }
             // id: process.env.VITE_GTAG_ID  // dev
         }
     }, router);
