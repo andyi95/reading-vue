@@ -3,7 +3,7 @@
     <n-config-provider :theme="theme">
       <n-message-provider>
         <!-- Header and Sider for large screens -->
-        <n-layout v-show="isDesktop">
+        <n-layout v-if="isDesktop">
           <n-layout-header class="w-full flex justify-end items-center px-2 py-1">
             <!-- Header Pane for Icons -->
             <div class="flex items-center space-x-4">
@@ -43,7 +43,7 @@
         </n-layout>
 
         <!-- Layout for small screens -->
-        <n-layout v-show="!isDesktop">
+        <n-layout v-else>
           <!-- Mobile Layout -->
           <div class="mobile-header flex justify-between items-center px-2 py-1">
             <!-- Theme and Locale Toggles in Mobile -->

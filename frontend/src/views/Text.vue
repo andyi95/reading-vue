@@ -197,14 +197,7 @@ const options = ref({
 });
 const grayedText: Ref<Array<GrayedTextItem>> = ref([]);
 const audioSource = ref<Blob>(null);
-const sourceText = computed({
-  get() {
-    return store.sourceText;
-  },
-  set(value) {
-    store.updateText(value);
-  }
-});
+const sourceText = ref('');
 
 const reText = /[A-Za-zА-Яа-я\s]/g;
 interface Color {
