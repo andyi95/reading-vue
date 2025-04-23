@@ -66,7 +66,7 @@
     </n-form>
 
   <Playback v-if="audioSource" :audio-blob="audioSource" :key="playBackKey"/>
-        <BaseTextBox :label="$t('common.textContent')" ref="textContent" v-if="fetchedText.length || grayedText.length">
+        <BaseTextBox :label="$t('common.textContent')" ref="textContent" v-show="fetchedText.length || grayedText.length">
             <div v-if="grayedText.length && options.grayScale">
                 <span v-for="item in grayedText"
                       :class="{'grayed-dark': isDarkTheme && item.gray === 'grayed', 'grayed': !isDarkTheme && item.gray === 'grayed'}" :key="item.id">{{ item.word + ' ' }}</span>
@@ -256,32 +256,32 @@ const cntWords = computed(() => {
 })
 const updateText = debounce(async () => {
   const chunkSize = 100;
-  fetchedText.value = [];
+  const newItems: FetchTextItem[] = [];
+
   let responses = []
-  let splittedText = sourceText.value.split(' ')
-  for (let i = 0; i < splittedText.length; i += chunkSize) {
-    const chunk = splittedText.slice(i, i + chunkSize)
-    let response = null
-        try {
-      response = await api.post('parse/', {text: chunk.join(' ')})
+  let words = sourceText.value.split(' ')
+  const totalChunks = Math.ceil(words.length / chunkSize);
+  for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+    const start = chunkIndex * chunkSize;
+    const end = start + chunkSize;
+    const chunk = words.slice(start, end);
+    try {
+      const {data} = await api.post('parse/', {text: chunk.join(' ')});
+      data.forEach((item) => {
+        item.id = newItems.length;
+        item.color = assignColor(item);
+        newItems.push(item);
+      })
     } catch (error) {
       warning("Что-то пошло не так")
       console.log(error)
-      continue
-    }
-    let j = fetchedText.value.length
-    response.data.forEach(function (part, idx, arr) {
-      arr[idx]['id'] = j
-      j += 1
-    })
-    fetchedText.value = [...fetchedText.value, ...response.data,]
-    fetchedText.value.forEach(word => {
-      word.color = assignColor(word)
-    })
-    if (options.value.onlyVerbs || options.value.onlyVerbs) {
-      filterText();
     }
   }
+  fetchedText.value = newItems;
+  if (options.value.onlyVerbs || options.value.onlyVerbs) {
+    filterText();
+  }
+
 }, 300)
 
 const grayUpdated = (value: boolean) => {

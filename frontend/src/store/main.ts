@@ -119,4 +119,7 @@ export const useMainStore = defineStore('mainStore', () => {
         isDarkTheme,
         updateFontSize
     };
-}, {persist: true});
+}, {
+    persist: {
+        omit: ['readingMode', 'sourceText', 'fetchedData', 'schulteContext'],
+    }});
