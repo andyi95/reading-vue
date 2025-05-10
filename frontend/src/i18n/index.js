@@ -400,6 +400,6 @@ export default createI18n({
                 minute: 'numeric', second: 'numeric'
             }
         },
-
-    }
+    },
+    globalInjection: true
 })
