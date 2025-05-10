@@ -7,7 +7,11 @@
     <n-form :rules="formRules" :model="formContent" ref="formRef">
       <n-form-item path="password"
           :label="$t('auth.passwordLabel')" :error="passwordError ? $t('auth.invalidPassword') : ''">
-        <n-input v-model:value="formContent.password" type="password" clearable/>
+        <n-input
+            v-model:value="formContent.password"
+            type="password" :input-props="{autocomplete: 'on', type: 'password'}"
+            placeholder="Пароль"
+            clearable/>
       </n-form-item>
     </n-form>
       </n-spin>
@@ -100,10 +104,12 @@ import BaseButton from "@/components/BaseButton.vue";
 import BaseCheckbox from "@/components/BaseCheckbox.vue";
 import BaseTextBox from "@/components/BaseTextBox.vue";
 import {useMainStore} from "@/store/main";
+import {useAuthStore} from "@/store/auth";
 
 const message = useMessage();
 const {t} = useI18n();
 const store = useMainStore();
+const authStore = useAuthStore();
 
 const playBackKey = ref(0);
 const textContent = ref(null);
@@ -158,7 +164,7 @@ const submitPassword = async () => {
     return;
   }
   isLoading.value = true;
-    const hashedPassword = await hashPassword(formContent.value.password);
+    const hashedPassword = authStore.hashedPassword || await authStore.setPassword(formContent.value.password);
     api.post(
       'text-to-speech/',
       { text: sourceText.value },
@@ -183,11 +189,16 @@ const submitPassword = async () => {
     });
 };
 const convertToSpeech = async () => {
-    showModal.value = true;
-
-  if (formRef.value && formRef.value.password) {
-    formRef.value.password = '';
+  if (authStore.hashedPassword) {
+    // formRef.value.password = authStore.hashedPassword;
+    await submitPassword();
+    return;
   }
+    showModal.value = true;
+  //
+  // if (formRef.value && formRef.value.password) {
+  //   formRef.value.password = '';
+  // }
   passwordError.value = false;
 };
 const options = ref({
@@ -281,6 +292,9 @@ const updateText = debounce(async () => {
   if (options.value.onlyVerbs || options.value.onlyVerbs) {
     filterText();
   }
+  if (options.value.grayScale) {
+    grayUpdated(options.value.grayScale);
+  }
 
 }, 300)
 
@@ -315,8 +329,8 @@ const filterText = () => {
     fetchedText.value = cachedText.value
     return;
   }
-  let nouns: [] = [];
-  let verbs: [] = [];
+  let nouns: FetchTextItem[] = [];
+  let verbs: FetchTextItem[] = [];
   if (options.value.onlyNouns === true) {
     nouns = fetchedText.value.filter(function (items) {
       return items.tag === 'NOUN'
