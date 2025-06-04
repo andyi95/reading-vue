@@ -122,4 +122,16 @@ export const useMainStore = defineStore('mainStore', () => {
 }, {
     persist: {
         omit: ['readingMode', 'sourceText', 'fetchedData', 'schulteContext'],
+        serializer: {
+            serialize: (state) => JSON.stringify(state),
+            deserialize: (str: string) => {
+                return JSON.parse(str, (key, value) => {
+                    if (key === 'startTime' || key === 'endTime' || key === 'lastSaved') {
+                        return new Date(value as string);
+                    }
+                    return value;
+                })
+            }
+        }
+
     }});
