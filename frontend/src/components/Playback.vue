@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref, onMounted, watch, computed} from "vue";
 import WaveSurfer from "wavesurfer.js";
-import {CloudDownloadOutline, PlayCircleOutline, StopCircleSharp} from '@vicons/ionicons5';
+import {CloudDownloadOutline, PlayCircleOutline, StopCircleSharp, RepeatOutline} from '@vicons/ionicons5';
 import { useThemeVars} from "naive-ui"
 import {saveAs} from "file-saver";
 
@@ -19,7 +19,11 @@ const themeVars = useThemeVars();
 const downloadUrl = computed(() => {
   return URL.createObjectURL(props.audioBlob)
 });
+const isLooping = ref(false);
 
+const toggleLooping = () => {
+  isLooping.value = !isLooping.value
+}
 const downloadAudio = () => {
   saveAs(downloadUrl.value, `audio-${Date.now()}.weba`)
 
@@ -27,6 +31,9 @@ const downloadAudio = () => {
 const playAudio = () => {
   playbackWaveSurfer?.playPause()
   isPlaying.value = playbackWaveSurfer?.isPlaying() || false
+  if (isLooping.value && isPlaying.value){
+    playbackWaveSurfer?.setOptions({autoplay: true})
+  }
 }
 
 watch(playbackRate, (newRate) => {
@@ -53,14 +60,21 @@ onMounted(() => {
     if (!playbackWaveSurfer) return;
     playbackWaveSurfer.setPlaybackRate(playbackRate.value);
   });
+  playbackWaveSurfer.on('finish', () => {
+    if (isLooping.value) {
+      playbackWaveSurfer?.play();
+      return;
+    }
+    isPlaying.value = false;
+  });
 });
 const speedOptions = [1, 1.5, 2, 2.5]
 </script>
 
 <template>
   <div ref="playbackWaveRef" id="playbackWaveRef"></div>
-  <div class="flex items-center py-1 my-1 justify-between">
-        <n-icon size="100" :color="themeVars.primaryColor">
+  <div class="flex flex-col items-center py-1 my-1 justify-between space-y-4 md:space-y-0 md:flex-row md:space-x-4">
+        <n-icon class="play-control" :color="themeVars.primaryColor">
           <PlayCircleOutline v-if="!isPlaying" @click="playAudio"/>
           <StopCircleSharp v-else @click="playAudio"/>
         </n-icon>
@@ -72,13 +86,30 @@ const speedOptions = [1, 1.5, 2, 2.5]
         :type="playbackRate === speedOption ? 'primary' : 'default'"
         @click="playbackRate = speedOption">{{ speedOption }}x
     </n-button>
+  <n-button @click="toggleLooping">
+    <n-icon class="sized-icon-50" :color="isLooping ? themeVars.primaryColor : themeVars.textColor">
+      <RepeatOutline/></n-icon>
+  </n-button>
 </div>
-    <n-icon size="50">
+    <n-icon class="sized-icon-50">
       <CloudDownloadOutline @click="downloadAudio"/>
     </n-icon>
   </div>
 </template>
 
 <style scoped>
-
+.play-control {
+  font-size: 50px;
+}
+.sized-icon-50 {
+  font-size: 30px;
+}
+@media (min-width: 768px) {
+  .play-control{
+    font-size: 100px;
+  }
+  .sized-icon-50 {
+    font-size: 50px;
+  }
+}
 </style>

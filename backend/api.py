@@ -1,34 +1,31 @@
-from typing import Optional
-
+import os
+import subprocess
+import time
+import uuid
+from typing import Annotated, Optional
+from logging import getLogger
+import httpx
 import uvicorn
-from fastapi import FastAPI
+from fastapi import APIRouter, Body, Depends, FastAPI, Header, HTTPException, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from aioredis import from_url, Redis
-from utils.analize import analize_text, count_words
-from asyncio import sleep
-REDIS_URL = 'redis:6379/0'
+from google.cloud import texttospeech
+from grpc._channel import _MultiThreadedRendezvous
+from starlette.background import BackgroundTask
+from starlette.responses import FileResponse
 
+from app.schemas import TextModel
+from settings import Settings, get_settings
+from utils.analize import TextAnalizer, analize_text, count_words
 
-class Counted(BaseModel):
-    count: int
-    word: str
+api = APIRouter(prefix='/api', dependencies=[Depends(get_settings)])
 
+app = FastAPI(
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None
+)
 
-class TextModel(BaseModel):
-    text: str
-
-
-class TextResponse(BaseModel):
-    id: int
-    word: str
-    tag: Optional[str]
-    normal_form: Optional[str]
-
-
-api = FastAPI()
-app = FastAPI()
 
 origins = [
     "http://localhost",
@@ -36,6 +33,7 @@ origins = [
     'backend',
     'nginx'
 ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -43,11 +41,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+logger = getLogger(__name__)
 
 @api.post('/parse/')
-async def create_text(text: TextModel, colors: Optional[dict] = None):
-    analized = await analize_text(text.text)
+async def create_text(text: TextModel, settings: Settings = Depends(get_settings)):
+    analized = await analize_text(text.text, settings)
     return analized
 
 
@@ -60,13 +58,95 @@ async def count_text(text: TextModel):
     return JSONResponse(res)
 
 
+def delete_audio_file(filepath: str):
+    os.remove(filepath)
 
-app.mount('/api', api)
+
+def authenticate_user(authorization: str = Header(...), settings: Settings = Depends(get_settings)):
+    try:
+        scheme, password = authorization.split()
+        if scheme.lower() != 'password':
+            raise HTTPException(status_code=401, detail='Invalid authorization scheme')
+    except ValueError:
+        raise HTTPException(status_code=401, detail='Invalid authorization header')
+
+    if password != settings.AUTH_PASSWRD:
+        raise HTTPException(status_code=401, detail='Invalid password')
+    return True
 
 
-@app.on_event('startup')
-async def init_cache():
-    redis = from_url(f'redis://{REDIS_URL}', encoding="utf8", decode_responses=True)
+@api.post('/text-to-speech/', dependencies=[Depends(authenticate_user)])
+async def text_to_speech(settings: Annotated[Settings, Depends(get_settings)], text: TextModel, voice: Optional[str]
+= 'anton') -> FileResponse:
+    analizer = TextAnalizer(text.text)
+    voice = analizer.get_voice_params()
+    client = texttospeech.TextToSpeechClient()
+    chunks = analizer.split_text(4500)
+    filenames = []
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3
+    )
+
+    os.makedirs('temp', exist_ok=True)
+    for i, chunk in enumerate(chunks):
+        synthesis_input = texttospeech.SynthesisInput(text=chunk)
+        try:
+            response = client.synthesize_speech(
+                input=synthesis_input, voice=voice, audio_config=audio_config
+            )
+        except _MultiThreadedRendezvous as e:
+            raise HTTPException(status_code=400, detail=str(e.code()))
+        filename = f'{uuid.uuid4()}.mp3'
+        with open(f'./temp/{filename}', 'wb') as f:
+            f.write(response.audio_content)
+            filenames.append(f'./temp/{filename}')
+    merged_filename = f'temp/merged_{uuid.uuid4()}.mp3'
+    command = ['ffmpeg', '-y', '-i', "concat:" + "|".join(filenames), '-acodec', 'copy', merged_filename]
+    subprocess.run(command, check=True)
+    for filename in filenames:
+        os.remove(filename)
+    response = FileResponse(path=merged_filename)
+    response.background = BackgroundTask(delete_audio_file, filepath=merged_filename)
+    return response
+
+
+@api.post('/token/verify/')
+async def validate_token(password: Annotated[str, Body(..., embed=True)], settings: Settings = Depends(get_settings)):
+    if password != settings.AUTH_PASSWRD:
+        raise HTTPException(status_code=401, detail='Invalid password')
+    return Response(status_code=200)
+
+@api.api_route('/{path:path}', methods=['POST'])
+async def proxy(settings: Annotated[Settings, Depends(get_settings)], request: Request, path: str):
+    url = f'{settings.API_GATEWAY_URL}/{path}'
+    headers = dict(request.headers)
+    headers = {
+        'Authorization': f'Bearer {settings.API_GATEWAY_TOKEN}'
+    }
+    data = await request.form()
+    async with httpx.AsyncClient() as client:
+        if request.method == 'GET':
+            try:
+                response = await client.get(url=url, headers=headers)
+                return JSONResponse(status_code=response.status_code, content=response.json())
+            except Exception as e:
+                logger.exception('erorr making request')
+                return Response(status_code=500)
+        if request.method == 'POST':
+            try:
+                response = await client.post(url=url, headers=headers, data=data)
+            except Exception as e:
+                logger.exception('erorr making request')
+                return Response(status_code=500)
+    try:
+        return JSONResponse(status_code=response.status_code, content={'status': 'Ok'})
+    except Exception as e:
+        logger.exception('error returning response')
+        return Response(status_code=response.status_code)
+
+
+app.include_router(api)
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

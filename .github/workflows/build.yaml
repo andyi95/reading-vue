@@ -53,17 +53,18 @@ jobs:
 
       - name: Test start configuration
         env:
+          CI_REGISTRY_IMAGE: ${{ env.APP_VERSION }}
           COMPOSE_FILE: docker-compose.yaml:docker-compose.override.yaml:docker-compose.stage.yaml
         run: |
-          docker-compose up -d
-          docker-compose ps
+          docker compose up -d
+          docker compose ps
           sleep 10
-          if [ $(docker-compose ps -q | wc -l) -ne $(docker-compose config --services | wc -l) ]; then
+          if [ $(docker compose ps -q | wc -l) -ne $(docker compose config --services | wc -l) ]; then
             echo "Not all containers are running."
-            docker-compose ps
+            docker compose ps
             exit 1
           fi
-          docker-compose down
+          docker compose down
 
   send-telegram-message:
     name: send-telegram-message

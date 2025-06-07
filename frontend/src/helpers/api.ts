@@ -1,11 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
+import {useMessage} from 'naive-ui';
 
-let baseURL: string;
-if (process.env.NODE_ENV === 'development') {
-    baseURL = 'http://localhost:8000/api/';
-} else {
-    baseURL = '/api/';
-}
+const baseURL = '/api/'
 
 interface ApiConfig {
     baseURL: string;

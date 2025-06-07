@@ -1,5 +1,6 @@
 #!/bin/sh
 
+apk update && apk add curl
 if [ -f ".env.dist" ]; then
     source .env.dist
 else

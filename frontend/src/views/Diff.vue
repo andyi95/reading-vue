@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import DiffMatchPatch from 'diff-match-patch';
 import { ref, watch, computed, nextTick } from 'vue';
-import {useStore} from 'vuex';
 import TextParser from "@/helpers/parser";
 import {MicCircleSharp} from '@vicons/ionicons5'
 import { useSpeechRecognition} from "@vueuse/core";
 import { useThemeVars} from "naive-ui";
 import {SwapHorizontalOutline} from "@vicons/ionicons5";
-const store = useStore();
-const theme = computed(() => store.state.theme);
+import {useMainStore} from "@/store/main";
+const store = useMainStore();
+const theme = computed(() => store.theme);
 const isDark = computed(() => theme.value === 'darkTheme')
 const text1 = ref('');
 const text2 = ref('');
@@ -18,24 +18,21 @@ const textContent = ref(null);
 const currentSegment = ref('');
 const lastSegmentLength = ref(0);
 const isListening = computed(() => speech.isListening.value)
+const isStoppedManually = ref(true);
 const toggleSpeechRecognition = () => {
   if (isListening.value){
+    isStoppedManually.value = true;
     speech.stop()
   }
   else {
+    isStoppedManually.value = false;
     lastSegmentLength.value = 0;
     speech.start()
   }
 }
 const copyText = () => {
   if (!textContent.value) return;
-  const range = document.createRange();
-  range.selectNode(textContent.value.$el);
-  window.getSelection()?.removeAllRanges();
-  const selection = window.getSelection();
-  selection?.addRange(range);
-  document.execCommand('copy');
-  selection?.removeAllRanges();
+  navigator.clipboard.writeText(textContent.value.innerText);
 }
 const scrollTextInput = () => {
   nextTick(() => {
@@ -48,7 +45,7 @@ const scrollTextInput = () => {
 const speech = useSpeechRecognition({
   continuous: true,
   interimResults: true,
-  lang: store.getters.localeCode
+  lang: store.localeCode
 });
 
 
@@ -62,7 +59,11 @@ watch(speech.result, (result) => {
   currentSegment.value = '';
   scrollTextInput()
 })
-
+watch(speech.isListening, (isListening) => {
+  if (!isListening && !isStoppedManually.value){
+    speech.start()
+  }
+}, {immediate: true})
 
 const themeVars = useThemeVars();
 const generateDiffHtml = (diffs: []) => {
@@ -140,9 +141,11 @@ const colors = computed(() => ({
       <n-button @click="swapTexts" secondary type="primary">
         <span class="pr-1"><n-icon><SwapHorizontalOutline/></n-icon></span>{{$t('diff.swapLabel')}}</n-button>
     </n-space>
-    <n-card class="text-2xl" v-if="diffResult.length > 0" content-class="text-2xl" ref="textContent">
+    <n-card class="text-2xl" v-if="diffResult.length > 0" content-class="text-2xl">
+      <div ref="textContent">
       <span class="text-2xl" v-for="(item, index) in diffResult" :key="index"
             :class="[item.cssClass, {'dark': isDark}]">{{ item.text }}</span>
+      </div>
       <template #footer>
       <n-button type="primary" @click="copyText">{{ $t('common.copyText')}}</n-button></template>
     </n-card>

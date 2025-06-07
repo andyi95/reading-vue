@@ -1,18 +1,20 @@
 <script>
-import {NGi, NGrid, NGridItem, NInputNumber, useMessage, NCard, useThemeVars, NButton, NTime, NFormItem} from 'naive-ui';
-import {defineAsyncComponent, defineComponent, ref} from "vue";
-import debounce from "debounce";
-import {mapActions}  from "vuex";
+import {useMessage, useThemeVars} from 'naive-ui';
+import {defineAsyncComponent, ref} from "vue";
+import {debounce} from "lodash-es";
+import {useComponentStore} from "@/store/componentStore";
+import {useMainStore} from "@/store/main";
 export default {
   name: 'Schulte',
   components: {
     SchulteResults: defineAsyncComponent(() => import('@/components/SchulteResults.vue')),
-    NGrid, NGi, NGridItem, NInputNumber, NCard, NButton, NTime, NFormItem},
+    },
 
   data() {
     return {
       isPlaying: false,
-      size: this.$store.state.schulteSettings.size,
+      size: this.store.schulteSettings.size,
+      sizeInput: this.store.schulteSettings.size,
       gridData: [],
       shuffledGrid: [],
       startTime: null,
@@ -20,11 +22,11 @@ export default {
       currentRate: 0,
       currentItem: null,
       currentIndex: 0,
-      gameMode: this.$store.state.schulteSettings.gameMode,
+      gameMode: this.store.schulteSettings.gameMode,
       buttonLabel: null,
-      easyMode: this.$store.state.schulteSettings.easyMode,
+      easyMode: this.store.schulteSettings.easyMode,
       errors: 0,
-      tableCharsType: this.$store.state.schulteSettings.tableCharsType,
+      tableCharsType: this.store.schulteSettings.tableCharsType,
       windowHeight: 0,
       windowWidth: 0,
       errorsInaRow: 0,
@@ -36,6 +38,14 @@ export default {
     const timerCount = ref(0);
     const timer = ref(null);
     const themeVars = useThemeVars();
+    const componentStore = useComponentStore();
+    const store = useMainStore();
+    const updateSchulteResults = (data) => {
+      store.updateSchulteResults(data)
+    }
+    const updateSchulteSettings = (data) => {
+      store.updateSchulteSettings(data)
+    }
     return {
       timerCount, timer,
       warning(text) {
@@ -45,7 +55,8 @@ export default {
         message.success(
             text, { duration: 5000})
       },
-      themeVars
+      themeVars, componentStore, updateSchulteResults, updateSchulteSettings,
+      store
     }
   },
   computed: {
@@ -79,12 +90,9 @@ export default {
     ]
     },
     getSchulteResults(){
-      return this.$store.getters.sortedSchulteResults
+      return this.store.sortedSchulteResults
     },
     gridSizes(){
-      function sleep (time) {
-        return new Promise((resolve) => setTimeout(resolve, time));
-      }
       let wRate = 0.7;
       if (this.size > 5) {
         wRate = 0.8;
@@ -112,7 +120,7 @@ export default {
         fontSize: `${Math.min(Math.round(maxWidth / this.size * 0.4), 32)}px`,
         gap: gap
       }
-    }
+    },
   },
   watch: {
     isPlaying(value){
@@ -132,18 +140,24 @@ export default {
           clearTimeout(timeout)
         }, 5000)
       }
+    },
+    sizeInput(value){
+      if (value && typeof value === 'number' && value >= 3 && value <= 20){
+        this.size = value
+        this.reset();
+      }
     }
   },
   methods: {
-    ...mapActions([
-        'updateSchulteResults',
-        'updateSchulteSettings'
-    ]),
     start(){
       if (!this.isPlaying){
+        if (this.currentIndex > 0){
+          this.reset()
+        }
         this.isPlaying = true
         this.startTime = new Date()
         this.currentIndex = 0;
+        this.currentRate = 0;
         this.startTime = new Date();
         this.errors = 0;
         this.currentItem = this.gridData[this.currentIndex];
@@ -160,12 +174,15 @@ export default {
         this.updateSchulteSettings({
           size: this.size,
           tableType: this.tableCharsType,
+          gameMode: this.gameMode,
           easyMode: this.easyMode,
           tableCharsType: this.tableCharsType
         })
+
         this.timer = setInterval(() => {
           this.timerCount++;
         }, 1000);
+        this.componentStore.registerComponentData('Schulte', {grid: this.gridData, startTime: this.startTime, size: this.size, tableType: this.tableCharsType})
       }
       else {
         this.stop();
@@ -210,6 +227,7 @@ export default {
       }
       return arr;
     },
+
     generateEmojiRange(){
       const emojiis = [
         ...this.range(0x1F600, 0x1F64F),  // smileyes
@@ -347,6 +365,13 @@ export default {
     this.$nextTick(() => {
       window.addEventListener('resize', this.onResize);
     });
+    this.componentStore.registerComponentData('Schulte', this.$data)
+  },
+  updated() {
+    this.componentStore.logInteraction('Schulte', 'updated')
+  },
+  unmounted() {
+    this.componentStore.unregisterComponentData('Schulte')
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize);
@@ -378,7 +403,7 @@ export default {
 >
   <n-space vertical>
     <n-form-item :label="$t('schulte.size')">
-  <n-input-number v-model:value="size" :min="3" :max="20" :step="1" :default-value="5" @update:value="reset">
+  <n-input-number v-model:value="sizeInput" :min="3" :max="20" :step="1" :default-value="5">
   </n-input-number>
     </n-form-item>
     <n-form-item :label="$t('schulte.easyGame')">
@@ -414,7 +439,7 @@ export default {
                       class="current-item">&nbsp;{{ currentItem.value }}&nbsp;</span>
         </n-card>
     </div>
-  <n-grid :cols="this.size" :x-gap="gridSizes.gap" :y-gap="gridSizes.gap" class="square-container">
+  <n-grid :cols="size" :x-gap="gridSizes.gap" :y-gap="gridSizes.gap" class="square-container">
     <n-grid-item v-for="(item, index) in this.shuffledGrid"
                  :key="index" class="square"
                  :class="{ hidden: item.hidden, red: item.isRed, 'emoji': tableCharsType === 'emoji'}"
@@ -522,8 +547,11 @@ span .current-item{
   background-color: #ff6a6a;
 }
 .emoji{
-  font-family: 'Noto Color Emoji', sans-serif;
+  font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Android Emoji', 'EmojiSymbols', sans-serif;
   color: #ffffff;
+}
+.emoji:hover {
+  will-change: contents;
 }
 .emoji.current-item:not(.red) {
   background-color: #313131;

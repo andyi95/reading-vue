@@ -2,11 +2,9 @@
 set -e
 
 echo "Deploying stage"
-DEPLOY_COMPONENT=$1
-cd /home/andrey/reader/
 echo $(whoami)
 echo $(curl ifconfig.me)
 echo $(pwd)
-docker compose pull $DEPLOY_COMPONENT
-docker compose up -d --force-recreate --remove-orphans --no-build $DEPLOY_COMPONENT
+TAG=${CI_COMMIT_SHORT_SHA} docker compose pull
+TAG=${CI_COMMIT_SHORT_SHA} docker compose up -d --force-recreate --remove-orphans --no-build
 docker compose restart

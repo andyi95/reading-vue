@@ -27,8 +27,9 @@ export default class TextParser {
         this.vowels_reg = /^[aeiouаяуюоеёэиы]$/i;
         this.reText = /[A-Za-zА-Яа-я]/;
         this.replaceMap = {
-            'А': '@', 'В': '8', 'Е': '№', 'К': '<', 'М': 'M', 'Н': 'Н', 'О': '0',
-            'Р': '%', 'С': '$', 'Т': '7', 'У': 'Y', 'Х': 'X', 'Ь': 'b', 'Я': '9',
+            'А': '@', 'В': '8', 'Г': '7', 'Б': '6', 'К': 'К', 'М': 'M', 'Н': '№', 'О': '0',
+            'Р': '%', 'С': '$', 'Т': 'Т', 'У': 'У', 'Ф': 'Ф', 'Ч': '4', 'Х': 'X', 'Ь': 'b', 'Я': '9',
+
             'A': '4', 'B': '8', 'C': '<', 'E': '3', 'G': '6', 'H': '#', 'I': '!',
             'J': ']', 'K': 'X', 'L': '1', 'M': 'M', 'N': 'И', 'O': '0', 'P': '9',
             'Q': 'O', 'R': '2', 'S': '$', 'T': '7', 'U': 'Y', 'V': '√', 'W': 'W',
@@ -36,10 +37,11 @@ export default class TextParser {
         };
     }
     private removePunctuation(text: string): string {
-        return text.replace(/[^\w\sа-яa-z]|_/giu, '');
+        return text.replace(/[^\w\sа-яёa-z]|_/giu, '');
     }
     static removePunctuation(text: string): string {
-        return text.replace(/[^\w\sа-яa-z]|_/giu, ' ');
+        const obj = new TextParser(text);
+        return obj.removePunctuation(text);
     }
     static compareTexts(text1: string, text2: string): Diff[] {
         const dmp = new DiffMatchPatch();
@@ -47,6 +49,54 @@ export default class TextParser {
             TextParser.removePunctuation(text1).toLowerCase(),
             TextParser.removePunctuation(text2).toLowerCase());
     }
+    static compareTextsUsingPivots(text1: string, text2: string): ((string | 0)[] | Diff | (string | -1)[] | (string | 1)[])[] {
+        const dmp = new DiffMatchPatch();
+
+        // Split texts into sentences or paragraphs based on punctuation
+        const splitRegex = /([.!?])\s+/; // This splits on sentence boundaries
+        const segments1 = text1.split(splitRegex).filter(segment => segment.trim().length > 0);
+        const segments2 = text2.split(splitRegex).filter(segment => segment.trim().length > 0);
+
+        let diffs = [];
+        let idx1 = 0, idx2 = 0;
+
+        // Compare segments around identified pivot points
+        while (idx1 < segments1.length && idx2 < segments2.length) {
+            const segment1 = segments1[idx1];
+            const segment2 = segments2[idx2];
+
+            if (segment1 === segment2) {
+                // If segments match, add as equal
+                diffs.push([DiffMatchPatch.DIFF_EQUAL, segment1]);
+                idx1++;
+                idx2++;
+            } else {
+                // Use DiffMatchPatch to find differences within segments
+                const innerDiffs = dmp.diff_main(segment1, segment2);
+                diffs.push(...innerDiffs);
+
+                // Advance indices based on content overlap or mismatches
+                if (segment1.length > segment2.length) {
+                    idx2++;
+                } else {
+                    idx1++;
+                }
+            }
+        }
+
+        // Handle remaining segments in either text
+        while (idx1 < segments1.length) {
+            diffs.push([DiffMatchPatch.DIFF_DELETE, segments1[idx1]]);
+            idx1++;
+        }
+        while (idx2 < segments2.length) {
+            diffs.push([DiffMatchPatch.DIFF_INSERT, segments2[idx2]]);
+            idx2++;
+        }
+
+        return diffs;
+    }
+
 
     replaceVowels(): ParsedCharacter[] {
         const cleanedText = this.removePunctuation(this.text)
@@ -121,6 +171,30 @@ export default class TextParser {
     } catch (e: any) {
         throw e;
     }
+}
+export function splitText(sourceText: string, chunkSize: number = 5000): string[] {
+    let text = sourceText;
+    const chunks: string[] = [];
+    while (text.length > 0) {
+    if (text.length <= chunkSize) {
+      chunks.push(text);
+      break;
+    }
+
+    let chunk = text.slice(0, chunkSize);
+    let lastDot = chunk.lastIndexOf('.');
+    let lastComma = chunk.lastIndexOf(',');
+    let lastSpace = chunk.lastIndexOf(' ');
+
+    let splitIndex = lastDot > 0 ? lastDot : lastComma > 0 ? lastComma : lastSpace > 0 ? lastSpace : 4900;
+
+    chunk = text.slice(0, splitIndex + 1);
+    chunks.push(chunk);
+
+    text = text.slice(splitIndex + 1);
+  }
+
+  return chunks;
 }
 export function copyText(element: HTMLElement): void {
     const range = document.createRange();

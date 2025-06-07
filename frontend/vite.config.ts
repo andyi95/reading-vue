@@ -1,17 +1,16 @@
-import {defineConfig, loadEnv} from "vite";
+import {defineConfig, splitVendorChunkPlugin} from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from 'path';
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import Sitemap from 'vite-plugin-sitemap';
-import {TailwindCSSVitePlugin} from "tailwindcss-vite-plugin";
 import {ViteWebfontDownload} from "vite-plugin-webfont-dl";
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import msClarity from "./src/plugins/ms-clarity";
 
 export default defineConfig(({command, mode}) => {
     const parent = path.resolve(process.cwd(), '.');
-      const env = loadEnv(mode, parent, 'VITE_')
         return {
             plugins: [
                 VueI18nPlugin({
@@ -24,10 +23,9 @@ export default defineConfig(({command, mode}) => {
                     changefreq: 'weekly',
                     hostname: 'https://text-tools.ru',
                     dynamicRoutes: [
-                        '/', '/text', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice', '/diff'
+                        '/', '/anticipation', '/spreeder', '/mixer', '/schulte', '/voice', '/diff', '/editor', '/about'
                     ]
                 }),
-                TailwindCSSVitePlugin(),
                 ViteWebfontDownload ([
                     'https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap',
                 ],),
@@ -37,16 +35,13 @@ export default defineConfig(({command, mode}) => {
                         'vue-router',
                         {
                             'naive-ui': [
-                                'useDialog',
-                                'useMessage',
-                                'useNotification',
-                                'useLoadingBar']
+                                'useMessage',]
                         },
                     ]
                 }),
                 Components({
                     resolvers: [NaiveUiResolver()]
-                })
+                }),
             ],
             resolve: {
                 alias: {
@@ -59,6 +54,14 @@ export default defineConfig(({command, mode}) => {
                 'process.env': {
                     VITE_BASE_URL: process.env.VITE_BASE_URL,
                     VITE_GTAG_ID: process.env.VITE_GTAG_ID
+                }
+            },
+            server: {
+                proxy: {
+                    '/api': {
+                        target: 'http://localhost:8000',
+                        changeOrigin: true
+                    }
                 }
             }
         }

@@ -4,7 +4,7 @@ import { CogOutline } from '@vicons/ionicons5'
 import {computed, onMounted, ref, watch} from "vue";
 import WaveSurfer from 'wavesurfer.js'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js'
-import { debounce } from 'lodash-es';
+import {debounce} from 'lodash-es';
 import Playback from "@/components/Playback.vue";
 import RecordingControl from "@/components/RecordingControl.vue";
 const waveformRef = ref<HTMLElement | null>(null);
@@ -22,9 +22,6 @@ const warning = (text: string) => {
   message.warning(text)
 }
 const themeVars = useThemeVars();
-const microphoneColor = computed(() => {
-  return isRecording.value ? themeVars.value.primaryColor : themeVars.value.actionColor
-});
 const setPlaybackRate = debounce((rate: number) => {
   waveSurfer?.setPlaybackRate(rate, true);
   waveSurfer?.play()
@@ -57,11 +54,7 @@ const pauseRecording = () => {
   mediaRecorder.value?.isPaused() ? mediaRecorder.value?.resumeRecording() : mediaRecorder.value?.pauseRecording()
   isPaused.value = !isPaused.value
 }
-const resumeRecording = () => {
-  mediaRecorder.value?.resumeRecording()
-}
 
-const isPlaying = ref(false)
 
 watch(playbackRate, (rate: number) => {
   setPlaybackRate(rate)
@@ -115,17 +108,32 @@ const createWaveSurfer = () => {
   }));
 }
 onMounted(async () => {
-  navigator.mediaDevices.enumerateDevices().then((devices) => {
-    devices.forEach((device) => {
-      if (device.kind === 'audioinput') {
-        deviceOptions.value.push({
-          label: device.label,
-          value: device.deviceId
+  if (!navigator.mediaDevices?.enumerateDevices) {
+    console.log("Couldn't retrieve avaliable devices")
+  }
+  else {
+     navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      // Stop the stream as we just want the permission, not the actual audio data
+      stream.getTracks().forEach(track => track.stop());
+
+      navigator.mediaDevices.enumerateDevices().then((devices) => {
+        devices.forEach((device) => {
+          if (device.kind === 'audioinput') {
+            deviceOptions.value.push({
+              label: device.label,
+              value: device.deviceId
+            })
+          }
         })
-      }
+        selectedDevice.value = devices[0].deviceId
+      })
     })
-    selectedDevice.value = devices[0].deviceId
-  })
+    .catch(err => {
+      console.log(err);
+      // Handle the error appropriately
+    });
+  }
 });
 const showSettings = ref(false)
 </script>
@@ -155,7 +163,7 @@ const showSettings = ref(false)
   <div class="flex justify-end">
     <n-button text
               @click="showSettings = !showSettings">
-      <n-icon depth="3" size="50"><CogOutline/></n-icon>
+      <n-icon depth="3" class="sized-icon-50"><CogOutline/></n-icon>
     </n-button>
 
     <n-modal v-model:show="showSettings">
@@ -174,5 +182,12 @@ const showSettings = ref(false)
 </template>
 
 <style scoped>
-
+.sized-icon-50 {
+  font-size: 32px;
+}
+@media (min-width: 768px) {
+.sized-icon-50 {
+  font-size: 50px;
+}
+}
 </style>

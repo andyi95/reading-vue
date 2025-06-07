@@ -1,23 +1,24 @@
 import io
-
+import json
 import re
+from collections import Counter
 
 import pymorphy2 as py
+from aioredis import from_url
+from google.cloud import texttospeech
+from langdetect import detect
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
-from collections import Counter
-from aioredis import from_url
-import json
 
-REDIS_URL = 'redis:6379/0'
+from settings import Settings
 
 stemmer = PorterStemmer()
 morph = py.MorphAnalyzer()
-redis = from_url(f"redis://{REDIS_URL}", encoding="utf-8", decode_responses=True)
 
 
-async def analize_text(text: str) -> list:
+async def analize_text(text: str, settings: Settings) -> list:
+    redis = from_url(f"redis://{settings.REDIS_URL}", encoding="utf-8", decode_responses=True)
     async def parse_line(line: str, counter: int):
         words = line.split()
         new_line = []
@@ -88,3 +89,72 @@ def count_words(text: str) -> dict:
     v = Counter(result)
     return dict(v.most_common())
 
+
+class TextAnalizer:
+    def __init__(self, text: str):
+        self.text = text
+
+    def split_text(self, max_byte_length: int = 5000):
+        chunks = []
+        text = self.text
+        while text:
+            split_at = max_byte_length
+            current_chunk_bytes = text[:split_at].encode('utf-8')
+
+            while len(current_chunk_bytes) > max_byte_length and split_at > 0:
+                split_at -= 1
+                current_chunk_bytes = text[:split_at].encode('utf-8')
+
+            if split_at == 0:
+                split_at = max_byte_length
+
+            best_split = max(text.rfind('.', 0, split_at),
+                             text.rfind(',', 0, split_at),
+                             text.rfind(' ', 0, split_at))
+
+            if best_split == -1:
+                best_split = split_at
+
+            chunks.append(text[:best_split + 1])
+            text = text[best_split + 1:]
+        return chunks
+
+    def get_voice_params(self) -> texttospeech.VoiceSelectionParams:
+        LANG_CODES = {
+            'ru': {
+                'language_code': 'ru-RU',
+                'name': 'ru-RU-Standard-B',
+                'gender': texttospeech.SsmlVoiceGender.NEUTRAL
+            },
+            'uk': {
+                'language_code': 'uk-UA',
+                'name': 'uk-UA-Standard-A',
+                'gender': texttospeech.SsmlVoiceGender.FEMALE
+            },
+            'sk': {
+                'language_code': 'sk-SK',
+                'name': 'sk-SK-Standard-A',
+                'gender': texttospeech.SsmlVoiceGender.FEMALE
+            },
+            'en': {
+                'language_code': 'en-US',
+                'name': 'en-US-Neural2-I',
+                'gender': texttospeech.SsmlVoiceGender.MALE
+            },
+            'fr': {
+                'language_code': 'fr-FR',
+                'name': 'fr-FR-Neural2-C'
+            }
+        }
+        lang = detect(self.text)
+        if lang in LANG_CODES:
+            return texttospeech.VoiceSelectionParams(
+                language_code=LANG_CODES[lang]['language_code'],
+                name=LANG_CODES[lang]['name'],
+                ssml_gender=LANG_CODES[lang].get('gender')
+            )
+        return texttospeech.VoiceSelectionParams(
+            language_code='ru-Ru',
+            ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,
+            name='ru-RU-Standard-B'
+        )

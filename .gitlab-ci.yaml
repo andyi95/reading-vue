@@ -15,10 +15,6 @@ variables:
             - "home"
         description: "Environment for deploy"
 
-workflow:
-    rules:
-        - if: '$DEPLOY_ENVIRONMENT == "development"'
-          variables:
 
 .docker_build: &docker-build
     variables:
@@ -31,6 +27,7 @@ workflow:
     tags:
         - docker
     before_script:
+        - apk update && apk add git
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
         - |
             if [ -n "$(git tag --points-at HEAD)" ]; then
@@ -41,21 +38,30 @@ workflow:
             export COMPOSE_FILE=docker-compose.yaml:docker-compose.stage.yaml
         - app/stage/vars $CI_COMMIT_REF_SLUG
     only:
-        - dev
-        - develop
-        - master
+        refs:
+            - dev
+            - development
+            - master
+            - merge_requests
+            - rc
 
 build:frontend:
     <<: *docker-build
     script:
-        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build frontend
+        - TAG=${CI_COMMIT_SHORT_SHA} docker compose build --no-cache frontend
+        - TAG=${CI_COMMIT_REF_NAME} docker compose build frontend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push frontend
+        - TAG=${CI_COMMIT_REF_NAME} docker compose push frontend
 
 build:backend:
     <<: *docker-build
     script:
+        - echo $GAPP_CREDENTIALS_BASE64 | base64 -d > backend/gcloud-service-key.json
+        - export GOOGLE_APPLICATION_CREDENTIALS=/app/gcloud-service-key.json
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose build backend
+        - TAG=${CI_COMMIT_REF_NAME} docker compose build backend
         - TAG=${CI_COMMIT_SHORT_SHA} docker compose push backend
+        - TAG=${CI_COMMIT_REF_NAME} docker compose push backend
 
 test:frontend:
     stage: test
@@ -65,6 +71,8 @@ test:frontend:
         - app/stage/test frontend
     after_script:
         - docker compose down
+    needs:
+        - build:frontend
 
 test:backend:
     stage: test
@@ -74,69 +82,96 @@ test:backend:
         - app/stage/test backend
     after_script:
         - docker compose down
+    needs:
+        - build:backend
 
 .deploy_script: &deploy_script
     variables:
-        GIT_STRATEGY: 'none'
-        GIT_CHECKOUT: 'false'
+        GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+        GIT_STRATEGY: 'fetch'
+        GIT_CHECKOUT: 'true'
         GIT_DEPTH: 0
-        GIT_CLONE_PATH: 'none'
     before_script:
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     script: >
-        cd /home/andrey/reader &&
         app/stage/vars $CI_COMMIT_REF_SLUG &&
-        app/stage/deploy $DEPLOY_COMPONENT 
+        app/stage/deploy $DEPLOY_COMPONENT
+    when: manual
+    tags:
+        - ssh
+        - dev
+    only:
+        refs:
+            - dev
+            - development
+            - master
+
+deploy:development:
+    <<: *deploy_script
+    stage: deploy:development
+    needs:
+        - test:frontend
+        - test:backend
+    environment:
+        name: development
+        deployment_tier: development
+        url: https://reader.dev.andyi95.com/
+
+stop:development:
+    stage: deploy:development
+    script:
+        - docker compose down
+    environment:
+        name: development
+        deployment_tier: development
+        url: https://reader.dev.andyi95.com/
+        action: stop
     when: manual
     tags:
         - ssh
         - dev
 
-deploy:development:frontend:
+
+deploy:home:
     <<: *deploy_script
     stage: deploy:development
-    variables:
-        DEPLOY_COMPONENT: frontend
-#    needs:
-#        - test:frontend
+    needs:
+        - test:frontend
+        - test:backend
     environment:
-        name: development
+        name: home
         deployment_tier: development
-        url: https://reader.dev.andyi95.com/
+        url: https://spreedy.ru/
+    tags:
+        - home
 
-deploy:development:backend:
-    <<: *deploy_script
+stop:home:
     stage: deploy:development
-    variables:
-        DEPLOY_COMPONENT: backend
-#    needs:
-#        - test:backend
+    script:
+        - docker compose down
     environment:
-        name: development
+        name: home
         deployment_tier: development
-        url: https://reader.dev.andyi95.com/
+        url: https://spreedy.ru/
+        action: stop
+    when: manual
+    tags:
+        - home
 
-deploy:production:backend:
+deploy:production:
     <<: *deploy_script
     stage: deploy:production
     variables:
         DEPLOY_COMPONENT: backend
     needs:
+        - test:frontend
         - test:backend
     environment:
         name: production
         deployment_tier: production
         url: https://text-tools.ru/
+    tags:
+        - ssh
+        - prod
 
-deploy:production:frontend:
-    <<: *deploy_script
-    stage: deploy:production
-    variables:
-        DEPLOY_COMPONENT: frontend
-    needs:
-        - test:frontend
-    environment:
-        name: production
-        deployment_tier: production
-        url: https://text-tools.ru/
 

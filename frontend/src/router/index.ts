@@ -1,6 +1,5 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import i18n from "@/i18n";
-import {useHead, Meta} from "@unhead/vue";
 
 const {t, locale} = i18n.global
 const Anticipation = () => import('@/views/Anticipation.vue')
@@ -11,20 +10,21 @@ const Schulte = () => import('@/views/Schulte.vue')
 const Diff = () => import('@/views/Diff.vue')
 
 const routes: RouteRecordRaw[] = [
-  {path: '/', name: 'TextParser', component: Text, meta: {title: t('nav.textparser'),
-    tags: t('text.metaTags'), description: t('text.metaDescription')
+  {path: '/', name: 'TextParser', component: Text, meta: {
+    title: t('nav.textparser'),
+    tags: t('textparser.metaTags'), description: t('textparser.metaDescription'),
+      hasReadMode: true
   }},
   {path: '/anticipation', name: 'Anticipation', component: Anticipation, meta: {
-    title: t('nav.anticipation'), tags: t('anticipation.metaTags'), description: t('anticipation.metaDescription')
-  }},
-  {path: '/text', name: 'Parser', component: Text, meta: {
-    title: t('nav.textparser'), tags: t('text.metaTags'), description: t('text.metaDescription')
+    title: t('nav.anticipation'), tags: t('anticipation.metaTags'),
+      description: t('anticipation.metaDescription'),
+      hasReadMode: true
   }},
   {path: '/spreeder', name: 'Spreeder', component: Spreeder, meta: {
     title: t('nav.spreeder'), tags: t('spreeder.metaTags'), description: t('spreeder.metaDescription')
   }},
   {path: '/mixer', name: 'Mixer', component: ChaosChars, meta: {
-    title: t('nav.mixer'), tags: t('mixer.metaTags'), description: t('mixer.metaDescription')
+    title: t('nav.mixer'), tags: t('chaos.metaTags'), description: t('chaos.metaDescription'), hasReadMode: true
   }},
   {path: '/schulte', name: 'Schulte', component: Schulte, meta: {
     title: t('nav.schulte'), tags: t('schulte.metaTags'), description: t('schulte.metaDescription')
@@ -36,14 +36,22 @@ const routes: RouteRecordRaw[] = [
       title: t('nav.diff'), tags: t('diff.metaTags'), description: t('diff.metaDescription')
     }},
   {path: '/editor', name: 'Editor', component: () => import('@/views/Editor.vue'), meta: {
-    title: t('nav.editor'), tags: t('editor.metaTags'), description: t('editor.metaDescription')}
+    title: t('editor.metaTitle'), tags: t('editor.metaTags'), description: t('editor.metaDescription'),
+      hasReadMode: true}
     },
   {
     path: '/about',
     name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import('@/views/About.vue')
   },
-  {path: '/:catchAll(.*)', redirect: '/text'}
+  {
+    path: '/keyboard',
+    name: 'Keyboard',
+    component: () => import('@/views/Keyboard.vue'), meta: {
+      title: t('keyboard.metaTitle'), tags: t('keyboard.metaTags'), description: t('keyboard.metaDescription'),
+      hasReadMode: false}
+  },
+  {path: '/:catchAll(.*)', name: 'NotFound', component: () => import('@/views/NotFound.vue')}
 
 ]
 
@@ -52,26 +60,6 @@ const router = createRouter({
   linkActiveClass: 'active',
   routes
 });
-router.beforeEach(async (to, from, next) => {
-  const description = to.meta.description ? to.meta.description : t('common.metaDescription');
-    const tags = to.meta.tags ? to.meta.tags : t('common.metaTags');
-    const title = to.meta.title ? to.meta.title : t('common.metaTitle');
-    useHead({
-      title: to.meta.title ? to.meta.title : t('nav.title'),
-      meta: [
-        {
-          name: 'description',
-          content: description as string
-        },
-        {
-          name: 'keywords',
-          content: tags as string
-        }
-      ]
-    })
-  // @ts-ignore
-  document.title = to.meta.title ? to.meta.title : t('nav.title');
-  next();
-})
+
 
 export default router

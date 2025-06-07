@@ -1,9 +1,17 @@
 import {createI18n} from "vue-i18n";
 
-import store from "@/store";
+
 
 const messages = {
     en: {
+        auth: {
+
+            passwordInput: 'Enter password',
+            passwordRequired: 'Password is required',
+            passwordLabel: 'Password',
+            submitForm: 'Submit',
+            invalidPassword: 'Invalid password'
+        },
         nav: {
             textparser: 'Word count',
             spreeder: 'Spreader',
@@ -14,7 +22,32 @@ const messages = {
             schulte: 'Schulte table',
             title: 'Text tools',
             voice: 'Voice Recorder',
-            diff: 'Compare texts'
+            diff: 'Compare texts',
+            editor: 'Text editor',
+            notFoundTitle: 'Not found',
+            notFoundMessage: 'It seems that this page does not exist',
+            backHome: 'Go to main page',
+            about: 'About',
+            typing: 'Typing'
+        },
+        keyboard: {
+            metaTitle: 'Typing',
+            metaTags: 'text, reading, typing, keyboard, speed typing, touch typing',
+            metaDescription: 'Typing is a tool for learning. It helps to type faster and more accurately.',
+            progress: 'Progress',
+            correct: 'Correct',
+            incorrect: 'Mistakes',
+            wpm: 'Words per minute',
+            wps: 'Words per second',
+            cpm: 'Characters per minute',
+            start: 'Start',
+            stop: 'Stop',
+            reset: 'Reset',
+            lessonSelect: 'Select a lesson',
+            levelSelect: 'Select a level',
+            timeLabel: 'Time',
+            accuLabel: 'Accuracy',
+            finished: 'Great job! You finished the lesson in {minutes} minutes {seconds} seconds, making {errors} mistakes. Your speed is {rate} characters per minute.',
         },
         common:{
             textContent: 'Text for reading',
@@ -24,11 +57,18 @@ const messages = {
             textPlaceHolder: 'Start text input...',
             removeVowels: 'Remove vowels',
             yesLabel: 'Yes',
+            errorMessage: 'Something went wrong. Please try again later.',
             noLabel: 'No',
+            settingsLabel: 'Settings',
+            fontSize: 'Font size',
+            fontSizePH: 'Select font size in pt',
+            boxWidth: 'Text box width',
+            chunkSize: 'Chunk size',
             metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder.',
             metaTitle: 'Text tools',
             metaTags: 'text, tools, reading, learning, memorizing, word counter, text colorizer, text converter, text mixer, text spreader, Schulte table, voice recorder',
-            warnMessage: 'Something went wrong. Please try again later.'
+            warnMessage: 'Something went wrong. Please try again later.',
+            readingMode: 'Reading mode'
         },
         textparser: {
             sourceText: 'Source text',
@@ -38,14 +78,15 @@ const messages = {
             cntWords: 'Words amount',
             paintText: 'Color text',
             copyText: 'Copy text',
-            countWords: 'Count words',
+            countWords: 'Frequency analysis',
             onlyNouns: 'Show only nouns',
             onlyVerbs: 'Show only verbs',
             grayScale: 'Use gray scale',
             textContent: 'Text for reading',
             metaTitle: 'Text tools',
-            metaTags: 'text, reading, word counter, text colorizer, morphemes, morphological analysis',
-            metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, morphological analysis.'
+            metaTags: 'text, reading, word counter, text colorizer, morphemes, morphological analysis, text to speech',
+            metaDescription: 'Text tools for reading, learning and memorizing. Word counter, text colorizer, morphological analysis, text to speech.',
+            textToSpeech: 'Text to speech'
         },
         spreeder: {
             sourceText: 'Source text',
@@ -131,15 +172,39 @@ const messages = {
             text1Label: 'First text',
             text2Label: 'Second text',
             swapLabel: 'Swap texts'
+        },
+        editor: {
+            title: 'Text editor',
+            description: 'Simple online text editor',
+            metaTitle: 'Text editor',
+            metaTags: 'text. editing, editor, online editor, text editor, free online editor, text processor, online text editor, text editor, ',
+            metaDescription: 'Text editor is a tool for editing text. It helps to edit text online.'
+        },
+        mixer: {
+            metaTags: 'text, reading, text mixer, text converter, text chaos, text transformation',
+            metaDescription: 'Text mixer is a tool for text transformation. It helps to read and understand the text better.'
         }
     },
     ru: {
+        bugReport: {
+            title: 'Сообщить о проблеме',
+            subject: 'Тема',
+            message: 'Описание проблемы',
+            submit: 'Отправить'
+        },
         anticipation: {
             selectChars: 'Дополнительные символы',
             placeHolderSelect: 'Выберите символы',
             metaTitle: 'Антиципация',
             metaTags: 'текст, чтение, антиципация, скорочтение, внимание, концентрация',
             metaDescription: 'Антиципация - это инструмент для тренировки внимания и скорочтения. Он помогает читать быстрее и понимать лучше.'
+        },
+        auth: {
+            passwordInput: 'Введите пароль',
+            passwordRequired: 'Введите пароль',
+            passwordLabel: 'Пароль',
+            submitForm: 'Отправить',
+            invalidPassword: 'Неверный пароль',
         },
         schulte: {
             title: 'Таблица Шульте',
@@ -181,7 +246,13 @@ const messages = {
             schulte: 'Таблица Шульте',
             title: 'Текстовые инструменты',
             voice: 'Запись голоса',
-            diff: 'Сравнение текстов'
+            diff: 'Сравнение текстов',
+            editor: 'Редактор',
+            notFoundTitle: 'Не найдено',
+            notFoundMessage: 'Похоже, такой страницы не существует',
+            backHome: 'На главную',
+            about: 'О сайте',
+            typing: 'Печать'
         },
         common:{
             textContent: 'Текст для чтения',
@@ -192,10 +263,15 @@ const messages = {
             removeVowels: 'Убрать гласные',
             yesLabel: 'Да',
             noLabel: 'Нет',
+            settingsLabel: 'Настройки',
+            fontSize: 'Размер текста',
+            boxWidth: 'Ширина области отображеия',
+            chunkSize: 'Слов в показе',
             metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса.',
             metaTitle: 'Текстовые инструменты',
             metaTags: 'текст, инструменты, чтение, обучение, запоминание, подсчёт слов, раскраска текста, конвертер текста, перемешиватель текста, спридер, таблица Шульте, запись голоса',
-            warnMessage: 'Что-то пошло не так. Попробуйте позже.'
+            warnMessage: 'Что-то пошло не так. Попробуйте позже.',
+            readingMode: 'Режим чтения'
         },
         textparser: {
             sourceText: 'Исходный текст',
@@ -205,15 +281,20 @@ const messages = {
             cntWords: 'Количество слов',
             paintText: 'Раскрасить текст',
             copyText: 'Скопировать текст',
-            countWords: 'Подсчёт слов',
+            countWords: 'Частотный анализ',
             onlyNouns: 'Показать только существительные',
             onlyVerbs: 'Показать только глаголы',
             grayScale: 'Оттенки серого',
             removeVowels: 'Убрать гласные',
             textContent: 'Текст для чтения',
             metaTitle: 'Подсчёт слов',
-            metaTags: 'текст, чтение, подсчёт слов, раскраска текста, морфемы, морфологический анализ',
-            metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, морфологический анализ.'
+            textToSpeech: 'Озвучить текст',
+            metaTags: 'текст, чтение, подсчёт слов, раскраска текста, морфемы, морфологический анализ, озвучка текста, текст в речь',
+            metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, морфологический анализ, озвучка текста.'
+        },
+        text: {
+            metaTags: 'текст, чтение, подсчёт слов, раскраска текста, морфемы, морфологический анализ, озвучка текста, текст в речь',
+            metaDescription: 'Инструменты для чтения, обучения и запоминания текстов. Подсчёт слов, раскраска текста, морфологический анализ, озвучка текста.'
         },
         spreeder: {
             sourceText: 'Исходный текст',
@@ -226,6 +307,10 @@ const messages = {
             metaTags: 'текст, чтение, скорочтение, спридер, слов в минуту',
             metaDescription: 'Спридер - это инструмент для скорочтения. Он помогает читать быстрее и понимать лучше.'
 
+        },
+        mixer: {
+            metaTags: 'текст, чтение, дешифровщик, конвертер текста, хаос текста, трансформация текста',
+            metaDescription: 'Дешифровщик - это инструмент для трансформации текста. Он помогает читать и понимать текст лучше.'
         },
         chaos: {
             sourceText: 'Исходный текст',
@@ -265,13 +350,38 @@ const messages = {
             text1Label: 'Первый текст',
             text2Label: 'Второй текст',
             swapLabel: 'Поменять тексты местами'
+        },
+        editor: {
+            title: 'Текстовый редактор',
+            description: 'Простой онлайн редактор текста',
+            metaTitle: 'Текстовый редактор',
+            metaTags: 'текст. редактирование, редактор, онлайн редактор, текстовый редактор, бесплатный онлайн редактор, редактор текста, он-лайн редактор, текстовый процессор',
+            metaDescription: 'Текстовый редактор - это инструмент для редактирования текста. Он помогает редактировать текст онлайн.'
+        },
+        keyboard: {
+            progress: 'Прогресс',
+            correct: 'Верно',
+            incorrect: 'Ошибки',
+            wpm: 'Слов в минуту',
+            wps: 'Слов в секунду',
+            cpm: 'Символов в минуту',
+            start: 'Начать',
+            stop: 'Стоп',
+            reset: 'Сброс',
+            lessonSelect: 'Выберите урок',
+            levelSelect: 'Выберите уровень',
+            timeLabel: 'Время',
+            accuLabel: 'Точность',
+            metaTitle: 'Печать',
+            metaTags: 'текст, чтение, печать, клавиатура, скоростная печать, слепой метод печати',
+            metaDescription: 'Клавиатурный тренажёр - это инструмент для обучения печати. Он помогает печатать быстрее и точнее.',
+            finished: 'Отличная работа! Вы закончили урок за {minutes} минут {seconds} секунд, совершив {errors} ошибок. Ваша скорость {rate} символов в минуту.',
         }
     }
 }
 
-const storedLocale = store.state.locale || "ru"
 export default createI18n({
-    locale: storedLocale,
+    locale: "ru",
     fallbackLocale: 'ru',
     legacy: false,
     runtimeOnly: false,

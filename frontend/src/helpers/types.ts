@@ -23,13 +23,32 @@ export interface SchulteContext {
     currentItem: any;
     currentIndex: number;
 }
-
+export interface UserData {
+    user: {
+        username: string;
+    },
+    token: {
+        bearer: string;
+    }
+}
 export interface State {
     theme: string | null;
     sourceText: string;
     fetchedData: any[];
+    showReportCard: boolean;
+    readingMode: boolean;
     locale: string;
     schulteResults: SchulteResultsItem[];
     schulteSettings: SchulteSettings;
     schulteContext: SchulteContext;
+    editorContent: {
+        lastSaved: Date,
+        content: string,
+    },
+    anticipationSettings: {
+        fontSize: number | 16
+    },
+    mixerSettings: {
+        fontSize: number | 16
+    }
 }
