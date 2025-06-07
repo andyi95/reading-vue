@@ -53,6 +53,7 @@ jobs:
 
       - name: Test start configuration
         env:
+          CI_REGISTRY_IMAGE: ${{ env.APP_VERSION }}
           COMPOSE_FILE: docker-compose.yaml:docker-compose.override.yaml:docker-compose.stage.yaml
         run: |
           docker compose up -d
